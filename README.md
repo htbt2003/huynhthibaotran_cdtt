@@ -7,4 +7,4 @@
 - Tên đề tài: Xây dựng website bán quần áo
 - Cộng nghệ: Laravel + ReactJS + (Công nghệ giao diện: Bootstrap )
 ## KẾ HOẠCH THỰC HIỆN
-### Tuần 1 ( 23/11/2023 đến 30/11): Tổ chức project và thiết kế csdl
+### Tuần 1 ( 23/11/2023 đến 30/11 Push ): Tổ chức project và thiết kế csdl
