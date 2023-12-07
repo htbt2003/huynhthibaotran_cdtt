@@ -297,7 +297,7 @@ function Menu() {
                         </h3>
                         <ul>
                           <li>
-                            <Link href="contact.html">Contact</Link>
+                            <Link to={"/lien-he"}>Contact</Link>
                           </li>
                           <li>
                             <Link href="cart.html">cart</Link>
@@ -335,7 +335,7 @@ function Menu() {
                   </div>
                 </li>
                 <li>
-                  <Link href="contact.html">contact us</Link>
+                  <Link to={"/lien-he"}>Liên hệ</Link>
                 </li>
               </ul>
             </nav>

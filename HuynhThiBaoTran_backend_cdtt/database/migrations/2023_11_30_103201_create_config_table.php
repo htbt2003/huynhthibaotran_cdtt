@@ -11,16 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('db_banner', function (Blueprint $table) {
+        Schema::create('db_config', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 1000);
-            $table->string('link', 1000);
-            $table->string('description', 1000);
-            $table->string('position');
+            $table->string('author');
+            $table->string('email');
+            $table->string('phone');
+            $table->string('zalo');
+            $table->string('facebook');
+            $table->string('address');
+            $table->string('youtube');
+            $table->string('metadesc');
+            $table->string('metakey');
             $table->timestamps(); //created_at, updated_at
             $table->unsignedInteger('created_by')->default(1);
             $table->unsignedInteger('updated_by')->nullable();
             $table->unsignedTinyInteger('status')->default(2);
+
         });
     }
 
@@ -29,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('db_banner');
+        Schema::dropIfExists('db_config');
     }
 };

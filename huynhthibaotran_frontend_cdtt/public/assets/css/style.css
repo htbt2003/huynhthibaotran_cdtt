@@ -604,8 +604,9 @@
 	display: none;
 
 }
-.sidebar_widget.catrgorie  ul li ul.categorie_sub.open {
+.sidebar_widget.catrgorie  ul li ul.categorie_sub.show {
 	display: block;
+	transition: block -2s;
 }
 .sidebar_widget.catrgorie  > ul > li.has-sub.open > a,.sidebar_widget.catrgorie  > ul > li.has-sub > a {
 	color: #fff;

@@ -1,8 +1,8 @@
 // import Search from "../layouts/LayoutSite/Search";
-// import Cart from "../pages/frontend/Cart";
-// import checkout from "../pages/frontend/Cart/checkout";
+import Cart from "../pages/frontend/Cart";
+import checkout from "../pages/frontend/Cart/checkout";
 // import confirm from "../pages/frontend/Cart/confirm";
-// import Contact from "../pages/frontend/Contact";
+import Contact from "../pages/frontend/Contact";
 import Home from "../pages/frontend/Home";
 // import Post from "../pages/frontend/Post";
 // import PostDetail from "../pages/frontend/Post/PostDetail";
@@ -21,10 +21,10 @@ const RouterPublic = [
     // {path:'/chu-de-bai-viet/:slug',component:PostTopic},
     // {path:'/thuong-hieu/:slug',component:ProductBrand},
     // {path:'/chi-tiet-bai-viet/:slug',component:PostDetail},
-    // {path:'/lien-he',component:Contact},
+    {path:'/lien-he',component:Contact},
     // {path:'/tim-kiem/:key',component:Search},
-    // {path:'/gio-hang',component:Cart},
-    // {path:'/dat-hang',component:checkout},
+    {path:'/gio-hang',component:Cart},
+    {path:'/dat-hang',component:checkout},
     // {path:'/xac-nhan',component:confirm}
 
 ];

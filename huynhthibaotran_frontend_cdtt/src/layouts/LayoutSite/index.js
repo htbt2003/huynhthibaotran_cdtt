@@ -5,9 +5,9 @@ import Copyright from './Copyright';
 // import "./LayoutSiteStyle.css"
 import Home from '../../pages/frontend/Home';
 import React, { useEffect } from 'react';
-// import '../../assets/css/style.css';
+import '../../assets/css/plugin.css';
 // import '../../assets/css/bundle.css';
-// import '../../assets/js/ajax-mail.js';
+// import '../../assets/js/main.js';
 
 function LayoutSite() {
     useEffect(() => {

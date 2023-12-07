@@ -4,40 +4,45 @@ import { Link } from "react-router-dom";
 import React from 'react';
 
 function CategoryList() {
+  const [isStyled, setIsStyled] = useState(false);
+  const myFunction = () => {
+    const element = document.getElementById("myDIV");
+    element.classList.toggle("mystyle");
+    setIsStyled((prevIsStyled) => !prevIsStyled);
+  };
+  // const [listCategory, setListCategory] = useState([]);
+  // useEffect(function () {
+  //     (async function () {
+  //         const result = await CategoryServices.getCategoryByParentId(0)
+  //         setListCategory(result.data.categories)
+  //     })();
+  // }, []);
+  return (
+    <>
+      {/*sidebar banner*/}
+      <div className="sidebar_widget banner mb-35">
+        <div className="banner_img mb-35">
+          <Link href="#">
+            <img src="assets\img\banner\banner5.jpg" alt="" />
+          </Link>
+        </div>
+        <div className="banner_img">
+          <Link href="#">
+            <img src="assets\img\banner\banner6.jpg" alt="" />
+          </Link>
+        </div>
+      </div>
+      {/*sidebar banner end*/}
 
-    // const [listCategory, setListCategory] = useState([]);
-    // useEffect(function () {
-    //     (async function () {
-    //         const result = await CategoryServices.getCategoryByParentId(0)
-    //         setListCategory(result.data.categories)
-    //     })();
-    // }, []);
-    return (
-      <>
-            {/*sidebar banner*/}
-            <div className="sidebar_widget banner mb-35">
-            <div className="banner_img mb-35">
-              <Link href="#">
-                <img src="assets\img\banner\banner5.jpg" alt="" />
-              </Link>
-            </div>
-            <div className="banner_img">
-              <Link href="#">
-                <img src="assets\img\banner\banner6.jpg" alt="" />
-              </Link>
-            </div>
-          </div>
-          {/*sidebar banner end*/}
-
-          {/*categorie menu start*/}
-        <div className="sidebar_widget catrgorie mb-35">
+      {/*categorie menu start*/}
+      <div className="sidebar_widget catrgorie mb-35">
         <h3>Categories</h3>
         <ul>
           <li className="has-sub">
-            <Link href="#demo">
+            <a href="#demo" data-toggle="collapse" aria-controls="demo">
               <i className="fa fa-caret-right" /> women
-            </Link>
-            <ul className="categorie_sub">
+            </a>
+            <ul className="categorie_sub" id="demo">
               <li>
                 <Link href="#">
                   <i className="fa fa-caret-right" /> Accessories
@@ -281,9 +286,9 @@ function CategoryList() {
         </ul>
       </div>
       {/*categorie menu end*/}
-      </>
+    </>
 
-    );
+  );
 }
 
 export default CategoryList;

@@ -55,9 +55,9 @@ function Header(props) {
         <div className="header_links">
           <ul>
             <li>
-              <a href="contact.html" title="Contact">
+              <Link to={"/lien-he"} title="Contact">
                 Contact
-              </a>
+              </Link>
             </li>
             <li>
               <a href="wishlist.html" title="wishlist">
@@ -70,9 +70,9 @@ function Header(props) {
               </a>
             </li>
             <li>
-              <a href="cart.html" title="My cart">
+              <Link to={"/gio-hang"} title="My cart">
                 My cart
-              </a>
+              </Link>
             </li>
             <li>
               <a href="login.html" title="Login">

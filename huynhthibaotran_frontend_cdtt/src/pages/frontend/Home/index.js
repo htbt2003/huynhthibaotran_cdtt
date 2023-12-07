@@ -26,13 +26,13 @@ function Home() {
       <Wpn/>
 
       {/*sidebar banner*/}
-      {/* <div className="sidebar_widget bottom ">
+      <div className="sidebar_widget bottom ">
         <div className="banner_img">
           <Link href="#">
             <img src="assets\img\banner\banner9.jpg" alt="" />
           </Link>
         </div>
-      </div> */}
+      </div>
       {/*sidebar banner end*/}
     </div>
     <div className="col-lg-9 col-md-12">
