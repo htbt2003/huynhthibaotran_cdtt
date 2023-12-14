@@ -21,7 +21,7 @@ class MenuController extends Controller
         if(count($menus)){
             return response()->json(
                 [
-                    'success' => true,
+                    'status' => true,
                     'message' => 'Tải dữ liệu thành công',
                     'menus' => $menus
                 ],
@@ -31,7 +31,7 @@ class MenuController extends Controller
         else{
             return response()->json(
                 [
-                    'success' => false,
+                    'status' => false,
                     'message' => 'Không có dữ liệu',
                     'menus' => null
                 ],
@@ -41,12 +41,17 @@ class MenuController extends Controller
     }
     public function index()
     {
-        $menus = Menu::orderBy('created_at', 'DESC')->get();
+        $menus = Menu::where('status', '!=', 0)
+        ->orderBy('created_at', 'DESC'
+        ->select('id', 'name', 'link', 'position' )
+        )->get();
+        $total = Menu::count();
         return response()->json(
             [
-                'success' => true, 
+                'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
-                'menus' => $menus
+                'menus' => $menus,
+                'total' => $total
             ],
             200
         );
@@ -55,7 +60,7 @@ class MenuController extends Controller
     {
         $menu = Menu::find($id);
         return response()->json(
-            ['success' => true, 'message' => 'Tải dữ liệu thành công', 'menu' => $menu],
+            ['status' => true, 'message' => 'Tải dữ liệu thành công', 'menu' => $menu],
             200
         );
     }
@@ -70,19 +75,43 @@ class MenuController extends Controller
         $menu->created_by = 1;
         $menu->status = $request->status; //form
         $menu->position = $request->position; //form
-        $menu->save(); //Luuu vao CSDL
-        return response()->json(
-            [
-                'success' => true, 
-                'message' => 'Thành công', 
-                'menu' => $menu
-            ],
-            201
-        );
+        if($menu->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Thành công', 
+                    'menu' => $menu
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Thêm không thành công', 
+                    'menu' => null
+                ],
+                422
+            );
+        }
     }
     public function update(Request $request, $id)
     {
         $menu = Menu::find($id);
+        if($menu == null)
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'menu' => null
+                ],
+                404
+            );  
+        }
         $menu->name = $request->name; //form
         $menu->link = $request->link; //form
         $menu->parent_id = $request->parent_id; //form
@@ -91,28 +120,65 @@ class MenuController extends Controller
         $menu->updated_by = 1;
         $menu->status = $request->status; //form
         $menu->position = $request->position; //form
-        $menu->save(); //Luuu vao CSDL
-        return response()->json(
-            [
-                'success' => true, 
-                'message' => 'Thành công', 
-                'menu' => $menu
-            ],
-            200
-        );
+        if($menu->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'menu' => $menu
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'menu' => null
+                ],
+                422
+            );
+        }
     }
     public function destroy($id)
     {
         $menu = Menu::findOrFail($id);
-        $menu->delete();
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Xóa thành công',
-                'menu' => null
-            ],
-            200
-        );
+        if($menu == null)
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'menu' => null
+                ],
+               404 
+            );    
+        }
+        if($menu->delete())
+        {
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Xóa thành công',
+                    'menu' => $menu
+                ],
+                200
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Xóa không thành công',
+                    'menu' => null
+                ],
+                422
+            );    
+        }
     }
 
 }

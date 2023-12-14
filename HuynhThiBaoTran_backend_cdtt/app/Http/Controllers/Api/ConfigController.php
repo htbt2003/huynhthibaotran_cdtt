@@ -4,22 +4,21 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Contact;
 
-class ContactController extends Controller
+class ConfigController extends Controller
 {
     public function index()
     {
-        $contacts = Contact::where('status', '!=', 0)
-            ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'phone', 'email', 'title')
-            ->get();
-        $total = Contact::count();
+        $configs = Config::where('status', '!=', 0)
+        ->orderBy('created_at', 'DESC')
+        ->select('id', 'name', 'slug', 'image', 'link', 'position' )
+        ->get();
+        $total = Config::count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
-                'contacts' => $contacts,
+                'configs' => $configs,
                 'total' => $total
             ],
             200
@@ -27,31 +26,34 @@ class ContactController extends Controller
     }
     public function show($id)
     {
-        $contact = Contact::find($id);
+        $config = Config::find($id);
         return response()->json(
-            ['status' => true, 'message' => 'Tải dữ liệu thành công', 'contact' => $contact],
+            ['status' => true, 'message' => 'Tải dữ liệu thành công', 'config' => $config],
             200
         );
     }
     public function store(Request $request)
     {
-        $contact = new Contact();
-        $contact->user_id = 1; //form
-        $contact->name = $request->name; //form
-        $contact->email = $request->email; //form
-        $contact->phone = $request->phone; //form
-        $contact->title = $request->title; //form
-        $contact->content = $request->content; //form
-        $contact->replay_id = $request->replay_id; //form
-        $contact->created_at = date('Y-m-d H:i:s');
-        $contact->status = $request->status; //form
-        if($contact->save())//Luuu vao CSDL
+        $config = new config();
+        $config->author = $request->author; //form
+        $config->email = $request->email; //form
+        $config->phone = $request->phone; //form
+        $config->zalo = $request->zalo; //form
+        $config->facebook = $request->facebook; //form
+        $config->address = $request->address; //form
+        $config->youtube = $request->youtube; //form
+        $config->metadesc = $request->metadesc; //form
+        $config->metakey = $request->metakey; //form
+        $config->created_at = date('Y-m-d H:i:s');
+        $config->created_by = 1;
+        $config->status = $request->status; //form
+        if($config->save())//Luuu vao CSDL
         {
             return response()->json(
                 [
                     'status' => true, 
                     'message' => 'Thành công', 
-                    'contact' => $contact
+                    'config' => $config
                 ],
                 201
             );    
@@ -62,7 +64,7 @@ class ContactController extends Controller
                 [
                     'status' => false, 
                     'message' => 'Thêm không thành công', 
-                    'contact' => null
+                    'config' => null
                 ],
                 422
             );
@@ -70,35 +72,37 @@ class ContactController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $contact = Contact::find($id);
-        if($contact == null)
+        $config = Config::find($id);
+        if($config == null)
         {
             return response()->json(
                 [
                     'status' => false, 
                     'message' => 'Không tìm thấy dữ liệu', 
-                    'contact' => null
+                    'config' => null
                 ],
                 404
             );    
         }
-        $contact->user_id = $request->user_id; //form
-        $contact->name = $request->name; //form
-        $contact->email = $request->email; //form
-        $contact->phone = $request->phone; //form
-        $contact->title = $request->title; //form
-        $contact->content = $request->content; //form
-        $contact->replay_id = $request->replay_id; //form
-        $contact->updated_at = date('Y-m-d H:i:s');
-        $contact->updated_by = 1;
-        $contact->status = $request->status; //form
-        if($contact->save())//Luuu vao CSDL
+        $config->author = $request->author; //form
+        $config->email = $request->email; //form
+        $config->phone = $request->phone; //form
+        $config->zalo = $request->zalo; //form
+        $config->facebook = $request->facebook; //form
+        $config->address = $request->address; //form
+        $config->youtube = $request->youtube; //form
+        $config->metadesc = $request->metadesc; //form
+        $config->metakey = $request->metakey; //form
+        $config->updated_at = date('Y-m-d H:i:s');
+        $config->updated_by = 1;
+        $config->status = $request->status; //form
+        if($config->save())//Luuu vao CSDL
         {
             return response()->json(
                 [
                     'status' => true, 
                     'message' => 'Cập nhật dữ liệu thành công', 
-                    'contact' => $contact
+                    'config' => $config
                 ],
                 201
             );    
@@ -109,7 +113,7 @@ class ContactController extends Controller
                 [
                     'status' => false, 
                     'message' => 'Cập nhật dữ liệu không thành công', 
-                    'contact' => null
+                    'config' => null
                 ],
                 422
             );
@@ -117,25 +121,25 @@ class ContactController extends Controller
     }
     public function destroy($id)
     {
-        $contact = contact::findOrFail($id);
-        if($contact == null)
+        $config = Config::findOrFail($id);
+        if($config == null)
         {
             return response()->json(
                 [
                     'status' => false, 
                     'message' => 'Không tìm thấy dữ liệu', 
-                    'contact' => null
+                    'config' => null
                 ],
                404 
             );    
         }
-        if($contact->delete())
+        if($config->delete())
         {
             return response()->json(
                 [
                     'status' => true,
                     'message' => 'Xóa thành công',
-                    'contact' => $contact
+                    'config' => $config
                 ],
                 200
             );    
@@ -146,11 +150,10 @@ class ContactController extends Controller
                 [
                     'status' => false,
                     'message' => 'Xóa không thành công',
-                    'contact' => null
+                    'config' => null
                 ],
                 422
             );    
         }
     }
-
 }

@@ -11,10 +11,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::orderBy('created_at', 'DESC')->get();
+        $users = User::where('status', '!=', 0)
+        ->orderBy('created_at', 'DESC')
+        ->select('id', 'name', 'slug', 'phone', 'email', 'image')
+        ->get();
         return response()->json(
             [
-                'success' => true, 
+                'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'users' => $users
             ],
@@ -25,7 +28,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
         return response()->json(
-            ['success' => true, 
+            ['status' => true, 
              'message' => 'Tải dữ liệu thành công', 
              'user' => $user],
             200
@@ -46,7 +49,7 @@ class UserController extends Controller
         if ($files != null) {
             $extension = $files->getClientOriginalExtension();
             if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = $slug . '.' . $extension;
+                $filename = date('YmdHis') . '.' . $extension;
                 $user->image = $filename;
                 $files->move(public_path('images/user'), $filename);
             }
@@ -56,19 +59,43 @@ class UserController extends Controller
         $user->created_at = date('Y-m-d H:i:s');
         $user->created_by = 1;
         $user->status = $request->status; //form
-        $user->save(); //Luuu vao CSDL
-        return response()->json(
-            [
-                'success' => true, 
-                'message' => 'Thành công', 
-                'user' => $user
-            ],
-            201
-        );
+        if($user->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Thành công', 
+                    'user' => $user
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Thêm không thành công', 
+                    'user' => null
+                ],
+                422
+            );
+        }
     }
     public function update(Request $request, $id)
     {
         $user = User::find($id);
+        if($user == null)
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'user' => null
+                ],
+                404
+            );    
+        }
         $user->name = $request->name; //form
         $user->email = $request->email; //form
         $user->phone = $request->phone; //form
@@ -81,7 +108,7 @@ class UserController extends Controller
         if ($files != null) {
             $extension = $files->getClientOriginalExtension();
             if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = $slug . '.' . $extension;
+                $filename = date('YmdHis') . '.' . $extension;
                 $user->image = $filename;
                 $files->move(public_path('images/user'), $filename);
             }
@@ -91,35 +118,72 @@ class UserController extends Controller
         $user->updated_at = date('Y-m-d H:i:s');
         $user->updated_by = 1;
         $user->status = $request->status; //form
-        $user->save(); //Luuu vao CSDL
-        return response()->json(
-            [
-                'success' => true, 
-                'message' => 'Thành công', 
-                'user' => $user
-            ],
-            200
-        );
+        if($user->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'user' => $user
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'user' => null
+                ],
+                422
+            );
+        }
     }
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        $user->delete();
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Xóa thành công',
-                'user' => null
-            ],
-            200
-        );
+        if($user == null)
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'user' => null
+                ],
+               404 
+            );    
+        }
+        if($user->delete())
+        {
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Xóa thành công',
+                    'user' => $user
+                ],
+                200
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Xóa không thành công',
+                    'user' => null
+                ],
+                422
+            );    
+        }
     }
     public function login($email, $password){
         $user = User::where([['email', '=', $email], ['password', '=', $password]])->first();
         if($user != null){
-            return response()->json(['message' => 'Đăng nhập thành công', 'success' => true, 'user' => $user]);
+            return response()->json(['message' => 'Đăng nhập thành công', 'status' => true, 'user' => $user]);
         }else{
-            return response()->json(['message' => 'Sai email hoặc mật khẩu', 'success' => false, 'user' => null]);
+            return response()->json(['message' => 'Sai email hoặc mật khẩu', 'status' => false, 'user' => null]);
         }
     }
 

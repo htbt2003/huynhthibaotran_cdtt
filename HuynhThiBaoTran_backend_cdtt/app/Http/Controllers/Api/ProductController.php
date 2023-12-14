@@ -41,7 +41,7 @@ class ProductController extends Controller
         if(count($products)>0){
             return response()->json(
                 [
-                    'success' => true,
+                    'status' => true,
                     'message' => 'Tải dữ liệu thành công',
                     'products' => $products
                 ],
@@ -51,7 +51,7 @@ class ProductController extends Controller
         else{
             return response()->json(
                 [
-                    'success' => false,
+                    'status' => false,
                     'message' => 'Không có dữ liệu',
                     'products' => null
                 ],
@@ -70,7 +70,7 @@ class ProductController extends Controller
             ->get();
         return response()->json(
             [
-                'success' => true,
+                'status' => true,
                 'message' => 'Tải dữ liệu thành công',
                 'products' => $products
             ],
@@ -108,7 +108,7 @@ class ProductController extends Controller
             ->get();
         return response()->json(
             [
-                'success' => true,
+                'status' => true,
                 'message' => 'Tải dữ liệu thành công',
                 'products' => $products
             ],
@@ -116,15 +116,15 @@ class ProductController extends Controller
         );
     }
 
-    public function product_brand($limit, $brand_id)
+    public function product_product($limit, $product_id)
     {
-        $products = Product::where([['brand_id', '=', $brand_id], ['status', '=', 1]])
+        $products = Product::where([['product_id', '=', $product_id], ['status', '=', 1]])
             ->orderBy('created_at', 'DESC')
             ->limit($limit)
             ->get();
         return response()->json(
             [
-                'success' => true,
+                'status' => true,
                 'message' => 'Tải dữ liệu thành công',
                 'products' => $products
             ],
@@ -143,7 +143,7 @@ class ProductController extends Controller
             ->get();
         return response()->json(
             [
-                'success' => true,
+                'status' => true,
                 'message' => 'Tải dữ liệu thành công',
                 'products' => $products
             ],
@@ -159,7 +159,7 @@ class ProductController extends Controller
         $product = Product::where($args)->first();
         if($product == null){
             return response()->json(
-                ['success' => false, 
+                ['status' => false, 
                  'message' => 'Không timg thấy dữ liệu', 
                  'product' =>null
                 ],
@@ -194,7 +194,7 @@ class ProductController extends Controller
         ->limit(8)
         ->get();
             return response()->json(
-                ['success' => true, 
+                ['status' => true, 
                  'message' => 'Tải dữ liệu thành công', 
                  'product' => $product,
                  'product_other'=>$product_other
@@ -214,7 +214,7 @@ class ProductController extends Controller
         if(count($products) > 0){
             return response()->json(
                 [
-                    'success' => true,
+                    'status' => true,
                     'message' => 'Tải dữ liệu thành công',
                     'products' => $products
                 ],
@@ -224,7 +224,7 @@ class ProductController extends Controller
         else{
             return response()->json(
                 [
-                    'success' => false,
+                    'status' => false,
                     'message' => 'Không có dữ liệu',
                     'products' => null
                 ],
@@ -235,12 +235,17 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = Product::orderBy('created_at', 'DESC')->get();
+        $products = Product::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'category_id', 'product_id', 'image')
+            ->get();
+        $total = Product::count();
         return response()->json(
             [
-                'success' => true, 
+                'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
-                'products' => $products
+                'products' => $products,
+                'total' => $total
             ],
             200
         );
@@ -249,7 +254,11 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         return response()->json(
-            ['success' => true, 'message' => 'Tải dữ liệu thành công', 'product' => $product],
+            [   
+                'status' => true, 
+                'message' => 'Tải dữ liệu thành công', 
+                'product' => $product
+            ],
             200
         );
     }
@@ -257,7 +266,7 @@ class ProductController extends Controller
     {
         $product = new Product();
         $product->category_id = $request->category_id; //form
-        $product->brand_id = $request->brand_id; //form
+        $product->product_id = $request->product_id; //form
         $product->name = $request->name; //form
         $product->slug = Str::of($request->name)->slug('-');
         $product->price = $request->price; //form
@@ -267,7 +276,7 @@ class ProductController extends Controller
         if ($files != null) {
             $extension = $files->getClientOriginalExtension();
             if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = $product->slug . '.' . $extension;
+                $filename = date('YmdHis') . '.' . $extension;
                 $product->image = $filename;
                 $files->move(public_path('images/product'), $filename);
             }
@@ -280,21 +289,45 @@ class ProductController extends Controller
         $product->created_at = date('Y-m-d H:i:s');
         $product->created_by = 1;
         $product->status = $request->status; //form
-        $product->save(); //Luuu vao CSDL
-        return response()->json(
-            [
-                'success' => true, 
-                'message' => 'Thành công', 
-                'product' => $product
-            ],
-            201
-        );
+        if($product->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Thành công', 
+                    'product' => $product
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Thêm không thành công', 
+                    'product' => null
+                ],
+                422
+            );
+        }
     }
     public function update(Request $request, $id)
     {
         $product = Product::find($id);
+        if($product == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'product' => null
+                ],
+                404
+            );    
+        }
         $product->category_id = $request->category_id; //form
-        $product->brand_id = $request->brand_id; //form
+        $product->product_id = $request->product_id; //form
         $product->name = $request->name; //form
         $product->slug = Str::of($request->name)->slug('-');
         $product->price = $request->price; //form
@@ -304,7 +337,7 @@ class ProductController extends Controller
         if ($files != null) {
             $extension = $files->getClientOriginalExtension();
             if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = $product->slug . '.' . $extension;
+                $filename = date('YmdHis') . '.' . $extension;
                 $product->image = $filename;
                 $files->move(public_path('images/product'), $filename);
             }
@@ -317,28 +350,65 @@ class ProductController extends Controller
         $product->updated_at = date('Y-m-d H:i:s');
         $product->updated_by = 1;
         $product->status = $request->status; //form
-        $product->save(); //Luuu vao CSDL
-        return response()->json(
-            [
-                'success' => true, 
-                'message' => 'Thành công', 
-                'product' => $product
-            ],
-            200
-        );
+        if($product->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'product' => $product
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'product' => null
+                ],
+                422
+            );
+        }
     }
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
-        $product->delete();
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Xóa thành công',
-                'product' => null
-            ],
-            200
-        );
+        if($product == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'product' => null
+                ],
+               404 
+            );    
+        }
+        if($product->delete())
+        {
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Xóa thành công',
+                    'product' => $product
+                ],
+                200
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Xóa không thành công',
+                    'product' => null
+                ],
+                422
+            );    
+        }
     }
 
 

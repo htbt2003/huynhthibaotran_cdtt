@@ -1,4 +1,4 @@
-// import Dashboard from "../pages/backend/Dashboard";
+import Dashboard from "../pages/backend/Dashboard";
 // import BrandList from '../pages/backend/Brand/BrandList';
 // import BrandShow from '../pages/backend/Brand/BrandShow';
 // import BrandCreate from '../pages/backend/Brand/BrandCreate';
@@ -44,7 +44,7 @@
 // import CustomerUpdate from '../pages/backend/Customer/CustomerUpdate';
 
 const RouterPrivate = [
-//   { path: "/admin", component: Dashboard },
+  { path: "/admin", component: Dashboard },
 //   { path: "/admin/brand", component: BrandList },
 //   { path: "/admin/brand/show/:id", component: BrandShow },
 //   { path: "/admin/brand/create", component: BrandCreate },

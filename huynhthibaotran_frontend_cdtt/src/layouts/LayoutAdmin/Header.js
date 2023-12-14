@@ -1,131 +1,184 @@
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { Trans } from 'react-i18next';
 
-function Header() {
-  return (
-    <section className="header bg-primary">
-      <div className="container-fluid ">
-        <nav className="navbar navbar-expand-lg">
-          <div className="container-fluid">
-            <Link className="navbar-brand text-white" to="/admin">
-              Quản Trị
-            </Link>
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div
-              className="collapse navbar-collapse"
-              id="navbarSupportedContent"
-            >
-              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                
-                <li className="nav-item dropdown">
-                  <Link
-                    className="nav-link dropdown-toggle text-white"
-                    to="#"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    Sản Phẩm
-                  </Link>
-                  <ul className="dropdown-menu">
-                    <li>
-                      <Link className="dropdown-item" to="/admin/product">
-                        Tất cả sản phẩm
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/category">
-                        Danh mục
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/brand">
-                        Thương hiệu
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/contact">
-                        Liên hệ
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/menu">
-                        Menu
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/order">
-                        Hóa đơn
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/post">
-                        Bài viết
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/slider">
-                        Slider
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/topic">
-                        Chủ đề
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/user">
-                        Người dùng
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/admin/customer">
-                        Khách hàng
-                      </Link>
-                    </li>
-                  </ul>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link active text-white" aria-current="page" to="#">
-                    Home
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link text-white" to="#">
-                    Link
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link disabled text-white">Disabled</Link>
-                </li>
-              </ul>
-              <form className="d-flex" role="search">
-                <input
-                  className="form-control me-2"
-                  type="search"
-                  placeholder="Search"
-                  aria-label="Search"
-                />
-                <button className="btn btn-outline-success" type="submit">
-                  Search
-                </button>
-                </form>
-            </div>
+class Header extends Component {
+  toggleOffcanvas() {
+    document.querySelector('.sidebar-offcanvas').classList.toggle('active');
+  }
+  toggleRightSidebar() {
+    document.querySelector('.right-sidebar').classList.toggle('open');
+  }
+  render () {
+    return (
+      <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+          <Link className="navbar-brand brand-logo" to="/"><img src={require('../../assets/img/logo.svg')} alt="logo" /></Link>
+          <Link className="navbar-brand brand-logo-mini" to="/"><img src={require('../../assets/img/logo-mini.svg')} alt="logo" /></Link>
+        </div>
+        <div className="navbar-menu-wrapper d-flex align-items-stretch">
+          <button className="navbar-toggler navbar-toggler align-self-center" type="button" onClick={ () => document.body.classList.toggle('sidebar-icon-only') }>
+            <span className="mdi mdi-menu"></span>
+          </button>
+          <div className="search-field d-none d-md-block">
+            <form className="d-flex align-items-center h-100" action="#">
+              <div className="input-group">
+                <div className="input-group-prepend bg-transparent">
+                  <i className="input-group-text border-0 mdi mdi-magnify"></i>
+                </div>
+                <input type="text" className="form-control bg-transparent border-0" placeholder="Search projects"/>
+              </div>
+            </form>
           </div>
-        </nav>
-      </div>
-    </section>
-  
-  );
+          <ul className="navbar-nav navbar-nav-right">
+            <li className="nav-item nav-profile">
+              <Dropdown alignRight>
+                <Dropdown.Toggle className="nav-link">
+                  <div className="nav-profile-img">
+                    <img src={require("../../assets/images/faces/face1.jpg")} alt="user"/>
+                    <span className="availability-status online"></span>
+                  </div>
+                  <div className="nav-profile-text">
+                    <p className="mb-1 text-black"><Trans>David Greymaax</Trans></p>
+                  </div>
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="navbar-dropdown">
+                  <Dropdown.Item href="!#" onClick={evt =>evt.preventDefault()}>
+                    <i className="mdi mdi-cached mr-2 text-success"></i>
+                    <Trans>Activity Log</Trans>
+                  </Dropdown.Item>
+                  <Dropdown.Item href="!#" onClick={evt =>evt.preventDefault()}>
+                    <i className="mdi mdi-logout mr-2 text-primary"></i>
+                    <Trans>Signout</Trans>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </li>
+            <li className="nav-item">
+              <Dropdown alignRight>
+                <Dropdown.Toggle className="nav-link count-indicator">
+                  <i className="mdi mdi-email-outline"></i>
+                  <span className="count-symbol bg-warning"></span>
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="preview-list navbar-dropdown">
+                  <h6 className="p-3 mb-0"><Trans>Messages</Trans></h6>
+                  <div className="dropdown-divider"></div>
+                  <Dropdown.Item className="dropdown-item preview-item" onClick={evt =>evt.preventDefault()}>
+                    <div className="preview-thumbnail">
+                      <img src={require("../../assets/images/faces/face4.jpg")} alt="user" className="profile-pic"/>
+                    </div>
+                    <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                      <h6 className="preview-subject ellipsis mb-1 font-weight-normal"><Trans>Mark send you a message</Trans></h6>
+                      <p className="text-gray mb-0">
+                        1 <Trans>Minutes ago</Trans>
+                      </p>
+                    </div>
+                  </Dropdown.Item>
+                  <div className="dropdown-divider"></div>
+                  <Dropdown.Item className="dropdown-item preview-item" onClick={evt =>evt.preventDefault()}>
+                    <div className="preview-thumbnail">
+                      <img src={require("../../assets/images/faces/face2.jpg")} alt="user" className="profile-pic"/>
+                    </div>
+                    <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                      <h6 className="preview-subject ellipsis mb-1 font-weight-normal"><Trans>Cregh send you a message</Trans></h6>
+                      <p className="text-gray mb-0">
+                        15 <Trans>Minutes ago</Trans>
+                      </p>
+                    </div>
+                  </Dropdown.Item>
+                  <div className="dropdown-divider"></div>
+                  <Dropdown.Item className="dropdown-item preview-item" onClick={evt =>evt.preventDefault()}>
+                    <div className="preview-thumbnail">
+                      <img src={require("../../assets/images/faces/face3.jpg")} alt="user" className="profile-pic"/>
+                    </div>
+                    <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                      <h6 className="preview-subject ellipsis mb-1 font-weight-normal"><Trans>Profile picture updated</Trans></h6>
+                      <p className="text-gray mb-0">
+                        18 <Trans>Minutes ago</Trans>
+                      </p>
+                    </div>
+                  </Dropdown.Item>
+                  <div className="dropdown-divider"></div>
+                  <h6 className="p-3 mb-0 text-center cursor-pointer">4 <Trans>new messages</Trans></h6>
+                </Dropdown.Menu>
+              </Dropdown>
+            </li>
+            <li className="nav-item">
+              <Dropdown alignRight>
+                <Dropdown.Toggle className="nav-link count-indicator">
+                  <i className="mdi mdi-bell-outline"></i>
+                  <span className="count-symbol bg-danger"></span>
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="dropdown-menu navbar-dropdown preview-list">
+                  <h6 className="p-3 mb-0"><Trans>Notifications</Trans></h6>
+                  <div className="dropdown-divider"></div>
+                  <Dropdown.Item className="dropdown-item preview-item" onClick={evt =>evt.preventDefault()}>
+                    <div className="preview-thumbnail">
+                      <div className="preview-icon bg-success">
+                        <i className="mdi mdi-calendar"></i>
+                      </div>
+                    </div>
+                    <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                      <h6 className="preview-subject font-weight-normal mb-1"><Trans>Event today</Trans></h6>
+                      <p className="text-gray ellipsis mb-0">
+                      <Trans>Just a reminder that you have an event today</Trans>
+                      </p>
+                    </div>
+                  </Dropdown.Item>
+                  <div className="dropdown-divider"></div>
+                  <Dropdown.Item className="dropdown-item preview-item" onClick={evt =>evt.preventDefault()}>
+                    <div className="preview-thumbnail">
+                      <div className="preview-icon bg-warning">
+                        <i className="mdi mdi-settings"></i>
+                      </div>
+                    </div>
+                    <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                      <h6 className="preview-subject font-weight-normal mb-1"><Trans>Settings</Trans></h6>
+                      <p className="text-gray ellipsis mb-0">
+                      <Trans>Update dashboard</Trans>
+                      </p>
+                    </div>
+                  </Dropdown.Item>
+                  <div className="dropdown-divider"></div>
+                  <Dropdown.Item className="dropdown-item preview-item" onClick={evt =>evt.preventDefault()}>
+                    <div className="preview-thumbnail">
+                      <div className="preview-icon bg-info">
+                        <i className="mdi mdi-link-variant"></i>
+                      </div>
+                    </div>
+                    <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
+                      <h6 className="preview-subject font-weight-normal mb-1"><Trans>Launch Admin</Trans></h6>
+                      <p className="text-gray ellipsis mb-0">
+                      <Trans>New admin wow</Trans>!
+                      </p>
+                    </div>
+                  </Dropdown.Item>
+                  <div className="dropdown-divider"></div>
+                  <h6 className="p-3 mb-0 text-center cursor-pointer"><Trans>See all notifications</Trans></h6>
+                </Dropdown.Menu>
+              </Dropdown>
+            </li>
+            <li className="nav-item nav-logout d-none d-lg-block">
+              <a className="nav-link" href="!#" onClick={event => event.preventDefault()}>
+                <i className="mdi mdi-power"></i>
+              </a>
+            </li>
+            <li className="nav-item nav-settings d-none d-lg-block">
+              <button type="button" className="nav-link border-0" onClick={this.toggleRightSidebar} >
+                <i className="mdi mdi-format-line-spacing"></i>
+              </button>
+            </li>
+          </ul>
+          <button className="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" onClick={this.toggleOffcanvas}>
+            <span className="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+    );
+  }
 }
 
 export default Header;

@@ -24,7 +24,7 @@ class PostController extends Controller
             ->get();
         return response()->json(
             [
-                'success' => true,
+                'status' => true,
                 'message' => 'Tải dữ liệu thành công',
                 'posts' => $posts
             ],
@@ -41,7 +41,7 @@ class PostController extends Controller
             ->get();
         return response()->json(
             [
-                'success' => true,
+                'status' => true,
                 'message' => 'Tải dữ liệu thành công',
                 'posts' => $posts
             ],
@@ -79,7 +79,7 @@ class PostController extends Controller
             ->get();
         return response()->json(
             [
-                'success' => true,
+                'status' => true,
                 'message' => 'Tải dữ liệu thành công',
                 'posts' => $posts
             ],
@@ -91,7 +91,7 @@ class PostController extends Controller
         $post = Post::orderBy('created_at', 'DESC')->first();
         return response()->json(
             [
-                'success' => true, 
+                'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'post' => $post
             ],
@@ -107,7 +107,7 @@ class PostController extends Controller
         $post = Post::where($args)->first();
         if($post == null){
             return response()->json(
-                ['success' => false, 
+                ['status' => false, 
                  'message' => 'Không timg thấy dữ liệu', 
                  'post' =>null
                 ],
@@ -142,7 +142,7 @@ class PostController extends Controller
         ->limit(8)
         ->get();
             return response()->json(
-                ['success' => true, 
+                ['status' => true, 
                  'message' => 'Tải dữ liệu thành công', 
                  'post' => $post,
                  'post_other'=>$post_other
@@ -163,7 +163,7 @@ class PostController extends Controller
             ->get();
         return response()->json(
             [
-                'success' => true,
+                'status' => true,
                 'message' => 'Tải dữ liệu thành công',
                 'posts' => $posts
             ],
@@ -174,12 +174,17 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::orderBy('created_at', 'DESC')->get();
+        $posts = Post::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'title', 'slug', 'topic_id', 'image' )
+            ->get();
+        $total = Post::count();
         return response()->json(
             [
-                'success' => true, 
+                'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
-                'posts' => $posts
+                'posts' => $posts,
+                'total' => $total
             ],
             200
         );
@@ -193,7 +198,7 @@ class PostController extends Controller
             $post = Post::where('slug', $id)->first();
         }
         return response()->json(
-            ['success' => true, 'message' => 'Tải dữ liệu thành công', 'post' => $post],
+            ['status' => true, 'message' => 'Tải dữ liệu thành công', 'post' => $post],
             200
         );
     }
@@ -209,7 +214,7 @@ class PostController extends Controller
         if ($files != null) {
             $extension = $files->getClientOriginalExtension();
             if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = $post->slug . '.' . $extension;
+                $filename = date('YmdHis') . '.' . $extension;
                 $post->image = $filename;
                 $files->move(public_path('images/post'), $filename);
             }
@@ -222,18 +227,43 @@ class PostController extends Controller
         $post->created_by = 1;
         $post->status = $request->status; //form
         $post->save(); //Luuu vao CSDL
-        return response()->json(
-            [
-                'success' => true, 
-                'message' => 'Thành công', 
-                'post' => $post
-            ],
-            201
-        );
+        if($post->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Thành công', 
+                    'post' => $post
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Thêm không thành công', 
+                    'post' => null
+                ],
+                422
+            );
+        }
     }
     public function update(Request $request, $id)
     {
         $post = Post::find($id);
+        if($post == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'post' => null
+                ],
+                404
+            );    
+        }
         $post->topic_id = $request->topic_id; //form
         $post->title = $request->title; //form
         $post->slug = Str::of($request->title)->slug('-');
@@ -243,7 +273,7 @@ class PostController extends Controller
         if ($files != null) {
             $extension = $files->getClientOriginalExtension();
             if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = $post->slug . '.' . $extension;
+                $filename = date('YmdHis') . '.' . $extension;
                 $post->image = $filename;
                 $files->move(public_path('images/post'), $filename);
             }
@@ -255,28 +285,65 @@ class PostController extends Controller
         $post->updated_at = date('Y-m-d H:i:s');
         $post->updated_by = 1;
         $post->status = $request->status; //form
-        $post->save(); //Luuu vao CSDL
-        return response()->json(
-            [
-                'success' => true, 
-                'message' => 'Thành công', 
-                'post' => $post
-            ],
-            200
-        );
+        if($post->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'post' => $post
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'post' => null
+                ],
+                422
+            );
+        }
     }
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
-        $post->delete();
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Xóa thành công',
-                'post' => null
-            ],
-            200
-        );
+        if($post == null)
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'post' => null
+                ],
+               404 
+            );    
+        }
+        if($post->delete())
+        {
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Xóa thành công',
+                    'post' => $post
+                ],
+                200
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Xóa không thành công',
+                    'post' => null
+                ],
+                422
+            );    
+        }
     }
 
 }
