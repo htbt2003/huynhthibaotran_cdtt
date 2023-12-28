@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('image');
             $table->int('roles');
+            $table->string('gender');
             $table->timestamps(); //created_at, updated_at
             $table->unsignedInteger('created_by')->default(1);
             $table->unsignedInteger('updated_by')->nullable();

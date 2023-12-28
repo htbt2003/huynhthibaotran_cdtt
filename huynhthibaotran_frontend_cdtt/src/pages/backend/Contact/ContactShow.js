@@ -11,7 +11,7 @@ function ContactShow() {
           (async function(){
             await ContactServices.getById(id)
             .then(function(result){
-                setContact(result.data.contact)
+                setContact(result.contact)
             });
           })();
     },[]);
@@ -19,7 +19,7 @@ function ContactShow() {
     {
       await ContactServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
+                alert(result.message)
                 navigator("/admin/contact", {replace:true})
             });
     }

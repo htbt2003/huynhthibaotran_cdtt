@@ -1,114 +1,70 @@
 import { Link, useNavigate } from 'react-router-dom';
-import {FaPlus} from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import MenuServices from '../../../services/MenuServices';
+import MenuCategoryCreate from './MenuCategoryCreate';
+import MenuBrandCreate from './MenuBrandCreate';
+import MenuTopicCreate from './MenuTopicCreate';
+import MenuPageCreate from './MenuPageCreate';
 
 function MenuCreate() {
-    const [menus, setMenus] = useState([]);
-    const navigator = useNavigate();
-    const [name, setName] = useState("");
-    const [link, setLink] = useState("");
-    const [parent_id, setParentId] = useState(0);
-    const [type, setType] = useState("");
     const [position, setPosition] = useState("");
-    const [status, setStatus] = useState(1);
-
-    function menuStore(event)
-    {
-        event.preventDefault();//không load lại trang
-        var menu = new FormData();
-        menu.append("name", name)
-        menu.append("link", link)
-        menu.append("parent_id", parent_id)
-        menu.append("position", position)
-        menu.append("type", type)
-        menu.append("status", status)
-        MenuServices.create(menu)
-        .then(function(result) {
-            alert(result.data.message);
-            navigator("/admin/menu", {replace:true})
-        });
-    }
-    useEffect(function(){
-      (async function(){
-        await MenuServices.getAll()
-        .then(function(result){
-            setMenus(result.data.menus)
-        });
-      })();
-    },[])
     return (
-    <form method='post' onSubmit={menuStore}>
-        <div className="card">
-            <div className="card-header">
-            <div className="row">
-                <div className="col-6">
-                <strong className="text-danger text-uppercase">
-                    Thêm menu
-                </strong>
-                </div>
-                <div className="col-6 text-end">
-                <Link to="/admin/menu" className="btn btn-info btn-sm me-2">
-                    <FaPlus/> Về danh sách
-                </Link>
-                <button type='submit' className='btn btn-success btn-sm'>Lưu</button>
-                </div>
-            </div>
-            </div>
-            <div className="card-body">
-                <div className='row'>
-                    <div className='col-md-9'>
-                        <div className='mb-3'>
-                            <label>
-                                <strong>Tên menu(*)</strong>
-                            </label>
-                            <input name='name' value={name} onChange={(e)=> setName(e.target.value)} className='form-control' type='text'/>
-                        </div>
-                        <div className='mb-3'>
-                            <label>
-                                <strong>Link(*)</strong>
-                            </label>
-                            <input  value={link} onChange={(e)=> setLink(e.target.value)}  className='form-control'/>
-                        </div>
-                        <div className='mb-3'>
-                            <label>
-                                <strong>Loại(*)</strong>
-                            </label>
-                            <input  value={type} onChange={(e)=> setType(e.target.value)} className='form-control'/>
-                        </div>
-                        <div className='mb-3'>
-                            <label>
-                                <strong>Vị trí(*)</strong>
-                            </label>
-                            <input  value={position} onChange={(e)=> setPosition(e.target.value)} className='form-control'/>
-                        </div>
-                    </div>
-                    <div className='col-md-3'>
-                        <div className='mb-3'>
-                                <label>
-                                    <strong>Mục cha(*)</strong>
-                                </label>
-                                <select  value={parent_id} onChange={(e)=> setParentId(e.target.value)} className='form-control'>
-                                    <option value="0">None</option>
-                                    {menus.map(function(menu, index){
-                                    return <option key={index} value={menu.id}>{menu.name}</option>
-                                })}
-                                </select>               
-                        </div>
-                        <div className='mb-3'>
-                            <label>
-                                <strong>Trạng thái</strong>
-                            </label>
-                            <select  value={status} onChange={(e)=> setStatus(e.target.value)} className='form-control'>
-                                <option value="1">Xuất bản</option>
-                                <option value="2">Chưa xuất bản</option>
+        <form method='post'>
+            <div>
+                <div className="">
+                    <ul className="list-group">
+                        <li className="list-group-item mb-2">
+                            <select name="postion" className="form-control" value={position} onChange={(e)=> setPosition(e.target.value)}>
+                                <option value="mainmenu">Main Menu</option>
+                                <option value="footermenu">Footer Menu</option>
                             </select>
-                        </div>
-                    </div>
+                        </li>
+                        <MenuCategoryCreate position={position}/>
+                        <MenuBrandCreate position={position}/>
+                        <MenuTopicCreate position={position}/>
+                        <MenuPageCreate position={position}/>
+                        <li className="list-group-item mb-2 border nav-item">
+                            <a
+                                className="nav-link menu-expanded"
+                                href="#multiCollapseLink"
+                                data-toggle="collapse"
+                            //aria-expanded="false"
+                            >
+                               Tùy biến liên kết
+                            </a>
+                            <div
+                                className="multi-collapse border-top mt-2 collapse"
+                                id="multiCollapseLink"
+                            >
+                                <div className="mb-3">
+                                    <label>Tên menu</label>
+                                    <input type="text" name="name" className="form-control" />
+                                </div>
+                                <div className="mb-3">
+                                    <label>Liên kết</label>
+                                    <input type="text" name="link" className="form-control" />
+                                </div>
+
+                                <div className="my-3">
+                                    <button
+                                        name="ADDCATEGORY"
+                                        type="submit"
+                                        className="btn btn-sm btn-success form-control"
+                                    >
+                                        Thêm
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
                 </div>
+
+
+
             </div>
-        </div>
-    </form>
+        </form>
     );
 }
 

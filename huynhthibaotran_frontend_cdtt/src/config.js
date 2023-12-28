@@ -1,2 +1,2 @@
-export const urlAPI= "http://localhost/public/api/"
-export const urlImage= "http://localhost/public/images/"
+export const urlAPI= "http://huynhthibaotran_backend_cdtt.test/api/"
+export const urlImage= "http://huynhthibaotran_backend_cdtt.test/images/"

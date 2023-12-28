@@ -11,9 +11,9 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::where('status', '!=', 0)
+        $users = User::where([['status', '!=', 0], ['roles', '=', 'user']])
         ->orderBy('created_at', 'DESC')
-        ->select('id', 'name', 'slug', 'phone', 'email', 'image')
+        ->select('id', 'name', 'phone', 'email', 'image')
         ->get();
         return response()->json(
             [
@@ -38,6 +38,7 @@ class UserController extends Controller
     {
         $user = new User();
         $user->name = $request->name; //form
+        $user->gender = $request->gender; //form
         $user->email = $request->email; //form
         $user->phone = $request->phone; //form
         $user->username = $request->username; //form
@@ -97,6 +98,7 @@ class UserController extends Controller
             );    
         }
         $user->name = $request->name; //form
+        $user->gender = $request->gender; //form
         $user->email = $request->email; //form
         $user->phone = $request->phone; //form
         $user->username = $request->username; //form

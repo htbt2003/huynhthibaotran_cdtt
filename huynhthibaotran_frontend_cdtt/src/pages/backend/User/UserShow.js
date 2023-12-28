@@ -11,7 +11,7 @@ function UserShow() {
           (async function(){
             await UserServices.getById(id)
             .then(function(result){
-                setUser(result.data.user)
+                setUser(result.user)
             });
           })();
     },[]);
@@ -19,7 +19,7 @@ function UserShow() {
     {
       await UserServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
+                alert(result.message)
                 navigator("/admin/user", {replace:true})
             });
     }
@@ -29,7 +29,7 @@ function UserShow() {
           <div className="row">
             <div className="col-6">
               <strong className="text-danger text-uppercase">
-                Chi tiết người dùng
+                Chi tiết thành viên
               </strong>
             </div>
             <div className="col-6 text-end">

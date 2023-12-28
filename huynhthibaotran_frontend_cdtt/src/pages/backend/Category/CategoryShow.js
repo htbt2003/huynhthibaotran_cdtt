@@ -11,7 +11,7 @@ function CategoryShow() {
           (async function(){
             await CategoryServices.getById(id)
             .then(function(result){
-                setCategory(result.data.category)
+                setCategory(result.category)
             });
           })();
     },[]);
@@ -19,7 +19,7 @@ function CategoryShow() {
     {
       await CategoryServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
+                alert(result.message)
                 navigator("/admin/category", {replace:true})
             });
     }

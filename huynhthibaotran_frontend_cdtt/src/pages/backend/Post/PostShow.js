@@ -11,7 +11,7 @@ function PostShow() {
           (async function(){
             await PostServices.getById(id)
             .then(function(result){
-                setPost(result.data.post)
+                setPost(result.post)
             });
           })();
     },[]);
@@ -19,7 +19,7 @@ function PostShow() {
     {
       await PostServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
+                alert(result.message)
                 navigator("/admin/post", {replace:true})
             });
     }

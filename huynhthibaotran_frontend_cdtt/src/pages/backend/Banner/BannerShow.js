@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import SliderServices from "../../../services/SliderServices"
+import BannerServices from "../../../services/BannerServices"
 
-function SliderShow() {
+function BannerShow() {
     const navigator = useNavigate();
     const {id} = useParams();
-    const [slider, setSlider] = useState([])
+    const [banner, setBanner] = useState([])
     useEffect (function(){
           (async function(){
-            await SliderServices.getById(id)
+            await BannerServices.getById(id)
             .then(function(result){
-                setSlider(result.data.slider)
+                setBanner(result.banner)
             });
           })();
     },[]);
-    async function SliderDelete(id)
+    async function BannerDelete(id)
     {
-      await SliderServices.remove(id)
+      await BannerServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
-                navigator("/admin/slider", {replace:true})
+                alert(result.message)
+                navigator("/admin/banner", {replace:true})
             });
     }
     return (
@@ -29,17 +29,17 @@ function SliderShow() {
           <div className="row">
             <div className="col-6">
               <strong className="text-danger text-uppercase">
-                Chi tiết slider
+                Chi tiết banner
               </strong>
             </div>
             <div className="col-6 text-end">
-                <Link to="/admin/slider" className="btn btn-info btn-sm me-2">
+                <Link to="/admin/banner" className="btn btn-info btn-sm me-2">
                     <FaPlus/> Về danh sách
                 </Link>
-                <Link className="btn btn-sm btn-primary me-1" to={"/admin/slider/update/" + slider.id}>
+                <Link className="btn btn-sm btn-primary me-1" to={"/admin/banner/update/" + banner.id}>
                       <FaEdit/>Sửa
                 </Link>
-                <button onClick={()=>SliderDelete(slider.id)} className="btn btn-sm btn-danger">
+                <button onClick={()=>BannerDelete(banner.id)} className="btn btn-sm btn-danger">
                     <FaTrash/>Xóa
                 </button>
             </div>
@@ -56,35 +56,27 @@ function SliderShow() {
                 <tbody>
                     <tr>
                       <th className="text-center">Id</th>
-                      <td>{slider.id}</td>
+                      <td>{banner.id}</td>
                     </tr>
                     <tr>
-                      <th className="text-center">Tên slider</th>
-                      <td>{slider.name}</td>
-                    </tr>
-                    <tr>
-                      <th className="text-center">Link</th>
-                      <td>{slider.link}</td>
-                    </tr>
-                    <tr>
-                      <th className="text-center">Sắp xếp</th>
-                      <td>{slider.sort_order}</td>
+                      <th className="text-center">Tên banner</th>
+                      <td>{banner.name}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Vị trí</th>
-                      <td>{slider.position}</td>
+                      <td>{banner.position}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Ngày tạo</th>
-                      <td>{slider.created_at}</td>
+                      <td>{banner.created_at}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Ngày cập nhật</th>
-                      <td>{slider.updated_at}</td>
+                      <td>{banner.updated_at}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Tình trạng</th>
-                      <td>{slider.status}</td>
+                      <td>{banner.status}</td>
                     </tr> 
                 </tbody>
             </table>
@@ -93,4 +85,4 @@ function SliderShow() {
     );
 }
 
-export default SliderShow;
+export default BannerShow;

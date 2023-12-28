@@ -2,12 +2,9 @@ import Header from './Header';
 import { Link, Outlet } from 'react-router-dom';
 // import Footer from './Footer';
 import Copyright from './Copyright';
-// import "./LayoutSiteStyle.css"
-import Home from '../../pages/frontend/Home';
+// import Home from '../../pages/frontend/Home';
 import React, { useEffect } from 'react';
 import '../../assets/css/plugin.css';
-// import '../../assets/css/bundle.css';
-// import '../../assets/js/main.js';
 
 function LayoutSite() {
     useEffect(() => {
@@ -46,16 +43,16 @@ function LayoutSite() {
         document.body.appendChild(mainScript);
     
         // Cleanup function
-        return () => {
-          document.body.removeChild(jqueryScript);
-          document.body.removeChild(popperScript);
-          document.body.removeChild(bootstrapScript);
-          document.body.removeChild(ajaxMailScript);
-          document.body.removeChild(pluginsScript);
-          document.body.removeChild(mainScript);
-        };
+        // return () => {
+        //   document.body.removeChild(jqueryScript);
+        //   document.body.removeChild(popperScript);
+        //   document.body.removeChild(bootstrapScript);
+        //   document.body.removeChild(ajaxMailScript);
+        //   document.body.removeChild(pluginsScript);
+        //   document.body.removeChild(mainScript);
+        // };
       }, []);
-
+    
     return (
         <>
             <div className="pos_page">

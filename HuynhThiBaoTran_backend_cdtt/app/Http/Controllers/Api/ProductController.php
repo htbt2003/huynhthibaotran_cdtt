@@ -160,7 +160,7 @@ class ProductController extends Controller
         if($product == null){
             return response()->json(
                 ['status' => false, 
-                 'message' => 'Không timg thấy dữ liệu', 
+                 'message' => 'Không tìm thấy dữ liệu', 
                  'product' =>null
                 ],
                 400
@@ -237,7 +237,7 @@ class ProductController extends Controller
     {
         $products = Product::where('status', '!=', 0)
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'slug', 'category_id', 'product_id', 'image')
+            ->select('id', 'name', 'slug', 'category_id', 'brand_id', 'image')
             ->get();
         $total = Product::count();
         return response()->json(

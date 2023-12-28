@@ -11,7 +11,7 @@ function BrandShow() {
           (async function(){
             await BrandServices.getById(id)
             .then(function(result){
-                setBrand(result.data.brand)
+                setBrand(result.brand)
             });
           })();
     },[]);
@@ -19,7 +19,7 @@ function BrandShow() {
     {
       await BrandServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
+                alert(result.message)
                 navigator("/admin/brand", {replace:true})
             });
     }
@@ -29,7 +29,7 @@ function BrandShow() {
           <div className="row">
             <div className="col-6">
               <strong className="text-danger text-uppercase">
-                Chi tiết danh mục
+                Chi tiết thương hiệu
               </strong>
             </div>
             <div className="col-6 text-end">
@@ -56,35 +56,35 @@ function BrandShow() {
                 <tbody>
                     <tr>
                       <th className="text-center">Id</th>
-                      <td>{brand.id}</td>
+                      <td>jghmg</td>
                     </tr>
                     <tr>
                       <th className="text-center">Tên Thương hiệu</th>
-                      <td>{brand.name}</td>
+                      <td>dvd</td>
                     </tr>
                     <tr>
                       <th className="text-center">Slug</th>
-                      <td>{brand.slug}</td>
+                      <td>dvfd</td>
                     </tr>
                     <tr>
                       <th className="text-center">Thứ tự</th>
-                      <td>{brand.sort_order}</td>
+                      <td>dffdfd</td>
                     </tr>
                     <tr>
                       <th className="text-center">Từ khóa</th>
-                      <td>{brand.metakey}</td>
+                      <td>fdfgf</td>
                     </tr>
                     <tr>
                       <th className="text-center">Mô tả</th>
-                      <td>{brand.metadesc}</td>
+                      <td>fghfh</td>
                     </tr>
                     <tr>
                       <th className="text-center">Ngày tạo</th>
-                      <td>{brand.created_at}</td>
+                      <td>fdgdg</td>
                     </tr>
                     <tr>
                       <th className="text-center">Ngày cập nhật</th>
-                      <td>{brand.update_at}</td>
+                      <td>dgfg</td>
                     </tr>
                 </tbody>
             </table>

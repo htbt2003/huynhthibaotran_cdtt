@@ -2,46 +2,51 @@ import React, { Component } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Trans } from 'react-i18next';
+import { AiOutlineDown } from "react-icons/ai";
+import { MdOutlineEmail } from "react-icons/md";
+import { FaRegBell, FaPowerOff } from "react-icons/fa6";
+import { CgFormatLineHeight, CgFormatJustify  } from "react-icons/cg";
+import { IoIosSearch } from "react-icons/io";
 
-class Header extends Component {
-  toggleOffcanvas() {
+function Header () {
+  function toggleOffcanvas() {
     document.querySelector('.sidebar-offcanvas').classList.toggle('active');
   }
-  toggleRightSidebar() {
+  function toggleRightSidebar() {
     document.querySelector('.right-sidebar').classList.toggle('open');
   }
-  render () {
     return (
       <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-        <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-          <Link className="navbar-brand brand-logo" to="/"><img src={require('../../assets/img/logo.svg')} alt="logo" /></Link>
-          <Link className="navbar-brand brand-logo-mini" to="/"><img src={require('../../assets/img/logo-mini.svg')} alt="logo" /></Link>
+        <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center bg-dark">
+          {/* <Link className="navbar-brand brand-logo" to="/"><img src={require('../../assets/img/logo.a79624ec.svg')} alt="logo" /></Link>
+          <Link className="navbar-brand brand-logo-mini" to="/"><img src={require('../../assets/img/logo-mini.svg')} alt="logo" /></Link> */}
         </div>
         <div className="navbar-menu-wrapper d-flex align-items-stretch">
           <button className="navbar-toggler navbar-toggler align-self-center" type="button" onClick={ () => document.body.classList.toggle('sidebar-icon-only') }>
-            <span className="mdi mdi-menu"></span>
+          <CgFormatJustify />
           </button>
-          <div className="search-field d-none d-md-block">
+          {/* <div className="search-field d-none d-md-block">
             <form className="d-flex align-items-center h-100" action="#">
               <div className="input-group">
                 <div className="input-group-prepend bg-transparent">
-                  <i className="input-group-text border-0 mdi mdi-magnify"></i>
+                  <i className="input-group-text border-0 "> <IoIosSearch /></i>
                 </div>
                 <input type="text" className="form-control bg-transparent border-0" placeholder="Search projects"/>
               </div>
             </form>
-          </div>
+          </div> */}
           <ul className="navbar-nav navbar-nav-right">
             <li className="nav-item nav-profile">
               <Dropdown alignRight>
                 <Dropdown.Toggle className="nav-link">
                   <div className="nav-profile-img">
-                    <img src={require("../../assets/images/faces/face1.jpg")} alt="user"/>
+                    {/* <img src={require("../../assets/images/faces/face1.jpg")} alt="user"/> */}
                     <span className="availability-status online"></span>
                   </div>
                   <div className="nav-profile-text">
                     <p className="mb-1 text-black"><Trans>David Greymaax</Trans></p>
                   </div>
+                  {/* <AiOutlineDown /> */}
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu className="navbar-dropdown">
@@ -59,7 +64,7 @@ class Header extends Component {
             <li className="nav-item">
               <Dropdown alignRight>
                 <Dropdown.Toggle className="nav-link count-indicator">
-                  <i className="mdi mdi-email-outline"></i>
+                  <MdOutlineEmail/>
                   <span className="count-symbol bg-warning"></span>
                 </Dropdown.Toggle>
 
@@ -68,7 +73,7 @@ class Header extends Component {
                   <div className="dropdown-divider"></div>
                   <Dropdown.Item className="dropdown-item preview-item" onClick={evt =>evt.preventDefault()}>
                     <div className="preview-thumbnail">
-                      <img src={require("../../assets/images/faces/face4.jpg")} alt="user" className="profile-pic"/>
+                      {/* <img src={require("../../assets/images/faces/face4.jpg")} alt="user" className="profile-pic"/> */}
                     </div>
                     <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
                       <h6 className="preview-subject ellipsis mb-1 font-weight-normal"><Trans>Mark send you a message</Trans></h6>
@@ -80,7 +85,7 @@ class Header extends Component {
                   <div className="dropdown-divider"></div>
                   <Dropdown.Item className="dropdown-item preview-item" onClick={evt =>evt.preventDefault()}>
                     <div className="preview-thumbnail">
-                      <img src={require("../../assets/images/faces/face2.jpg")} alt="user" className="profile-pic"/>
+                      {/* <img src={require("../../assets/images/faces/face2.jpg")} alt="user" className="profile-pic"/> */}
                     </div>
                     <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
                       <h6 className="preview-subject ellipsis mb-1 font-weight-normal"><Trans>Cregh send you a message</Trans></h6>
@@ -92,7 +97,7 @@ class Header extends Component {
                   <div className="dropdown-divider"></div>
                   <Dropdown.Item className="dropdown-item preview-item" onClick={evt =>evt.preventDefault()}>
                     <div className="preview-thumbnail">
-                      <img src={require("../../assets/images/faces/face3.jpg")} alt="user" className="profile-pic"/>
+                      {/* <img src={require("../../assets/images/faces/face3.jpg")} alt="user" className="profile-pic"/> */}
                     </div>
                     <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
                       <h6 className="preview-subject ellipsis mb-1 font-weight-normal"><Trans>Profile picture updated</Trans></h6>
@@ -109,7 +114,7 @@ class Header extends Component {
             <li className="nav-item">
               <Dropdown alignRight>
                 <Dropdown.Toggle className="nav-link count-indicator">
-                  <i className="mdi mdi-bell-outline"></i>
+                  <FaRegBell />
                   <span className="count-symbol bg-danger"></span>
                 </Dropdown.Toggle>
                 <Dropdown.Menu className="dropdown-menu navbar-dropdown preview-list">
@@ -163,22 +168,21 @@ class Header extends Component {
             </li>
             <li className="nav-item nav-logout d-none d-lg-block">
               <a className="nav-link" href="!#" onClick={event => event.preventDefault()}>
-                <i className="mdi mdi-power"></i>
+              <FaPowerOff />
               </a>
             </li>
             <li className="nav-item nav-settings d-none d-lg-block">
-              <button type="button" className="nav-link border-0" onClick={this.toggleRightSidebar} >
-                <i className="mdi mdi-format-line-spacing"></i>
+              <button type="button" className="nav-link border-0" onClick={toggleRightSidebar} >
+              <CgFormatLineHeight />
               </button>
             </li>
           </ul>
-          <button className="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" onClick={this.toggleOffcanvas}>
+          <button className="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" onClick={toggleOffcanvas}>
             <span className="mdi mdi-menu"></span>
           </button>
         </div>
       </nav>
     );
-  }
 }
 
 export default Header;

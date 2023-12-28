@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Banner;
+use Illuminate\Support\Str;
 
 
 class BannerController extends Controller
@@ -16,7 +17,7 @@ class BannerController extends Controller
             ['status', '=', 1]
         ];
         $banners = Banner::where($args)
-            ->orderBy('sort_order', 'ASC')
+        ->orderBy('created_at', 'DESC')
             ->get();
         return response()->json(
             [
@@ -31,7 +32,7 @@ class BannerController extends Controller
     {
         $banners = Banner::where('status', '!=', 0)
         ->orderBy('created_at', 'DESC')
-        ->select('id', 'name', 'slug', 'image', 'link', 'position' )
+        ->select('id', 'name', 'image', 'slug', 'position' )
         ->get();
         $total = Banner::count();
         return response()->json(
@@ -54,10 +55,10 @@ class BannerController extends Controller
     }
     public function store(Request $request)
     {
-        $banner = new banner();
+        $banner = new Banner();
         $banner->name = $request->name; //form
-        $banner->link = $request->link; //form
-        $banner->sort_order = $request->sort_order; //form
+        $banner->description = $request->description; //form
+        // $banner->link = $request->link; //form
         $banner->position = $request->position; //form
         $slug = Str::of($request->name)->slug('-');
         //upload image
@@ -78,7 +79,7 @@ class BannerController extends Controller
             return response()->json(
                 [
                     'status' => true, 
-                    'message' => 'Thành công', 
+                    'message' => 'Thêm thành công', 
                     'banner' => $banner
                 ],
                 201
@@ -111,8 +112,8 @@ class BannerController extends Controller
             );    
         }
         $banner->name = $request->name; //form
-        $banner->link = $request->link; //form
-        $banner->sort_order = $request->sort_order; //form
+        $banner->description = $request->description; //form
+        // $banner->link = $request->link; //form
         $banner->position = $request->position; //form
         $slug = Str::of($request->name)->slug('-');
         //upload image

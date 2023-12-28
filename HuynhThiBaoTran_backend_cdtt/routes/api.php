@@ -8,10 +8,12 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\SliderController;
+use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\TopicController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\OrderDetailController;
 
 /*
@@ -27,7 +29,7 @@ use App\Http\Controllers\Api\OrderDetailController;
 
 
 Route::get('menu_list/{position}/{parent_id?}', [MenuController::class, 'menu_list']);
-Route::get('slider_list/{position}', [SliderController::class, 'slider_list']);
+Route::get('banner_list/{position}', [BannerController::class, 'banner_list']);
 Route::get('category_list/{parent_id?}', [CategoryController::class, 'category_list']);
 Route::get('topic_list/{parent_id?}', [TopicController::class, 'topic_list']);
 
@@ -52,7 +54,7 @@ Route::get('order/index', [OrderController::class, 'index']);
 Route::get('order/{id}', [OrderController::class, 'order_userId']);
 Route::post('orderDetail/store', [OrderDetailController::class, 'store']);
 Route::post('orderDetail/doCheckout', [OrderController::class, 'doCheckout']);
-
+Route::post('post/store', [PostController::class, 'store']);
 
 Route::prefix('brand')->group(function () {
     Route::get('index', [BrandController::class, 'index']);
@@ -92,9 +94,16 @@ Route::prefix('order')->group(function () {
 Route::prefix('post')->group(function () {
     Route::get('index', [PostController::class, 'index']);
     Route::get('show/{id}', [PostController::class, 'show']);
-    Route::post('store', [PostController::class, 'store']);
+    // Route::post('store', [PostController::class, 'store']);
     Route::post('update/{id}', [PostController::class, 'update']);
     Route::delete('destroy/{id}', [PostController::class, 'destroy']);
+});
+Route::prefix('page')->group(function () {
+    Route::get('index', [PageController::class, 'index']);
+    Route::get('show/{id}', [PageController::class, 'show']);
+    Route::post('store', [PageController::class, 'store']);
+    Route::post('update/{id}', [PageController::class, 'update']);
+    Route::delete('destroy/{id}', [PageController::class, 'destroy']);
 });
 Route::prefix('product')->group(function () {
     Route::get('index', [ProductController::class, 'index']);
@@ -103,12 +112,12 @@ Route::prefix('product')->group(function () {
     Route::post('update/{id}', [ProductController::class, 'update']);
     Route::delete('destroy/{id}', [ProductController::class, 'destroy']);
 });
-Route::prefix('slider')->group(function () {
-    Route::get('index', [SliderController::class, 'index']);
-    Route::get('show/{id}', [SliderController::class, 'show']);
-    Route::post('store', [SliderController::class, 'store']);
-    Route::post('update/{id}', [SliderController::class, 'update']);
-    Route::delete('destroy/{id}', [SliderController::class, 'destroy']);
+Route::prefix('banner')->group(function () {
+    Route::get('index', [BannerController::class, 'index']);
+    Route::get('show/{id}', [BannerController::class, 'show']);
+    Route::post('store', [BannerController::class, 'store']);
+    Route::post('update/{id}', [BannerController::class, 'update']);
+    Route::delete('destroy/{id}', [BannerController::class, 'destroy']);
 });
 Route::prefix('topic')->group(function () {
     Route::get('index', [TopicController::class, 'index']);
@@ -124,6 +133,13 @@ Route::prefix('user')->group(function () {
     Route::post('store', [UserController::class, 'store']);
     Route::post('update/{id}', [UserController::class, 'update']);
     Route::delete('destroy/{id}', [UserController::class, 'destroy']);
+});
+Route::prefix('customer')->group(function () {
+    Route::get('index', [CustomerController::class, 'index']);
+    Route::get('show/{id}', [CustomerController::class, 'show']);
+    Route::post('store', [CustomerController::class, 'store']);
+    Route::post('update/{id}', [CustomerController::class, 'update']);
+    Route::delete('destroy/{id}', [CustomerController::class, 'destroy']);
 });
 
 

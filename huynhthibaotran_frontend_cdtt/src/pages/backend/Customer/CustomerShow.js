@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import UserServices from "../../../services/UserServices"
+import CustomerServices from "../../../services/CustomerServices"
 
 function CustomerShow() {
     const navigator = useNavigate();
     const {id} = useParams();
-    const [customer, setcustomer] = useState([])
+    const [user, setUser] = useState([])
     useEffect (function(){
           (async function(){
-            await UserServices.getById(id)
+            await CustomerServices.getById(id)
             .then(function(result){
-                setcustomer(result.data.user)
+                setUser(result.user)
             });
           })();
     },[]);
-    async function customerDelete(id)
+    async function UserDelete(id)
     {
-      await UserServices.remove(id)
+      await CustomerServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
-                navigator("/admin/customer", {replace:true})
+                alert(result.message)
+                navigator("/admin/user", {replace:true})
             });
     }
     return (
@@ -29,17 +29,17 @@ function CustomerShow() {
           <div className="row">
             <div className="col-6">
               <strong className="text-danger text-uppercase">
-                Chi tiết người dùng
+                Chi tiết khách hàng
               </strong>
             </div>
             <div className="col-6 text-end">
-                <Link to="/admin/customer" className="btn btn-info btn-sm me-2">
+                <Link to="/admin/user" className="btn btn-info btn-sm me-2">
                     <FaPlus/> Về danh sách
                 </Link>
-                <Link className="btn btn-sm btn-primary me-1" to={"/admin/customer/update/" + customer.id}>
+                <Link className="btn btn-sm btn-primary me-1" to={"/admin/user/update/" + user.id}>
                       <FaEdit/>Sửa
                 </Link>
-                <button onClick={()=>customerDelete(customer.id)} className="btn btn-sm btn-danger">
+                <button onClick={()=>UserDelete(user.id)} className="btn btn-sm btn-danger">
                     <FaTrash/>Xóa
                 </button>
             </div>
@@ -56,36 +56,47 @@ function CustomerShow() {
                 <tbody>
                     <tr>
                       <th className="text-center">Id</th>
-                      <td>{customer.id}</td>
+                      <td>{user.id}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Tên người dùng</th>
-                      <td>{customer.name}</td>
+                      <td>{user.name}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Email</th>
-                      <td>{customer.email}</td>
+                      <td>{user.email}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Điện thoại</th>
-                      <td>{customer.phone}</td>
+                      <td>{user.phone}</td>
                     </tr>
-                   
+                    <tr>
+                      <th className="text-center">Username</th>
+                      <td>{user.username}</td>
+                    </tr>
+                    <tr>
+                      <th className="text-center">Mật khẩu</th>
+                      <td>{user.password}</td>
+                    </tr>
                     <tr>
                       <th className="text-center">Địa chỉ</th>
-                      <td>{customer.address}</td>
+                      <td>{user.address}</td>
+                    </tr>
+                    <tr>
+                      <th className="text-center">Vai trò</th>
+                      <td>{user.roles}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Ngày tạo</th>
-                      <td>{customer.created_at}</td>
+                      <td>{user.created_at}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Ngày cập nhật</th>
-                      <td>{customer.updated_at}</td>
+                      <td>{user.updated_at}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Tình trạng</th>
-                      <td>{customer.status}</td>
+                      <td>{user.status}</td>
                     </tr>
                 </tbody>
             </table>

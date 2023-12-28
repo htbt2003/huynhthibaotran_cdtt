@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('link', 1000);
             $table->unsignedInteger('table_id');
             $table->string('type');
+            $table->string('position');
             $table->timestamps(); //created_at, updated_at
             $table->unsignedInteger('created_by')->default(1);
             $table->unsignedInteger('updated_by')->nullable();

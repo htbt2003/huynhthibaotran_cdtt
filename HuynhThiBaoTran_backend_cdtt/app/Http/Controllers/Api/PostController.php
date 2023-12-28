@@ -174,7 +174,7 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::where('status', '!=', 0)
+        $posts = Post::where([['status', '!=', 0], ['type', '=', 'post']])
             ->orderBy('created_at', 'DESC')
             ->select('id', 'title', 'slug', 'topic_id', 'image' )
             ->get();

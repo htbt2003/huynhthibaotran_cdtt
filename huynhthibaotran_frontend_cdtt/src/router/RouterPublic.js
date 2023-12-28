@@ -4,7 +4,7 @@ import checkout from "../pages/frontend/Cart/checkout";
 // import confirm from "../pages/frontend/Cart/confirm";
 import Contact from "../pages/frontend/Contact";
 import Home from "../pages/frontend/Home";
-// import Post from "../pages/frontend/Post";
+import Post from "../pages/frontend/Post";
 // import PostDetail from "../pages/frontend/Post/PostDetail";
 // import PostTopic from "../pages/frontend/Post/PostTopic";
 import Product from "../pages/frontend/Product";
@@ -15,7 +15,7 @@ import ProductDetail from "../pages/frontend/Product/ProductDetail";
 const RouterPublic = [
     {path:'/',component:Home},
     {path:'/san-pham',component:Product},
-    // {path:'/bai-viet',component:Post},
+    {path:'/bai-viet',component:Post},
     {path:'/chi-tiet-san-pham',component:ProductDetail},
     // {path:'/danh-muc-san-pham/:slug',component:ProductCategory},
     // {path:'/chu-de-bai-viet/:slug',component:PostTopic},

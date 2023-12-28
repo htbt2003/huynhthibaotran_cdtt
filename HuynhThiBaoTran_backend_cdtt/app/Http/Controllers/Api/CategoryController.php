@@ -17,6 +17,7 @@ class CategoryController extends Controller
         ];
         $categories = Category::where($args)
             ->orderBy('sort_order', 'ASC')
+            ->select('id', 'name', 'slug' )
             ->get();
         return response()->json(
             [
@@ -126,7 +127,7 @@ class CategoryController extends Controller
         if ($files != null) {
             $extension = $files->getClientOriginalExtension();
             if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = $category->slug . '.' . $extension;
+                $filename = date('YmdHis') . '.' . $extension;
                 $category->image = $filename;
                 $files->move(public_path('images/category'), $filename);
             }

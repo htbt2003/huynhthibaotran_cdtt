@@ -21,7 +21,7 @@ class BrandController extends Controller
             'message' => 'Tải dữ liệu thành công',
             'brands' => $brands,
             'total' => $total
-        ]
+        ];
         return response()->json($result,200);
     }
     public function show($id)

@@ -39,7 +39,7 @@ function ContactUpdate() {
       (async function(){
         await UserServices.getAll()
         .then(function(result){
-            setUsers(result.data.users)
+            setUsers(result.users)
         });
       })();
     },[])
@@ -109,7 +109,7 @@ function ContactUpdate() {
                     <div className='col-md-3'>
                     <div className='mb-3'>
                             <label>
-                                <strong>Mã người dùng(*)</strong>
+                                <strong>Mã khách hàng(*)</strong>
                             </label>
                             <select  value={user_id} onChange={(e)=> setUserId(e.target.value)} className='form-control'>
                                 {users.map(function(user, index){
