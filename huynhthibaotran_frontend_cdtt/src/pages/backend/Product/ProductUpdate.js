@@ -14,7 +14,6 @@ function ProductUpdate() {
     const [brand_id, setBrandId] = useState(0);
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0);
-    const [price_sale, setPriceSale] = useState(0);
     const [qty, setQty] = useState(1);
     const [detail, setDetail] = useState("");
     const [metakey, setMetakey] = useState("");
@@ -30,56 +29,49 @@ function ProductUpdate() {
         product.append("brand_id", brand_id)
         product.append("name", name)
         product.append("price", price)
-        product.append("price_sale", price_sale)
         product.append("qty", qty)
         product.append("detail", detail)
         product.append("metakey", metakey)
         product.append("metadesc", metadesc)
         product.append("status", status)
-        product.append("image", image.files[0])
+        if (image.files.length === 0) {
+            product.append("image", "")
+          }
+          else {
+            product.append("image", image.files[0])
+          }
         ProductServices.update(product, id)
         .then(function(result) {
-            alert(result.data.message);
+            alert(result.message);
             navigator("/admin/product", {replace:true})
         }); 
     }
     useEffect (function(){
           (async function(){
-            await BrandServices.getAll()
+            const brandResult = await BrandServices.getAll();
+            setBrands(brandResult.brandsAll)
+
+            const categoryResult = await CategoryServices.getAll();
+            setCategories(categoryResult.categoriesAll);
+
+            await ProductServices.getById(id)
             .then(function(result){
-                setBrands(result.data.brands)
+                const tmp = result.product
+                setCategoryId(tmp.category_id);
+                setBrandId(tmp.brand_id);
+                setName(tmp.name);
+                setPrice(tmp.price);
+                setDetail(tmp.detail);
+                setMetakey(tmp.metakey);
+                setMetadesc(tmp.metadesc);
+                setStatus(tmp.status);
             });
+
           })();
     },[]);
-    useEffect (function(){
-        (async function(){
-          await CategoryServices.getAll()
-          .then(function(result){
-              setCategories(result.data.categories)
-          });
-        })();
-   },[]);
-   useEffect (function(){
-    (async function(){
-      await ProductServices.getById(id)
-      .then(function(result){
-          const tmp = result.data.product
-          setCategoryId(tmp.category_id);
-          setBrandId(tmp.brand_id);
-          setName(tmp.name);
-          setPrice(tmp.price);
-          setPriceSale(tmp.price_sale);
-          setQty(tmp.qty);
-          setDetail(tmp.detail);
-          setMetakey(tmp.metakey);
-          setMetadesc(tmp.metadesc);
-          setStatus(tmp.status);
-      });
-    })();
-    },[]);
+
     return (
-        // <form method='product' onSubmit={ProductStore}>
-        <form method='product' >
+        <form method='product' onSubmit={ProductEdit}>
             <div className="content">
                 <section className="content-header my-2">
                     <h1 className="d-inline">Cập nhật sản phẩm</h1>
@@ -97,6 +89,7 @@ function ProductUpdate() {
                                     <strong>Tên sản phẩm (*)</strong>
                                 </label>
                                 <input
+                                value={name} onChange={(e)=> setName(e.target.value)}
                                     type="text"
                                     placeholder="Nhập tên sản phẩm"
                                     name="name"
@@ -108,6 +101,7 @@ function ProductUpdate() {
                                     <strong>Chi tiết (*)</strong>
                                 </label>
                                 <textarea
+                                value={detail} onChange={(e)=> setDetail(e.target.value)} 
                                     name="detail"
                                     placeholder="Nhập chi tiết sản phẩm"
                                     rows={7}
@@ -120,6 +114,7 @@ function ProductUpdate() {
                                     <strong>Mô tả (*)</strong>
                                 </label>
                                 <textarea
+                                value={metadesc} onChange={(e)=> setMetadesc(e.target.value)} 
                                     name="description"
                                     rows={3}
                                     className="form-control"
@@ -127,6 +122,19 @@ function ProductUpdate() {
                                     defaultValue={""}
                                 />
                             </div>
+                            <div className="mb-3">
+                                <label>
+                                    <strong>Từ khoá (*)</strong>
+                                </label>
+                                <input
+                                value={metakey} onChange={(e)=> setMetakey(e.target.value)}
+                                    type="text"
+                                    placeholder="Nhập tên sản phẩm"
+                                    name="name"
+                                    className="form-control"
+                                />
+                            </div>
+
                         </div>
                         <div className="col-md-3">
                             <div className="box-container mt-4 bg-white">
@@ -134,7 +142,7 @@ function ProductUpdate() {
                                     <strong>Đăng</strong>
                                 </div>
                                 <div className="box-body p-2 border-bottom">
-                                    <select name="status" className="form-select">
+                                    <select name="status" className="form-select" value={status} onChange={(e)=> setStatus(e.target.value)} >
                                         <option value={1}>Xuất bản</option>
                                         <option value={2}>Chưa xuất bản</option>
                                     </select>
@@ -150,9 +158,11 @@ function ProductUpdate() {
                                     <strong>Danh mục(*)</strong>
                                 </div>
                                 <div className="box-body p-2 border-bottom">
-                                    <select name="category_id" className="form-select">
+                                    <select name="category_id" className="form-select" value={category_id} onChange={(e)=> setCategoryId(e.target.value)}>
                                         <option value="">Chọn danh mục</option>
-                                        <option value={1}>Tên danh mục</option>
+                                        {categories.map(function(category, index){
+                                    return <option key={index} value={category.id}>{category.name}</option>
+                                })}
                                     </select>
                                 </div>
                             </div>
@@ -161,50 +171,26 @@ function ProductUpdate() {
                                     <strong>Thương hiệu(*)</strong>
                                 </div>
                                 <div className="box-body p-2 border-bottom">
-                                    <select name="brand_id" className="form-select">
+                                    <select name="brand_id" className="form-select" value={brand_id} onChange={(e)=> setBrandId(e.target.value)}>
                                         <option value="">Chọn thương hiêu</option>
-                                        <option value={1}>Tên danh mục</option>
+                                        {brands.map(function(brand, index){
+                                    return <option key={index} value={brand.id}>{brand.name}</option>
+                                })}
                                     </select>
                                 </div>
                             </div>
                             <div className="box-container mt-2 bg-white">
                                 <div className="box-header py-1 px-2 border-bottom">
-                                    <strong>Giá và số lượng</strong>
+                                    <strong>Giá bán(*)</strong>
                                 </div>
                                 <div className="box-body p-2 border-bottom">
                                     <div className="mb-3">
-                                        <label>
-                                            <strong>Giá bán (*)</strong>
-                                        </label>
                                         <input
+                                        value={price} onChange={(e)=> setPrice(e.target.value)}
                                             type="number"
                                             defaultValue={10000}
                                             min={10000}
                                             name="price"
-                                            className="form-control"
-                                        />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label>
-                                            <strong>Giá khuyến mãi (*)</strong>
-                                        </label>
-                                        <input
-                                            type="number"
-                                            defaultValue={10000}
-                                            min={10000}
-                                            name="pricesale"
-                                            className="form-control"
-                                        />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label>
-                                            <strong>Số lượng (*)</strong>
-                                        </label>
-                                        <input
-                                            type="number"
-                                            defaultValue={1}
-                                            min={1}
-                                            name="qty"
                                             className="form-control"
                                         />
                                     </div>
@@ -215,7 +201,7 @@ function ProductUpdate() {
                                     <strong>Hình đại diện(*)</strong>
                                 </div>
                                 <div className="box-body p-2 border-bottom">
-                                    <input type="file" name="image" className="form-control" />
+                                    <input type="file" id="image" className="form-control" />
                                 </div>
                             </div>
                         </div>

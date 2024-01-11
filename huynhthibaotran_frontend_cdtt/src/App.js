@@ -6,9 +6,9 @@ import RouterApp from './router';
 import LayoutAdmin from "./layouts/LayoutAdmin";
 // import { Provider } from "react-redux";
 // import store from "./pages/frontend/Cart/stores";
-import React, { useEffect } from 'react';
-function App() {
+// import React, { useEffect, useState } from 'react';
 
+function App() {
   return (
     // <Provider store={store}>
       <BrowserRouter>

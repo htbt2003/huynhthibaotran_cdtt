@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
+import './loading.css';
+
 function Loading() {
   return (
-    <div>Tai</div>
+    <div className="loader"></div>
   );
 }
 

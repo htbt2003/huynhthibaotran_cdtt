@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page)
 {
-    return httpAxios.get("post/index");
+    return httpAxios.get(`post/index?page=${page}`);
 }
 function getById(id)
 {
@@ -52,6 +52,22 @@ const PostServices = {
     getPostAll:getPostAll,
     getPostByTopicId:getPostByTopicId,
     getPostNew:getPostNew,
-    getTopicBySlug:getTopicBySlug
+    getTopicBySlug:getTopicBySlug,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("post/change_status/" + id);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("post/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("post/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`post/trash?page=${page}`);
+    },
 }
 export default PostServices;

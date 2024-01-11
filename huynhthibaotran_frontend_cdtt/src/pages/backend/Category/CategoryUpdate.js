@@ -43,7 +43,7 @@ function CategoryUpdate() {
           (async function(){
             await CategoryServices.getAll()
             .then(function(result){
-                setCategories(result.categories)
+                setCategories(result.categoriesAll)
             });
           })();
     },[]);

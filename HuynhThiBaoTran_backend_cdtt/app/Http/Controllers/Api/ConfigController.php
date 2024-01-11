@@ -11,15 +11,15 @@ class ConfigController extends Controller
     {
         $configs = Config::where('status', '!=', 0)
         ->orderBy('created_at', 'DESC')
-        ->select('id', 'name', 'slug', 'image', 'link', 'position' )
-        ->get();
-        $total = Config::count();
+        ->select('id', 'name', 'slug', 'image', 'link', 'position', 'status' )
+        ->paginate(5);
+        $total = Config::where('status', '!=', 0)->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'configs' => $configs,
-                'total' => $total
+                'total' => $total,
             ],
             200
         );

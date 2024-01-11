@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page)
 {
-    return httpAxios.get("topic/index");
+    return httpAxios.get(`topic/index?page=${page}`);
 }
 function getById(id)
 {
@@ -37,6 +37,22 @@ const TopicService = {
     update:update,
     remove:remove,
     getTopicByParentId:getTopicByParentId,
-    getTopicBySlug:getTopicBySlug
+    getTopicBySlug:getTopicBySlug,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("topic/change_status/" + id);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("topic/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("topic/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`topic/trash?page=${page}`);
+    },
 }
 export default TopicService;

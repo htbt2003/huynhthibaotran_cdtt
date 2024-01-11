@@ -1,21 +1,39 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FaPlus } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import MenuServices from '../../../services/MenuServices';
 import MenuCategoryCreate from './MenuCategoryCreate';
 import MenuBrandCreate from './MenuBrandCreate';
 import MenuTopicCreate from './MenuTopicCreate';
 import MenuPageCreate from './MenuPageCreate';
+import MenuCreateTuy from './MenuCreateTuy';
 
 function MenuCreate() {
+//     const navigator = useNavigate();
+//     const [name, setName] = useState("");
+//     const [link, setLink] = useState("");
     const [position, setPosition] = useState("");
+
+//     function MenuStore(event) {
+//       event.preventDefault();//không load lại trang
+//       const menu = new FormData();
+//       menu.append("name", name)
+//       menu.append("link", link)
+//       menu.append("position", position)
+//       menu.append("type", 'tuy-bien')
+//       MenuServices.create(menu)
+//       .then(function(result) {
+//           alert(result.message);
+//           navigator("/admin/menu", {replace:true})
+//       });
+// }
+    
     return (
-        <form method='post'>
             <div>
                 <div className="">
                     <ul className="list-group">
                         <li className="list-group-item mb-2">
                             <select name="postion" className="form-control" value={position} onChange={(e)=> setPosition(e.target.value)}>
+                                <option>Chọn vị trí đặt menu</option>
                                 <option value="mainmenu">Main Menu</option>
                                 <option value="footermenu">Footer Menu</option>
                             </select>
@@ -24,47 +42,10 @@ function MenuCreate() {
                         <MenuBrandCreate position={position}/>
                         <MenuTopicCreate position={position}/>
                         <MenuPageCreate position={position}/>
-                        <li className="list-group-item mb-2 border nav-item">
-                            <a
-                                className="nav-link menu-expanded"
-                                href="#multiCollapseLink"
-                                data-toggle="collapse"
-                            //aria-expanded="false"
-                            >
-                               Tùy biến liên kết
-                            </a>
-                            <div
-                                className="multi-collapse border-top mt-2 collapse"
-                                id="multiCollapseLink"
-                            >
-                                <div className="mb-3">
-                                    <label>Tên menu</label>
-                                    <input type="text" name="name" className="form-control" />
-                                </div>
-                                <div className="mb-3">
-                                    <label>Liên kết</label>
-                                    <input type="text" name="link" className="form-control" />
-                                </div>
-
-                                <div className="my-3">
-                                    <button
-                                        name="ADDCATEGORY"
-                                        type="submit"
-                                        className="btn btn-sm btn-success form-control"
-                                    >
-                                        Thêm
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-
+                        <MenuCreateTuy position={position}/>
                     </ul>
                 </div>
-
-
-
             </div>
-        </form>
     );
 }
 

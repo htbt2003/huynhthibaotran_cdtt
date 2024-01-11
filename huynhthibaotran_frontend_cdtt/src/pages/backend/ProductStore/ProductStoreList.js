@@ -3,26 +3,46 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { urlImage } from '../../../config';
 import { IoIosSearch } from "react-icons/io";
+import Loading from '../../../Loading';
+import ReactPaginate from "react-paginate";
 
 function ProductStoreList() {
-  const [statusdel, setStatusDel] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState();
+  const [load, setLoad] = useState(false)
+  const [reLoad, setReLoad] = useState();
   const [products, setProducts] = useState([]);
   useEffect(function(){
     (async function(){
-      const result = await ProductServices.getAll();
-      setProducts(result.products)
+      setLoad(true)
+      const result = await ProductServices.getAll(page);
+      setProducts(result.products.data)
+      setTotal(result.total);
+      setLoad(false)
     })();
-  },[statusdel])
+  },[reLoad, page])
   async function ProductDelete(id)
     {
       await ProductServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
-                setStatusDel(id)
+                alert(result.message)
+                setReLoad(id)
             });
     }
+    async function handleStatus(id) {
+      const result = await ProductServices.changeStatus(id)
+      // alert(result.message)
+      setReLoad(Date.now)
+    }
+      //------------pagination-------------
+  const numberPage = Math.ceil(total / 5);
+  const handlePageChange = (event) => {
+    setPage(event.selected+1);
+  };
+
   return (
     <div>
+      {load ? (<Loading />) : (<></>)}
       <div className="page-header">
         <div className='row'>
           <h1 className='ml-4 mr-3'>Sản phẩm</h1>
@@ -101,18 +121,18 @@ function ProductStoreList() {
                             <div className='row'>
                               <div className='col-2 pt-2'>{product.name}</div>
                               <div className="col- 2 function_style">
-                                <Link href="#" className="btn btn-success btn-sm">
-                                  <i className="fa fa-toggle-on" />
-                                </Link>
+                                <button onClick={() => handleStatus(product.id)} className={product.status === 1 ? "btn btn-success btn-sm" : "btn btn-danger btn-sm"}>
+                                      <i className={product.status === 1 ? "fa fa-toggle-on" : "fa fa-toggle-off"} />
+                                </button>
                                 <Link to={"/admin/category/update/"+ product.id} className="btn btn-primary btn-sm">
                                   <i className="fa fa-edit" />
                                 </Link>
                                 <Link to={"/admin/category/show/" + product.id} className="btn btn-info btn-sm">
                                   <i className="fa fa-eye" />
                                 </Link>
-                                <Link href="#" className="btn btn-danger btn-sm">
+                                <button href="#" className="btn btn-danger btn-sm" onClick={()=>ProductDelete(product.id)}>
                                   <i className="fa fa-trash" />
-                                </Link>
+                                </button>
                               </div>
                             </div>
                           </td>
@@ -129,33 +149,27 @@ function ProductStoreList() {
           </div>
         </div>
       </div>
-      <nav aria-label="Page navigation example">
-        <ul className="pagination pagination-sm justify-content-end">
-          <li className="page-item disabled">
-            <Link className="page-link">«</Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              1
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              2
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              3
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              »
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <ReactPaginate
+        className="pagination pagination-sm justify-content-end"
+        previousLabel="«"
+        nextLabel="»"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakLabel="..."
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        pageCount={numberPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageChange}
+        containerClassName="pagination"
+        activeClassName="active"
+        // forcePage={pageOffset} // lay trang hien tai
+      />
 
 
 

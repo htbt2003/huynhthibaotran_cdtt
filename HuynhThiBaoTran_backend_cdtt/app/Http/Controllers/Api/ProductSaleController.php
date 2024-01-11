@@ -4,16 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class ProductSaleController extends Controller
 {
-        public function index()
+    public function index()
     {
         $prosales = Productsale::where(['status', '!=', 0],)
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'slug', 'category_id', 'brand_id', 'image')
+            ->select('id', 'name', 'slug', 'category_id', 'brand_id', 'image', 'status')
             ->get();
-        $total = Productsale::count();
+         $total = Productsale::where('status', '!=', 0)->count();
         return response()->json(
             [
                 'status' => true, 
@@ -147,6 +148,65 @@ class ProductSaleController extends Controller
             );
         }
     }
+    public function delete($id)
+    {
+        $prosale = Productsale::find($id);
+        if($prosale == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'product' => null
+                ],
+                404
+            );    
+        }
+        $prosale->updated_at = date('Y-m-d H:i:s');
+        $prosale->updated_by = 1;
+        $prosale->status = 0; 
+        if($prosale->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'prosale' => $prosale
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $prosale = Productsale::find($id);
+        if($prosale == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'prosale' => null
+                ],
+                404
+            );    
+        }
+        $prosale->updated_at = date('Y-m-d H:i:s');
+        $prosale->updated_by = 1;
+        $prosale->status = 2; 
+        if($prosale->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'prosale' => $prosale
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
         $prosale = Productsale::findOrFail($id);
@@ -183,5 +243,5 @@ class ProductSaleController extends Controller
                 422
             );    
         }
-
+    }
 }

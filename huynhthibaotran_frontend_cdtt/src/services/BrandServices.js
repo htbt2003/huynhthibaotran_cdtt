@@ -2,8 +2,8 @@ import httpAxios from "../httpAxios";
 
 
 const BrandService = {
-    getAll: () =>{
-        return httpAxios.get("brand/index");
+    getAll: (page) =>{
+        return httpAxios.get(`brand/index?page=${page}`);
     },
     getById:(id) =>
     {
@@ -21,6 +21,21 @@ const BrandService = {
     {
         return httpAxios.delete("brand/destroy/" + id);
     },
-
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("brand/change_status/" + id);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("brand/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("brand/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`brand/trash?page=${page}`);
+    }
 };
 export default BrandService;

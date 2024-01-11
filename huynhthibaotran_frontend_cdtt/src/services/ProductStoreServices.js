@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page=1)
 {
-    return httpAxios.get("product/index");
+    return httpAxios.get(`product/index?page=${page}`);
 }
 function getById(id)
 {
@@ -57,6 +57,10 @@ const ProductStoreService = {
     getProductBySlug:getProductBySlug,
     getProductByCategoryId:getProductByCategoryId,
     getProductByBrandId:getProductByBrandId,
-    getProductSearch:getProductSearch
+    getProductSearch:getProductSearch,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("product/change_status/" + id);
+    },
 }
 export default ProductStoreService;

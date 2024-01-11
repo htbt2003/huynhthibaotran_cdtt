@@ -11,7 +11,7 @@ function ProductShow() {
           (async function(){
             await ProductServices.getById(id)
             .then(function(result){
-                setProduct(result.data.product)
+                setProduct(result.product)
             });
           })();
     },[]);
@@ -19,7 +19,7 @@ function ProductShow() {
     {
       await ProductServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
+                alert(result.message)
                 navigator("/admin/product", {replace:true})
             });
     }
@@ -77,14 +77,6 @@ function ProductShow() {
                     <tr>
                       <th className="text-center">Giá</th>
                       <td>{product.price}</td>
-                    </tr>
-                    <tr>
-                      <th className="text-center">Khuyến mãi</th>
-                      <td>{product.price_sale}</td>
-                    </tr>
-                    <tr>
-                      <th className="text-center">Số lượng</th>
-                      <td>{product.qty}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Chi tiết</th>

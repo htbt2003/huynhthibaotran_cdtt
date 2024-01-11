@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('slug', 1000);
             $table->float('price');
             $table->string('image', 1000);
-            $table->unsignedInteger('qty');
             $table->mediumText('detail')->nullable();
             $table->string('metakey');
             $table->string('metadesc');

@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page)
 {
-    return httpAxios.get("page/index");
+    return httpAxios.get(`page/index?page=${page}`);
 }
 function getById(id)
 {
@@ -52,6 +52,22 @@ const PageServices = {
     getpageAll:getpageAll,
     getpageByTopicId:getpageByTopicId,
     getpageNew:getpageNew,
-    getTopicBySlug:getTopicBySlug
+    getTopicBySlug:getTopicBySlug,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("page/change_status/" + id);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("page/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("page/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`page/trash?page=${page}`);
+    },
 }
 export default PageServices;

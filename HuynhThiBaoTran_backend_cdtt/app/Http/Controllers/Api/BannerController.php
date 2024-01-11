@@ -32,19 +32,64 @@ class BannerController extends Controller
     {
         $banners = Banner::where('status', '!=', 0)
         ->orderBy('created_at', 'DESC')
-        ->select('id', 'name', 'image', 'slug', 'position' )
-        ->get();
-        $total = Banner::count();
+        ->select('id', 'name', 'image', 'slug', 'position', 'status' )
+        ->paginate(5);
+        $total = Banner::where('status', '!=', 0)->count();
+        $publish = Banner::where('status', '=', 1)->count();
+        $trash = Banner::where('status', '=', 0)->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'banners' => $banners,
-                'total' => $total
+                'total' => $total,
+                'publish' => $publish,
+                'trash' => $trash,
             ],
             200
         );
     }
+    public function changeStatus($id)
+    {
+        $banner = Banner::find($id);
+        if($banner == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'banner' => null
+                ],
+                404
+            );    
+        }
+        $banner->updated_at = date('Y-m-d H:i:s');
+        $banner->updated_by = 1;
+        $banner->status = ($banner->status == 1) ? 2 : 1; //form
+        if($banner->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'banner' => $banner
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'banner' => null
+                ],
+                422
+            );
+        }
+    }
+
     public function show($id)
     {
         $banner = Banner::find($id);
@@ -152,9 +197,89 @@ class BannerController extends Controller
             );
         }
     }
+    public function trash()
+    {
+        $banners = Banner::where('status', '=', 0)
+        ->orderBy('created_at', 'DESC')
+        ->select('id', 'name', 'image', 'slug', 'position', 'status' )
+        ->paginate(5);
+        $total = Banner::where('status', '!=', 0)->count();
+        $publish = Banner::where('status', '=', 1)->count();
+        $trash = Banner::where('status', '=', 0)->count();
+        return response()->json(
+            [
+                'status' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'banners' => $banners,
+                'total' => $total,
+                'publish' => $publish,
+                'trash' => $trash,
+            ],
+            200
+        );
+    }
+    public function delete($id)
+    {
+        $banner = banner::find($id);
+        if($banner == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'banner' => null
+                ],
+                404
+            );    
+        }
+        $banner->updated_at = date('Y-m-d H:i:s');
+        $banner->updated_by = 1;
+        $banner->status = 0; 
+        if($banner->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'banner' => $banner
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $banner =Banner::find($id);
+        if($banner == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'banner' => null
+                ],
+                404
+            );    
+        }
+        $banner->updated_at = date('Y-m-d H:i:s');
+        $banner->updated_by = 1;
+        $banner->status = 2; 
+        if($banner->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'banner' => $banner
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
-        $banner = Banner::findOrFail($id);
+        $banner =Banner::findOrFail($id);
         if($banner == null)
         {
             return response()->json(

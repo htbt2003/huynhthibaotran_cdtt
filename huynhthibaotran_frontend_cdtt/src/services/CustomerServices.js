@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page)
 {
-    return httpAxios.get("customer/index");
+    return httpAxios.get(`customer/index?page=${page}`);
 }
 function getById(id)
 {
@@ -26,6 +26,22 @@ const CustomerService = {
     getById:getById,
     create:create,
     update:update,
-    remove:remove
+    remove:remove,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("customer/change_status/" + id);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("customer/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("customer/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`customer/trash?page=${page}`);
+    }
 }
 export default CustomerService;

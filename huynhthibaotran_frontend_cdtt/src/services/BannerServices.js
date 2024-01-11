@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page)
 {
-    return httpAxios.get("banner/index");
+    return httpAxios.get(`banner/index?page=${page}`);
 }
 function getById(id)
 {
@@ -31,6 +31,22 @@ const BannerService = {
     getById:getById,
     create:create,
     update:update,
-    remove:remove
+    remove:remove,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("banner/change_status/" + id);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("banner/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("banner/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`banner/trash?page=${page}`);
+    }
 }
 export default BannerService;

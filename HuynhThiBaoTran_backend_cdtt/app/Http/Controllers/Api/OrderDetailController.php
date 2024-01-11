@@ -9,9 +9,51 @@ use App\Models\OrderDetail;
 
 class OrderDetailController extends Controller
 {
+    public function changeStatus($id)
+    {
+        $orderdetail = Orderdetail::find($id);
+        if($orderdetail == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'orderdetail' => null
+                ],
+                404
+            );    
+        }
+        $orderdetail->updated_at = date('Y-m-d H:i:s');
+        $orderdetail->updated_by = 1;
+        $orderdetail->status = ($orderdetail->status == 1) ? 2 : 1; //form
+        if($orderdetail->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'orderdetail' => $orderdetail
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'orderdetail' => null
+                ],
+                422
+            );
+        }
+    }
     public function index()
     {
-        $orderDetails = OrderDetail::orderBy('created_at', 'DESC')->get();
+        $orderDetails = OrderDetail::where('status', '!=', 0)
+        ->orderBy('created_at', 'DESC')
+        ->paginate(5);
         return response()->json(
             [
                 'success' => true, 
@@ -33,7 +75,7 @@ class OrderDetailController extends Controller
     {
         $orderDetail = new OrderDetail();
         $orderDetail->order_id = $request->order_id; //form
-        $orderDetail->product_id = $request->product_id; //form
+        $orderDetail->orderdetail_id = $request->orderdetail_id; //form
         $orderDetail->price = $request->price; //form
         $orderDetail->qty = $request->qty; //form
         $orderDetail->created_at = date('Y-m-d H:i:s');
@@ -51,7 +93,7 @@ class OrderDetailController extends Controller
     {
         $orderDetail = OrderDetail::find($id);
         $orderDetail->order_id = $request->order_id; //form
-        $orderDetail->product_id = $request->product_id; //form
+        $orderDetail->orderdetail_id = $request->orderdetail_id; //form
         $orderDetail->price = $request->price; //form
         $orderDetail->qty = $request->qty; //form
         $orderDetail->updated_at = date('Y-m-d H:i:s');

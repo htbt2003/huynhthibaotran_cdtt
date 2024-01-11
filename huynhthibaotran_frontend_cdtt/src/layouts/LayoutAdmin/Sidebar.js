@@ -11,6 +11,7 @@ function Sidebar () {
     SanPham: false,
     BaiViet: false,
     QLBH: false,
+    QLNH: false,
     chartsMenuOpen: false,
     GiaoDien: false,
     HeThong: false,
@@ -82,7 +83,7 @@ function Sidebar () {
             <Collapse in={ state.SanPham }>
               <ul className="nav flex-column sub-menu">
                 <li className="nav-item"> <Link className='nav-link' to="/admin/product"><GoArrowRight /><Trans>Tất cả sản phẩm</Trans></Link></li>
-                <li className="nav-item"> <Link className='nav-link' to="/admin/productstore"><GoArrowRight /><Trans>Nhập hàng</Trans></Link></li>
+                <li className="nav-item"> <Link className='nav-link' to="/admin/productstore"><GoArrowRight /><Trans>Kho hàng</Trans></Link></li>
                 <li className="nav-item"> <Link className='nav-link' to="/admin/category"><GoArrowRight /><Trans>Danh mục</Trans></Link></li>
                 <li className="nav-item"> <Link className='nav-link' to="/admin/brand"><GoArrowRight /><Trans>Thương hiệu</Trans></Link></li>
                 <li className="nav-item"> <Link className='nav-link' to="/admin/productsale"><GoArrowRight /><Trans>Khuyến mãi</Trans></Link></li>
@@ -114,7 +115,12 @@ function Sidebar () {
               </ul>
             </Collapse>
           </li>
-
+          <li className='nav-item'>
+            <Link className="nav-link" to="/admin/customer">
+              <span className="menu-title"><Trans>Quản lý nhập hàng</Trans></span>
+              <MdFormatListBulleted />
+            </Link>
+          </li>
           <li className='nav-item'>
             <Link className="nav-link" to="/admin/customer">
               <span className="menu-title"><Trans>Khách hàng</Trans></span>

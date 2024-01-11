@@ -21,7 +21,6 @@ return new class extends Migration
             $table->timestamps(); //created_at, updated_at
             $table->unsignedInteger('created_by')->default(1);
             $table->unsignedInteger('updated_by')->nullable();
-            $table->unsignedTinyInteger('status')->default(2);
         });
     }
 

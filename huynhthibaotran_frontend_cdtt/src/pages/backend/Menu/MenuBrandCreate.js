@@ -10,7 +10,7 @@ function MenuBrandCreate(prop) {
     useEffect(function () {
         (async function () {
             const result = await BrandServices.getAll();
-            setBrands(result.brands);
+            setBrands(result.brands.data);
         })();
     }, []);
     const handleCheckboxChange = (brandId) => {
@@ -23,20 +23,19 @@ function MenuBrandCreate(prop) {
     };  
     function MenuBrandStore(event) {
         event.preventDefault();//không load lại trang
-        const menu ={
-            position:prop.position,
-            listid:selectedBrands,
-            type: "thuong-hieu"
-        }
-        MenuServices.create(menu)
-            .then(function (result) {
-                alert(result.message);
-                navigator("/admin/menu", { replace: true })
-            });
+        const stringid = selectedBrands.join('');
+        const position=prop.position
+        const listid=stringid
+        const type= "thuong-hieu"
+        MenuServices.tao(position, type, listid)
+        .then((result) => {
+        alert(result.message);
+        navigator('/admin/menu', { replace: true });
+        })
     }
 
     return (
-        <form method='post' onSubmit={MenuBrandStore}>
+        <form onSubmit={MenuBrandStore}>
             <li className="list-group-item mb-2 border nav-item">
                 <a
                     className="nav-link menu-expanded"

@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page)
 {
-    return httpAxios.get("category/index");
+    return httpAxios.get(`category/index?page=${page}`);
 }
 function getById(id)
 {
@@ -37,6 +37,22 @@ const CategoryService = {
     update:update,
     remove:remove,
     getCategoryByParentId:getCategoryByParentId,
-    getCategoryBySlug:getCategoryBySlug
+    getCategoryBySlug:getCategoryBySlug,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("category/change_status/" + id);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("category/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("category/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`category/trash?page=${page}`);
+    }
 }
 export default CategoryService;

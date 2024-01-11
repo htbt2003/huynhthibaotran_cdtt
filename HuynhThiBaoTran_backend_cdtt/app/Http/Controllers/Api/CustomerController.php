@@ -9,17 +9,85 @@ use App\Models\User;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function changeStatus($id)
     {
-        $users = User::where([['status', '!=', 0], ['roles', '=', 'customer']])
+        $customer = User::find($id);
+        if($customer == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'customer' => null
+                ],
+                404
+            );    
+        }
+        $customer->updated_at = date('Y-m-d H:i:s');
+        $customer->updated_by = 1;
+        $customer->status = ($customer->status == 1) ? 2 : 1; //form
+        if($customer->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'customer' => $customer
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'customer' => null
+                ],
+                422
+            );
+        }
+    }
+    public function trash()
+    {
+        $users = User::where([['status', '=', 0], ['roles', '=', 'customer']])
         ->orderBy('created_at', 'DESC')
-        ->select('id', 'name', 'phone', 'email', 'image')
-        ->get();
+        ->select('id', 'name', 'phone', 'email', 'image', 'status')
+        ->paginate(5);
+        $total = User::where([['status', '!=', 0], ['roles', '=', 'customer']])->count();
+        $publish = User::where([['status', '=', 1], ['roles', '=', 'customer']])->count();
+        $trash = User::where([['status', '=', 0], ['roles', '=', 'customer']])->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
-                'users' => $users
+                'users' => $users,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
+            ],
+            200
+        );
+    }
+
+    public function index()
+    {
+        $users = User::where([['status', '!=', 0], ['roles', '=', 'customer']])
+        ->orderBy('created_at', 'DESC')
+        ->select('id', 'name', 'phone', 'email', 'image', 'status')
+        ->paginate(5);
+        $total = User::where([['status', '!=', 0], ['roles', '=', 'customer']])->count();
+        $publish = User::where([['status', '=', 1], ['roles', '=', 'customer']])->count();
+        $trash = User::where([['status', '=', 0], ['roles', '=', 'customer']])->count();
+        return response()->json(
+            [
+                'status' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'users' => $users,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
             ],
             200
         );
@@ -143,6 +211,65 @@ class CustomerController extends Controller
             );
         }
     }
+    public function delete($id)
+    {
+        $user = User::find($id);
+        if($user == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'user' => null
+                ],
+                404
+            );    
+        }
+        $user->updated_at = date('Y-m-d H:i:s');
+        $user->updated_by = 1;
+        $user->status = 0; 
+        if($user->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Đã chuyển vào thành công', 
+                    'user' => $user
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $user = User::find($id);
+        if($user == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'user' => null
+                ],
+                404
+            );    
+        }
+        $user->updated_at = date('Y-m-d H:i:s');
+        $user->updated_by = 1;
+        $user->status = 2; 
+        if($user->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'user' => $user
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
         $user = User::findOrFail($id);

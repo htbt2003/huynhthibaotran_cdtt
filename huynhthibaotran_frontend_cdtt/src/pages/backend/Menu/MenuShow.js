@@ -11,7 +11,7 @@ function MenuShow() {
           (async function(){
             await MenuServices.getById(id)
             .then(function(result){
-                setMenu(result.data.menu)
+                setMenu(result.menu)
             });
           })();
     },[]);
@@ -19,7 +19,7 @@ function MenuShow() {
     {
       await MenuServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
+                alert(result.message)
                 navigator("/admin/menu", {replace:true})
             });
     }
@@ -73,6 +73,10 @@ function MenuShow() {
                     <tr>
                       <th className="text-center">Loại</th>
                       <td>{menu.type}</td>
+                    </tr>
+                    <tr>
+                      <th className="text-center">Trạng thái</th>
+                      <td>{menu.status}</td>
                     </tr>
                 </tbody>
             </table>

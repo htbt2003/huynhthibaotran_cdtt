@@ -4,27 +4,52 @@ import { useEffect, useState } from 'react';
 import PostServices from '../../../services/PostServices';
 import { urlImage } from '../../../config';
 import { IoIosSearch } from "react-icons/io";
+import Loading from '../../../Loading';
+import ReactPaginate from "react-paginate";
+import { TbRestore } from "react-icons/tb";
 
 
 function PostTrashList() {
-  const [statusdel, setStatusDel] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState();
+  const [load, setLoad] = useState(false)
+  const [reLoad, setReLoad] = useState();
     const [posts, setPosts] = useState([]);
+    const [publish, setPublish] = useState();
+    const [trash, setTrash] = useState();
     useEffect(function(){
       (async function(){
-        const result = await PostServices.getAll();
-        setPosts(result.posts)
+        setLoad(true)
+        const result = await PostServices.trash(page);
+        setPosts(result.posts.data)
+        setTotal(result.total);
+        setPublish(result.publish)
+        setTrash(result.trash)
+        setLoad(false)
         })();
-    },[statusdel])
+    },[reLoad, page])
     async function PostDelete(id)
     {
       await PostServices.remove(id)
             .then(function(result){
                 alert(result.message)
-                setStatusDel(id)
+                setReLoad(id)
             });
     }
+    async function handleReStore(id) {
+      const result = await PostServices.restore(id)
+      // alert(result.message)
+      setReLoad(Date.now)
+    }
+      //------------pagination-------------
+  const numberPage = Math.ceil(total / 5);
+  const handlePageChange = (event) => {
+    setPage(event.selected+1);
+  };
+
   return (
     <div>
+      {load ? (<Loading />) : (<></>)}
       <div className="page-header">
         <div className='row'>
           <h1 className='ml-4 mr-3'>Bài viết</h1>
@@ -32,9 +57,9 @@ function PostTrashList() {
         </div>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
-            <li className="breadcrumb-item"><a href="!#" onClick={event => event.preventDefault()}>Tất cả()</a></li>
-            <li className="breadcrumb-item active" aria-current="page" >Xuất bản()</li>
-            <li className="breadcrumb-item active" aria-current="page">Rác()</li>
+            <li className="breadcrumb-item"><Link to="/admin/post">Tất cả({total})</Link></li>
+            <li className="breadcrumb-item active" aria-current="page" >Xuất bản({publish})</li>
+            <li className="breadcrumb-item active" aria-current="page"><Link to="/admin/post/trash">Rác({trash})</Link></li>
           </ol>
         </nav>
       </div>
@@ -102,18 +127,18 @@ function PostTrashList() {
                             <div className='row'>
                               <div className='col-7 pt-2'>{post.title}</div>
                               <div className="col- 2 function_style">
-                                <Link href="#" className="btn btn-success btn-sm">
-                                  <i className="fa fa-toggle-on" />
-                                </Link>
+                              <button onClick={()=>handleReStore(post.id)} className="btn btn-success btn-sm">
+                                  <TbRestore />
+                                </button>
                                 <Link to={"/admin/post/update/"+ post.id} className="btn btn-primary btn-sm">
                                   <i className="fa fa-edit" />
                                 </Link>
                                 <Link to={"/admin/post/show/" + post.id} className="btn btn-info btn-sm">
                                   <i className="fa fa-eye" />
                                 </Link>
-                                <Link href="#" className="btn btn-danger btn-sm">
+                                <button href="#" className="btn btn-danger btn-sm" onClick={()=>PostDelete(post.id)}>
                                   <i className="fa fa-trash" />
-                                </Link>
+                                </button>
                               </div>
                             </div>
                           </td>
@@ -129,33 +154,27 @@ function PostTrashList() {
           </div>
         </div>
       </div>
-      <nav aria-label="Page navigation example">
-        <ul className="pagination pagination-sm justify-content-end">
-          <li className="page-item disabled">
-            <a className="page-link">«</a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              1
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              2
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              3
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              »
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <ReactPaginate
+        className="pagination pagination-sm justify-content-end"
+        previousLabel="«"
+        nextLabel="»"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakLabel="..."
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        pageCount={numberPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageChange}
+        containerClassName="pagination"
+        activeClassName="active"
+        // forcePage={pageOffset} // lay trang hien tai
+      />
 
     </div>
   );

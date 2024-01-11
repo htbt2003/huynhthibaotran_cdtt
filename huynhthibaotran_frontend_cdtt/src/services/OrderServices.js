@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page)
 {
-    return httpAxios.get("order/index");
+    return httpAxios.get(`order/index?page=${page}`);
 }
 function getById(id)
 {
@@ -38,5 +38,21 @@ const OrderService = {
     remove:remove,
     getOrderByUserId:getOrderByUserId,
     creatOrderDetail:creatOrderDetail,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("order/change_status/" + id);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("order/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("order/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`order/trash?page=${page}`);
+    },
 }
 export default OrderService;

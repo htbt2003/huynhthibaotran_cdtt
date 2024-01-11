@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import MenuServices from '../../../services/MenuServices';
 import CategoryServices from '../../../services/CategoryServices';
@@ -10,7 +10,7 @@ function MenuCategoryCreate(prop) {
   useEffect(function () {
     (async function () {
       const result = await CategoryServices.getAll();
-      setCategories(result.categories);
+      setCategories(result.categories.data);
     })();
   }, []);
   const handleCheckboxChange = (categoryId) => {
@@ -21,8 +21,6 @@ function MenuCategoryCreate(prop) {
       setSelectedCategories(prevSelected => [...prevSelected, categoryId]);
     }
   };
-  console.log(selectedCategories)
-
   function MenuCategoryStore(event) {
     event.preventDefault();//không load lại trang
     const menu ={
@@ -31,14 +29,13 @@ function MenuCategoryCreate(prop) {
       type: "danh-muc-san-pham"
     }
     MenuServices.create(menu)
-      .then(function (result) {
-        alert(result.message);
-        navigator("/admin/menu", { replace: true })
-      });
+    .then((result) => {
+      alert(result.message);
+      navigator('/admin/menu', { replace: true });
+    })
   }
-
   return (
-    <form method='post' onSubmit={MenuCategoryStore}>
+    <form onSubmit={MenuCategoryStore} >
       <li className="list-group-item mb-2 border nav-item">
         <a
           className="nav-link menu-expanded"
@@ -56,7 +53,6 @@ function MenuCategoryCreate(prop) {
             return (
               <div className="form-check" key={index}>
                 <input
-                  name="categoryid[]"
                   className="form-check-input"
                   type="checkbox"
                   defaultValue=""
@@ -75,7 +71,6 @@ function MenuCategoryCreate(prop) {
 
           <div className="my-3">
             <button
-              name="ADDCATEGORY"
               type="submit"
               className="btn btn-sm btn-success form-control"
             >

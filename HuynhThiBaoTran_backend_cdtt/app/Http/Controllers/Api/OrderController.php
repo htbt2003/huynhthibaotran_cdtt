@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderDetail;
-use App\Models\Product;
 
 
 class OrderController extends Controller
@@ -16,7 +15,7 @@ class OrderController extends Controller
        foreach($request  as  $row){
             $orderDetail=new OrderDetail;
             $orderDetail->order_id=100;
-            $orderDetail->product_id=$row->id;
+            $orderDetail->order_id=$row->id;
             $orderDetail->price=$row->price;
             $orderDetail->qty=$row->quantity;
             $orderDetail->save();
@@ -39,35 +38,106 @@ class OrderController extends Controller
             200
         );
     }
-    public function index()
+    public function changeStatus($id)
     {
-        $orders = Order::orderBy('created_at', 'DESC')->get();
+        $order = Order::find($id);
+        if($order == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'order' => null
+                ],
+                404
+            );    
+        }
+        $order->updated_at = date('Y-m-d H:i:s');
+        $order->updated_by = 1;
+        $order->status = ($order->status == 1) ? 2 : 1; //form
+        if($order->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'order' => $order
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'order' => null
+                ],
+                422
+            );
+        }
+    }
+    public function trash()
+    {
+        $orders = Order::where('status', '=', 0)
+        ->orderBy('created_at', 'DESC')
+        ->select('id', 'user_id', 'phone', 'email', 'created_at', 'status' )
+        ->paginate(5);
+        $total = Order::where('status', '!=', 0)->count();
+        $publish = Order::where('status', '=', 1)->count();
+        $trash = Order::where('status', '=', 0)->count();
         return response()->json(
             [
                 'success' => true, 
                 'message' => 'Tải dữ liệu thành công',
-                'orders' => $orders
+                'orders' => $orders,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
+            ],
+            200
+        );
+    }
+
+    public function index()
+    {
+        $orders = Order::where('status', '!=', 0)
+        ->orderBy('created_at', 'DESC')
+        ->select('id', 'user_id', 'phone', 'email', 'created_at', 'status' )
+        ->paginate(5);
+        $total = Order::where('status', '!=', 0)->count();
+        $publish = Order::where('status', '=', 1)->count();
+        $trash = Order::where('status', '=', 0)->count();
+        return response()->json(
+            [
+                'success' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'orders' => $orders,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
             ],
             200
         );
     }
     public function show($id)
     {
-        $products = array();
+        $orders = array();
         $orderDetail=OrderDetail::where('order_id', $id)->get();
         foreach($orderDetail as $row)
         {
-            $product = Product::find($row->product_id);
-            if($product != null)
-                $product["quantity"] = $row->qty;
-                array_push($products, $product);
+            $order = order::find($row->order_id);
+            if($order != null)
+                $order["quantity"] = $row->qty;
+                array_push($orders, $order);
         }
         $order = Order::find($id);
         return response()->json(
             ['success' => true, 
              'message' => 'Tải dữ liệu thành công', 
              'order' => $order,
-             'products' => $products
+             'orders' => $orders
             ],
             200
         );
@@ -116,6 +186,65 @@ class OrderController extends Controller
             200
         );
     }
+    public function delete($id)
+    {
+        $order = Order::find($id);
+        if($order == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'order' => null
+                ],
+                404
+            );    
+        }
+        $order->updated_at = date('Y-m-d H:i:s');
+        $order->updated_by = 1;
+        $order->status = 0; 
+        if($order->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'order' => $order
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $order = Order::find($id);
+        if($order == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'order' => null
+                ],
+                404
+            );    
+        }
+        $order->updated_at = date('Y-m-d H:i:s');
+        $order->updated_by = 1;
+        $order->status = 2; 
+        if($order->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'order' => $order
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
         $order = Order::findOrFail($id);

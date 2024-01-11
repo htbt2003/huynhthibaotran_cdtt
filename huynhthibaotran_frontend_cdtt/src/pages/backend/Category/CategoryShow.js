@@ -74,6 +74,10 @@ function CategoryShow() {
                       <th className="text-center">Thứ tự</th>
                       <td>{category.sort_order}</td>
                     </tr>
+                    <tr>
+                      <th className="text-center">Trạng thái</th>
+                      <td>{category.status}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>

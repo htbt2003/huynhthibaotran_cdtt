@@ -18,6 +18,15 @@ function Home() {
     //           });
     //         })();
     //   },[]);
+
+  //   const searchdata = [].concat(menus, brands)
+  // .filter((item) => {
+  //   return Object.values(item)
+  //     .join("")
+  //     .toLowerCase()
+  //     .includes(key.toLowerCase());
+  // });
+
     return (
 <div className=" pos_home_section">
   <div className="row pos_home">

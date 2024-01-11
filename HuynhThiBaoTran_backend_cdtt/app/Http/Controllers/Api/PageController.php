@@ -170,21 +170,85 @@ class PageController extends Controller
             200
         );
     }
-
-
-    public function index()
+    public function changeStatus($id)
     {
-        $pages = Post::where([['status', '!=', 0], ['type', '=', 'page']])
+        $page = Post::find($id);
+        if($page == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'page' => null
+                ],
+                404
+            );    
+        }
+        $page->updated_at = date('Y-m-d H:i:s');
+        $page->updated_by = 1;
+        $page->status = ($page->status == 1) ? 2 : 1; //form
+        if($page->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'page' => $page
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'page' => null
+                ],
+                422
+            );
+        }
+    }
+    public function trash()
+    {
+        $pages = Post::where([['status', '=', 0], ['type', '=', 'page']])
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'title', 'slug', 'topic_id', 'image' )
-            ->get();
-        $total = Post::count();
+            ->select('id', 'title', 'slug', 'topic_id', 'image', 'status' )
+            ->paginate(5);
+        $total = Post::where([['status', '=', 0], ['type', '=', 'page']])->count();
+        $publish = Banner::where('status', '=', 1)->count();
+        $trash = Banner::where('status', '=', 0)->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'pages' => $pages,
-                'total' => $total
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
+            ],
+            200
+        );
+    }
+
+    public function index()
+    {
+        $pages = Post::where([['status', '!=', 0], ['type', '=', 'page']])
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'title', 'slug', 'topic_id', 'image', 'status' )
+            ->paginate(5);
+        $total = Post::where([['status', '!=', 0], ['type', '=', 'page']])->count();
+        $publish = Banner::where([['status', '=', 1], ['type', '=', 'page']])->count();
+        $trash = Banner::where([['status', '=', 0], ['type', '=', 'page']])->count();
+        return response()->json(
+            [
+                'status' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'pages' => $pages,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
             ],
             200
         );
@@ -308,6 +372,65 @@ class PageController extends Controller
             );
         }
     }
+    public function delete($id)
+    {
+        $page = Post::find($id);
+        if($page == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'page' => null
+                ],
+                404
+            );    
+        }
+        $page->updated_at = date('Y-m-d H:i:s');
+        $page->updated_by = 1;
+        $page->status = 0; 
+        if($page->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'page' => $page
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $page = Post::find($id);
+        if($page == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'page' => null
+                ],
+                404
+            );    
+        }
+        $page->updated_at = date('Y-m-d H:i:s');
+        $page->updated_by = 1;
+        $page->status = 2; 
+        if($page->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'page' => $page
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
         $page = Post::findOrFail($id);

@@ -2,27 +2,51 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import ContactServices from '../../../services/ContactServices';
 import { IoIosSearch } from "react-icons/io";
+import Loading from '../../../Loading';
+import ReactPaginate from "react-paginate";
+import { TbRestore } from 'react-icons/tb';
 
 
 function ContactTrashList() {
-  const [statusdel, setStatusDel] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState();
+  const [load, setLoad] = useState(false)
+  const [reLoad, setReLoad] = useState();
   const [contacts, setContacts] = useState([]);
+  const [trash, setTrash] = useState();
+
     useEffect(function(){
       (async function(){
-        const result = await ContactServices.getAll();
-        setContacts(result.contacts);
+        setLoad(true)
+        const result = await ContactServices.trash(page);
+        setContacts(result.contacts.data);
+        setTotal(result.total);
+        setTrash(result.trash)
+        setLoad(false)
       })();
-    },[statusdel])
+    },[reLoad, page])
     async function ContactDelete(id)
     {
       await ContactServices.remove(id)
             .then(function(result){
                 alert(result.message)
-                setStatusDel(id)
+                setReLoad(id)
      });
     }
+    async function handleReStore(id) {
+      const result = await ContactServices.restore(id)
+      // alert(result.message)
+      setReLoad(Date.now)
+    }
+      //------------pagination-------------
+  const numberPage = Math.ceil(total / 5);
+  const handlePageChange = (event) => {
+    setPage(event.selected+1);
+  };
+
   return (
     <div>
+      {load ? (<Loading />) : (<></>)}
       <div className="page-header">
         <div className='row'>
           <h1 className='ml-4 mr-3'>Liên hệ</h1>
@@ -30,9 +54,8 @@ function ContactTrashList() {
         </div>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
-            <li className="breadcrumb-item"><Link href="!#" onClick={event => event.preventDefault()}>Tất cả()</Link></li>
-            <li className="breadcrumb-item active" aria-current="page" >Xuất bản()</li>
-            <li className="breadcrumb-item active" aria-current="page">Rác()</li>
+          <li className="breadcrumb-item"><Link to='/admin/contact'>Tất cả({total})</Link></li>
+            <li className="breadcrumb-item active" aria-current="page"><Link to='/admin/contact/trash'>Rác({trash})</Link></li>
           </ol>
         </nav>
       </div>
@@ -98,18 +121,18 @@ function ContactTrashList() {
                           <div className='row'>
                               <div className='col-7 pt-2'>{contact.name}</div>
                               <div className="col-2 function_style">
-                                <Link href="#" className="btn btn-success btn-sm">
-                                  <i className="fa fa-toggle-on" />
-                                </Link>
+                              <button onClick={()=>handleReStore(contact.id)} className="btn btn-success btn-sm">
+                                  <TbRestore />
+                                </button>
                                 <Link to={"/admin/contact/update/"+ contact.id} className="btn btn-primary btn-sm">
                                   <i className="fa fa-edit" />
                                 </Link>
                                 <Link to={"/admin/contact/show/" + contact.id} className="btn btn-info btn-sm">
                                   <i className="fa fa-eye" />
                                 </Link>
-                                <Link href="#" className="btn btn-danger btn-sm">
+                                <button href="#" className="btn btn-danger btn-sm" onClick={()=>ContactDelete(contact.id)}>
                                   <i className="fa fa-trash" />
-                                </Link>
+                                </button>
                               </div>
                             </div>
                           </td>
@@ -130,33 +153,27 @@ function ContactTrashList() {
           </div>
         </div>
       </div>
-      <nav aria-label="Page navigation example">
-        <ul className="pagination pagination-sm justify-content-end">
-          <li className="page-item disabled">
-            <Link className="page-link">«</Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              1
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              2
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              3
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              »
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <ReactPaginate
+        className="pagination pagination-sm justify-content-end"
+        previousLabel="«"
+        nextLabel="»"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakLabel="..."
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        pageCount={numberPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageChange}
+        containerClassName="pagination"
+        activeClassName="active"
+        // forcePage={pageOffset} // lay trang hien tai
+      />
 
     </div>
   );

@@ -170,21 +170,85 @@ class PostController extends Controller
             200
         );
     }
-
-
-    public function index()
+    public function changeStatus($id)
     {
-        $posts = Post::where([['status', '!=', 0], ['type', '=', 'post']])
+        $post = Post::find($id);
+        if($post == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'post' => null
+                ],
+                404
+            );    
+        }
+        $post->updated_at = date('Y-m-d H:i:s');
+        $post->updated_by = 1;
+        $post->status = ($post->status == 1) ? 2 : 1; //form
+        if($post->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'post' => $post
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'post' => null
+                ],
+                422
+            );
+        }
+    }
+    public function trash()
+    {
+        $posts = Post::where([['status', '=', 0], ['type', '=', 'post']])
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'title', 'slug', 'topic_id', 'image' )
-            ->get();
-        $total = Post::count();
+            ->select('id', 'title', 'slug', 'topic_id', 'image', 'status' )
+            ->paginate(5);
+        $total = Post::where([['status', '=', 0], ['type', '=', 'post']])->count();
+        $publish = Banner::where('status', '=', 1)->count();
+        $trash = Banner::where('status', '=', 0)->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'posts' => $posts,
-                'total' => $total
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
+            ],
+            200
+        );
+    }
+
+    public function index()
+    {
+        $posts = Post::where([['status', '!=', 0], ['type', '=', 'post']])
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'title', 'slug', 'topic_id', 'image', 'status' )
+            ->paginate(5);
+        $total = Post::where([['status', '!=', 0], ['type', '=', 'post']])->count();
+        $publish = Banner::where([['status', '=', 1], ['type', '=', 'post']])->count();
+        $trash = Banner::where([['status', '=', 0], ['type', '=', 'post']])->count();
+        return response()->json(
+            [
+                'status' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'posts' => $posts,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
             ],
             200
         );
@@ -308,6 +372,65 @@ class PostController extends Controller
             );
         }
     }
+    public function delete($id)
+    {
+        $post = Post::find($id);
+        if($post == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'post' => null
+                ],
+                404
+            );    
+        }
+        $post->updated_at = date('Y-m-d H:i:s');
+        $post->updated_by = 1;
+        $post->status = 0; 
+        if($post->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'post' => $post
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $post = Post::find($id);
+        if($post == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'post' => null
+                ],
+                404
+            );    
+        }
+        $post->updated_at = date('Y-m-d H:i:s');
+        $post->updated_by = 1;
+        $post->status = 2; 
+        if($post->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'post' => $post
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
         $post = Post::findOrFail($id);

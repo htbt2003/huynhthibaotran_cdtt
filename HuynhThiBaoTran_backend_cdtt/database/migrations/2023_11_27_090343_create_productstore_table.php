@@ -16,10 +16,10 @@ return new class extends Migration
             $table->unsignedInteger('product_id');
             $table->float('price_root');
             $table->unsignedInteger('qty');
+            $table->unsignedInteger('inventory');
             $table->timestamps(); //created_at, updated_at
             $table->unsignedInteger('created_by')->default(1);
             $table->unsignedInteger('updated_by')->nullable();
-            $table->unsignedTinyInteger('status')->default(2);
 
         });
     }

@@ -4,27 +4,52 @@ import { useEffect, useState } from 'react';
 import BannerServices from '../../../services/BannerServices';
 import { urlImage } from '../../../config';
 import { IoIosSearch } from "react-icons/io";
+import Loading from '../../../Loading';
+import ReactPaginate from "react-paginate";
 
 
 function BannerList() {
-  const [statusdel, setStatusDel] = useState([]);
-    const [banners, setbanners] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState();
+  const [load, setLoad] = useState(false)
+  const [reLoad, setReLoad] = useState();
+  const [banners, setbanners] = useState([]);
+  const [publish, setPublish] = useState();
+  const [trash, setTrash] = useState();
+
     useEffect(function(){
       (async function(){
-        const result = await BannerServices.getAll();
-        setbanners(result.banners)
+        setLoad(true)
+        const result = await BannerServices.getAll(page);
+        setbanners(result.banners.data)
+        setTotal(result.total);
+        setPublish(result.publish)
+        setTrash(result.trash)
+        setLoad(false)
         })();
-    },[statusdel])
+    },[reLoad,page])
     async function BannerDelete(id)
     {
-      await BannerServices.remove(id)
+      await BannerServices.delete(id)
             .then(function(result){
-                alert(result.data.message)
-                setStatusDel(id)
+                alert(result.message)
+                setReLoad(id)
             });
+    } 
+     async function handleStatus(id) {
+      const result = await BannerServices.changeStatus(id)
+      // alert(result.message)
+      setReLoad(Date.now)
     }
+    //------------pagination-------------
+    const numberPage = Math.ceil(total / 5);
+    const handlePageChange = (event) => {
+      setPage(event.selected+1);
+    };
+  
   return (
     <div>
+      {load ? (<Loading />) : (<></>)}
       <div className="page-header">
         <div className='row'>
           <h1 className='ml-4 mr-3'>Banner</h1>
@@ -32,9 +57,9 @@ function BannerList() {
         </div>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
-            <li className="breadcrumb-item"><a href="!#" onClick={event => event.preventDefault()}>Tất cả()</a></li>
-            <li className="breadcrumb-item active" aria-current="page" >Xuất bản()</li>
-            <li className="breadcrumb-item active" aria-current="page">Rác()</li>
+          <li className="breadcrumb-item"><Link to='/admin/banner'>Tất cả({total})</Link></li>
+            <li className="breadcrumb-item active" aria-current="page" >Xuất bản({publish})</li>
+            <li className="breadcrumb-item active" aria-current="page"><Link to='/admin/banner/trash'>Rác({trash})</Link></li>
           </ol>
         </nav>
       </div>
@@ -101,20 +126,20 @@ function BannerList() {
                           </td>
                           <td>
                             <div className='row'>
-                              <div className='col-2 pt-2'>{banner.name}</div>
+                              <div className='col-7 pt-2'>{banner.name}</div>
                               <div className="col- 2 function_style">
-                                <Link href="#" className="btn btn-success btn-sm">
-                                  <i className="fa fa-toggle-on" />
-                                </Link>
+                                <button onClick={() => handleStatus(banner.id)} className={banner.status === 1 ? "btn btn-success btn-sm" : "btn btn-danger btn-sm"}>
+                                      <i className={banner.status === 1 ? "fa fa-toggle-on" : "fa fa-toggle-off"} />
+                                </button>
                                 <Link to={"/admin/banner/update/"+ banner.id} className="btn btn-primary btn-sm">
                                   <i className="fa fa-edit" />
                                 </Link>
                                 <Link to={"/admin/banner/show/" + banner.id} className="btn btn-info btn-sm">
                                   <i className="fa fa-eye" />
                                 </Link>
-                                <Link href="#" className="btn btn-danger btn-sm">
+                                <button href="#" className="btn btn-danger btn-sm" onClick={()=>BannerDelete(banner.id)}>
                                   <i className="fa fa-trash" />
-                                </Link>
+                                </button>
                               </div>
                             </div>
                           </td>
@@ -131,33 +156,27 @@ function BannerList() {
           </div>
         </div>
       </div>
-      <nav aria-label="Page navigation example">
-        <ul className="pagination pagination-sm justify-content-end">
-          <li className="page-item disabled">
-            <a className="page-link">«</a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              1
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              2
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              3
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" href="#">
-              »
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <ReactPaginate
+        className="pagination pagination-sm justify-content-end"
+        previousLabel="«"
+        nextLabel="»"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakLabel="..."
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        pageCount={numberPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageChange}
+        containerClassName="pagination"
+        activeClassName="active"
+        // forcePage={pageOffset} // lay trang hien tai
+      />
 
     </div>
   );

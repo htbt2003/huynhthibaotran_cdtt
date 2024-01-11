@@ -26,14 +26,90 @@ class TopicController extends Controller
             200
         );
     }
-    public function index()
+    public function changeStatus($id)
     {
-        $topics = Topic::orderBy('created_at', 'DESC')->get();
+        $topic = Topic::find($id);
+        if($topic == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'topic' => null
+                ],
+                404
+            );    
+        }
+        $topic->updated_at = date('Y-m-d H:i:s');
+        $topic->updated_by = 1;
+        $topic->status = ($topic->status == 1) ? 2 : 1; //form
+        if($topic->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'topic' => $topic
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'topic' => null
+                ],
+                422
+            );
+        }
+    }
+    public function trash()
+    {
+        $topics = Topic::where('status', '=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'status')
+            ->paginate(5);
+        $total = Topic::where('status', '!=', 0)->count();
+        $publish = Topic::where('status', '=', 1)->count();
+        $trash = Topic::where('status', '=', 0)->count();
         return response()->json(
             [
                 'success' => true, 
                 'message' => 'Tải dữ liệu thành công',
-                'topics' => $topics
+                'topics' => $topics,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
+            ],
+            200
+        );
+    }
+
+    public function index()
+    {
+        $topics = Topic::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'status')
+            ->paginate(5);
+        $topicsAll = Topic::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'status')
+            ->get();
+        $total = Topic::where('status', '!=', 0)->count();
+        $publish = Topic::where('status', '=', 1)->count();
+        $trash = Topic::where('status', '=', 0)->count();
+        return response()->json(
+            [
+                'success' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'topics' => $topics,
+                'topicsAll' => $topicsAll,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
             ],
             200
         );
@@ -93,6 +169,65 @@ class TopicController extends Controller
             200
         );
     }
+    public function delete($id)
+    {
+        $topic = Topic::find($id);
+        if($topic == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'topic' => null
+                ],
+                404
+            );    
+        }
+        $topic->updated_at = date('Y-m-d H:i:s');
+        $topic->updated_by = 1;
+        $topic->status = 0; 
+        if($topic->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'topic' => $topic
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $topic = Topic::find($id);
+        if($topic == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'topic' => null
+                ],
+                404
+            );    
+        }
+        $topic->updated_at = date('Y-m-d H:i:s');
+        $topic->updated_by = 1;
+        $topic->status = 2; 
+        if($topic->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'topic' => $topic
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
         $topic = Topic::findOrFail($id);

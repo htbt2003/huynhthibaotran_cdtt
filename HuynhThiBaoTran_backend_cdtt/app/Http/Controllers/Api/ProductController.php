@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+
     public function product_home($limit, $category_id = 0)
     {
         $listid = array();
@@ -232,20 +233,93 @@ class ProductController extends Controller
             );    
         }
     }
-
-    public function index()
+    public function filter($category_id=0, $brand_id=0)
     {
-        $products = Product::where('status', '!=', 0)
+        if($category_id != 0 && $brand_id != 0)
+        {
+            $products = Product::where([['category_id','=' , $category_id],['brand_id','=' , $brand_id]])->get();
+        }
+        else if($category_id != 0)
+        {
+            $products = Product::where([['category_id','=' , $category_id]])->get();
+        }
+        else
+        {
+            $products = Product::where([['brand_id','=' , $brand_id]])->get();
+        }
+        return response()->json(
+            [
+                'status' => true,
+                'message' => 'Tải dữ liệu thành công',
+                'products' => $products,
+            ],
+            200
+        );   
+        // if(count($products) > 0){
+        //     return response()->json(
+        //         [
+        //             'status' => true,
+        //             'message' => 'Tải dữ liệu thành công',
+        //             'products' => $products
+        //         ],
+        //         200
+        //     );    
+        // }
+        // else{
+        //     return response()->json(
+        //         [
+        //             'status' => false,
+        //             'message' => 'Không có dữ liệu',
+        //             'products' => null
+        //         ],
+        //         200
+        //     );    
+        // }
+    }
+    public function trash()
+    {
+        $products = Product::where('status', '=', 0)
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'slug', 'category_id', 'brand_id', 'image')
-            ->get();
-        $total = Product::count();
+            ->select('id', 'name', 'slug', 'category_id', 'brand_id', 'image', 'status')
+            ->paginate(5);
+        $total = Product::where('status', '!=', 0)->count();
+        $publish = Product::where('status', '=', 1)->count();
+        $trash = Product::where('status', '=', 0)->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'products' => $products,
-                'total' => $total
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
+            ],
+            200
+        );
+    }
+
+    public function index()
+    {
+        $products = Product::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'category_id', 'brand_id', 'image', 'status')
+            ->paginate(5);
+        $productsAll = Product::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'category_id', 'brand_id', 'image', 'status')
+            ->get();
+        $total = Product::where('status', '!=', 0)->count();
+        $publish = Product::where('status', '=', 1)->count();
+        $trash = Product::where('status', '=', 0)->count();
+        return response()->json(
+            [
+                'status' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'products' => $products,
+                'productsAll' => $productsAll,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
             ],
             200
         );
@@ -253,24 +327,77 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::find($id);
-        return response()->json(
-            [   
-                'status' => true, 
-                'message' => 'Tải dữ liệu thành công', 
-                'product' => $product
-            ],
-            200
-        );
+        if($product == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'product' => null
+                ],
+                404
+            );    
+        }
+        else{
+            return response()->json(
+                [   
+                    'status' => true, 
+                    'message' => 'Tải dữ liệu thành công', 
+                    'product' => $product
+                ],
+                200
+            );    
+        }
     }
+    public function changeStatus($id)
+    {
+        $product = Product::find($id);
+        if($product == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'product' => null
+                ],
+                404
+            );    
+        }
+        $product->updated_at = date('Y-m-d H:i:s');
+        $product->updated_by = 1;
+        $product->status = ($product->status == 1) ? 2 : 1; //form
+        if($product->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'product' => $product
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'product' => null
+                ],
+                422
+            );
+        }
+    }
+
     public function store(Request $request)
     {
         $product = new Product();
         $product->category_id = $request->category_id; //form
-        $product->product_id = $request->product_id; //form
+        $product->brand_id = $request->brand_id; //form
         $product->name = $request->name; //form
         $product->slug = Str::of($request->name)->slug('-');
         $product->price = $request->price; //form
-        $product->price_sale = $request->price_sale; //form
         //upload image
         $files = $request->image;
         if ($files != null) {
@@ -282,7 +409,6 @@ class ProductController extends Controller
             }
         }
         //
-        $product->qty = $request->qty; //form
         $product->detail = $request->detail; //form
         $product->metakey = $request->metakey; //form
         $product->metadesc = $request->metadesc; //form
@@ -327,11 +453,10 @@ class ProductController extends Controller
             );    
         }
         $product->category_id = $request->category_id; //form
-        $product->product_id = $request->product_id; //form
+        $product->brand_id = $request->brand_id; //form
         $product->name = $request->name; //form
         $product->slug = Str::of($request->name)->slug('-');
         $product->price = $request->price; //form
-        $product->price_sale = $request->price_sale; //form
         //upload image
         $files = $request->image;
         if ($files != null) {
@@ -343,7 +468,6 @@ class ProductController extends Controller
             }
         }
         //
-        $product->qty = $request->qty; //form
         $product->detail = $request->detail; //form
         $product->metakey = $request->metakey; //form
         $product->metadesc = $request->metadesc; //form
@@ -371,6 +495,64 @@ class ProductController extends Controller
                 ],
                 422
             );
+        }
+    }
+    public function delete($id)
+    {
+        $product = Product::find($id);
+        if($product == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'product' => null
+                ],
+                404
+            );    
+        }
+        $product->updated_at = date('Y-m-d H:i:s');
+        $product->updated_by = 1;
+        $product->status = 0; 
+        if($product->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'product' => $product
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $product = Product::find($id);
+        if($product == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'product' => null
+                ],
+                404
+            );    
+        }
+        $product->updated_at = date('Y-m-d H:i:s');
+        $product->updated_by = 1;
+        $product->status = 2; 
+        if($product->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'product' => $product
+                ],
+                201
+            );    
         }
     }
     public function destroy($id)

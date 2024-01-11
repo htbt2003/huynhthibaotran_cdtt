@@ -9,17 +9,85 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    public function index()
+    public function changeStatus($id)
     {
-        $users = User::where([['status', '!=', 0], ['roles', '=', 'user']])
+        $user = User::find($id);
+        if($user == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'user' => null
+                ],
+                404
+            );    
+        }
+        $user->updated_at = date('Y-m-d H:i:s');
+        $user->updated_by = 1;
+        $user->status = ($user->status == 1) ? 2 : 1; //form
+        if($user->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'user' => $user
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'user' => null
+                ],
+                422
+            );
+        }
+    }
+    public function trash()
+    {
+        $users = User::where([['status', '=', 0], ['roles', '=', 'user']])
         ->orderBy('created_at', 'DESC')
-        ->select('id', 'name', 'phone', 'email', 'image')
-        ->get();
+        ->select('id', 'name', 'phone', 'email', 'image', 'status')
+        ->paginate(5);
+        $total = User::where([['status', '!=', 0], ['roles', '=', 'user']])->count();
+        $publish = Banner::where([['status', '=', 1], ['roles', '=', 'user']])->count();
+        $trash = Banner::where([['status', '=', 0], ['roles', '=', 'user']]->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
-                'users' => $users
+                'users' => $users,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
+            ],
+            200
+        );
+    }
+
+    public function index()
+    {
+        $users = User::where([['status', '!=', 0], ['roles', '=', 'user']])
+        ->orderBy('created_at', 'DESC')
+        ->select('id', 'name', 'phone', 'email', 'image', 'status')
+        ->paginate(5);
+        $total = User::where([['status', '!=', 0], ['roles', '=', 'user']])->count();
+        $publish = Banner::where('status', '=', 1)->count();
+        $trash = Banner::where('status', '=', 0)->count();
+        return response()->json(
+            [
+                'status' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'users' => $users,
+                'total' => $total,
+                'publish' => $publish,
+            'trash' => $trash,
             ],
             200
         );
@@ -143,6 +211,65 @@ class UserController extends Controller
             );
         }
     }
+    public function delete($id)
+    {
+        $user = User::find($id);
+        if($user == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'user' => null
+                ],
+                404
+            );    
+        }
+        $user->updated_at = date('Y-m-d H:i:s');
+        $user->updated_by = 1;
+        $user->status = 0; 
+        if($user->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'user' => $user
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $user = User::find($id);
+        if($user == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'user' => null
+                ],
+                404
+            );    
+        }
+        $user->updated_at = date('Y-m-d H:i:s');
+        $user->updated_by = 1;
+        $user->status = 2; 
+        if($user->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'user' => $user
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
         $user = User::findOrFail($id);

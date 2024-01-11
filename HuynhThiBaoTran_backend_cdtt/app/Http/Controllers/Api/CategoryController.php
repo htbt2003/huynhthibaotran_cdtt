@@ -17,7 +17,7 @@ class CategoryController extends Controller
         ];
         $categories = Category::where($args)
             ->orderBy('sort_order', 'ASC')
-            ->select('id', 'name', 'slug' )
+            ->select('id', 'name', 'slug', 'status' )
             ->get();
         return response()->json(
             [
@@ -28,19 +28,90 @@ class CategoryController extends Controller
             200
         );
     }
-    public function index()
+    public function changeStatus($id)
     {
-        $categories = Category::where('status', '!=', 0)
+        $category = Category::find($id);
+        if($category == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'category' => null
+                ],
+                404
+            );    
+        }
+        $category->updated_at = date('Y-m-d H:i:s');
+        $category->updated_by = 1;
+        $category->status = ($category->status == 1) ? 2 : 1; //form
+        if($category->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'category' => $category
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'category' => null
+                ],
+                422
+            );
+        }
+    }
+    public function trash()
+    {
+        $categories = Category::where('status', '=', 0)
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'slug', 'image' )
-            ->get();
-        $total = Category::count();
+            ->select('id', 'name', 'slug', 'image', 'status' )
+            ->paginate(5);
+        $total = Category::where('status', '!=', 0)->count();
+        $publish = Category::where('status', '=', 1)->count();
+        $trash = Category::where('status', '=', 0)->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'categories' => $categories,
-                'total' => $total
+                'total' => $total,
+                'publish' => $publish,
+                'trash' => $trash,
+            ],
+            200
+        );
+    }
+
+    public function index()
+    {
+        $categories = Category::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'image', 'status' )
+            ->paginate(5);
+        $categoriesAll = Category::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'image', 'status' )
+            ->paginate(5);
+        $total = Category::where('status', '!=', 0)->count();
+        $publish = Category::where('status', '=', 1)->count();
+        $trash = Category::where('status', '=', 0)->count();
+        return response()->json(
+            [
+                'status' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'categories' => $categories,
+                'categoriesAll' => $categoriesAll,
+                'total' => $total,
+                'publish' => $publish,
+                'trash' => $trash,
             ],
             200
         );
@@ -163,6 +234,65 @@ class CategoryController extends Controller
             );
         }
     }
+    public function delete($id)
+    {
+        $category = Category::find($id);
+        if($category == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'category' => null
+                ],
+                404
+            );    
+        }
+        $category->updated_at = date('Y-m-d H:i:s');
+        $category->updated_by = 1;
+        $category->status = 0; 
+        if($category->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'category' => $category
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $category = Category::find($id);
+        if($category == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'category' => null
+                ],
+                404
+            );    
+        }
+        $category->updated_at = date('Y-m-d H:i:s');
+        $category->updated_by = 1;
+        $category->status = 2; 
+        if($category->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'category' => $category
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
         $category = Category::findOrFail($id);

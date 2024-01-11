@@ -28,5 +28,9 @@ const OrderDetailServices = {
     create:create,
     update:update,
     remove:remove,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("orderDetail/change_status/" + id);
+    },
 }
 export default OrderDetailServices;

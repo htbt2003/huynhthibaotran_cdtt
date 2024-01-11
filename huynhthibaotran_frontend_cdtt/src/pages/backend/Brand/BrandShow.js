@@ -56,35 +56,39 @@ function BrandShow() {
                 <tbody>
                     <tr>
                       <th className="text-center">Id</th>
-                      <td>jghmg</td>
+                      <td>{brand.id}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Tên Thương hiệu</th>
-                      <td>dvd</td>
+                      <td>{brand.name}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Slug</th>
-                      <td>dvfd</td>
+                      <td>{brand.slug}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Thứ tự</th>
-                      <td>dffdfd</td>
+                      <td>{brand.sort_order}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Từ khóa</th>
-                      <td>fdfgf</td>
+                      <td>{brand.metakey}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Mô tả</th>
-                      <td>fghfh</td>
+                      <td>{brand.metadesc}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Ngày tạo</th>
-                      <td>fdgdg</td>
+                      <td>{brand.created}</td>
                     </tr>
                     <tr>
                       <th className="text-center">Ngày cập nhật</th>
-                      <td>dgfg</td>
+                      <td>{brand.updated_at}</td>
+                    </tr>
+                    <tr>
+                      <th className="text-center">Trạng thái</th>
+                      <td>{brand.status}</td>
                     </tr>
                 </tbody>
             </table>

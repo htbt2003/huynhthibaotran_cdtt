@@ -11,7 +11,7 @@ function MenuPageCreate(prop) {
   useEffect(function () {
     (async function () {
       const result = await PageServices.getAll();
-      setPages(result.pages);
+      setPages(result.pages.data);
     })();
   }, []);
 
@@ -26,16 +26,15 @@ function MenuPageCreate(prop) {
 
   function MenuPageStore(event) {
     event.preventDefault();//không load lại trang
-    const menu = {
-      position: prop.position,
-      listid: selectedPages,
-      type: "trang-don"
-    }
-    MenuServices.create(menu)
-      .then(function (result) {
-        alert(result.message);
-        navigator("/admin/menu", { replace: true })
-      });
+    const stringid = selectedPages.join('');
+    const position=prop.position
+    const listid=stringid
+    const type= "trang-don"
+    MenuServices.tao(position, type, listid)
+    .then((result) => {
+      alert(result.message);
+      navigator('/admin/menu', { replace: true });
+    })
   }
 
   return (

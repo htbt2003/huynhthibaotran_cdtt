@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page)
 {
-    return httpAxios.get("product/index");
+    return httpAxios.get(`product/index?page=${page}`);
 }
 function getById(id)
 {
@@ -57,6 +57,26 @@ const ProductService = {
     getProductBySlug:getProductBySlug,
     getProductByCategoryId:getProductByCategoryId,
     getProductByBrandId:getProductByBrandId,
-    getProductSearch:getProductSearch
+    getProductSearch:getProductSearch,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("product/change_status/" + id);
+    },
+    filter:(category_id=0, brand_id=0) =>
+    {
+        return httpAxios.get(`product/filter/${category_id}/${brand_id}`);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("product/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("product/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`product/trash?page=${page}`);
+    },
 }
 export default ProductService;

@@ -10,7 +10,7 @@ function MenuTopicCreate(prop) {
   useEffect(function () {
     (async function () {
       const result = await TopicServices.getAll();
-      settopics(result.topics);
+      settopics(result.topics.data);
     })();
   }, []);
 
@@ -25,16 +25,15 @@ function MenuTopicCreate(prop) {
 
   function MenuTopicStore(event) {
     event.preventDefault();//không load lại trang
-    const menu = {
-      position: prop.position,
-      listid: selectedTopics,
-      type: "chu-de-bai-viet"
-    }
-    MenuServices.create(menu)
-      .then(function (result) {
-        alert(result.message);
-        navigator("/admin/menu", { replace: true })
-      });
+    const stringid = selectedTopics.join('');
+    const position=prop.position
+    const listid=stringid
+    const type= "chu-de-bai-viet"
+    MenuServices.tao(position, type, listid)
+    .then((result) => {
+      alert(result.message);
+      navigator('/admin/menu', { replace: true });
+    })
   }
 
   return (

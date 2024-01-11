@@ -2,36 +2,61 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import OrderServices from '../../../services/OrderServices';
 import { IoIosSearch } from "react-icons/io";
+import Loading from '../../../Loading';
+import ReactPaginate from "react-paginate";
+import { TbRestore } from "react-icons/tb";
 
 
 function OrderTrashList() {
-  const [statusdel, setStatusDel] = useState([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState();
+  const [load, setLoad] = useState(false)
+  const [reLoad, setReLoad] = useState();
     const [orders, setOrders] = useState([]);
+    const [publish, setPublish] = useState();
+    const [trash, setTrash] = useState();
     useEffect(function(){
       (async function(){
-        const result = await OrderServices.getAll();
-        setOrders(result.orders)
+        setLoad(true)
+        const result = await OrderServices.trash(page);
+        setOrders(result.orders.data)
+        setTotal(result.total);
+        setPublish(result.publish)
+        setTrash(result.trash)
+        setLoad(false)
         })();
-    },[statusdel])
+    },[reLoad,page])
     async function OrderDelete(id)
     {
       await OrderServices.remove(id)
             .then(function(result){
-                alert(result.data.message)
-                setStatusDel(id)
+                alert(result.message)
+                setReLoad(id)
      });
     }
+    async function handleReStore(id) {
+      const result = await OrderServices.restore(id)
+      // alert(result.message)
+      setReLoad(Date.now)
+    }
+      //------------pagination-------------
+  const numberPage = Math.ceil(total / 5);
+  const handlePageChange = (event) => {
+    setPage(event.selected+1);
+  };
+
   return (
     <div>
+      {load ? (<Loading />) : (<></>)}
       <div className="page-header">
         <div className='row'>
           <h1 className='ml-4 mr-3'>Đơn hàng</h1>
         </div>
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
-            <li className="breadcrumb-item"><Link href="!#" onClick={event => event.preventDefault()}>Tất cả()</Link></li>
-            <li className="breadcrumb-item active" aria-current="page" >Xuất bản()</li>
-            <li className="breadcrumb-item active" aria-current="page">Rác()</li>
+          <li className="breadcrumb-item"><Link to="/admin/order">Tất cả({total})</Link></li>
+            <li className="breadcrumb-item active" aria-current="page" >Xuất bản({publish})</li>
+            <li className="breadcrumb-item active" aria-current="page"><Link to="/admin/order/trash">Rác({trash})</Link></li>
           </ol>
         </nav>
       </div>
@@ -97,18 +122,18 @@ function OrderTrashList() {
                             <div className='row'>
                               <div className='col-2 pt-2'>{order.name}</div>
                               <div className="col- 2 function_style">
-                                <Link href="#" className="btn btn-success btn-sm">
-                                  <i className="fa fa-toggle-on" />
-                                </Link>
+                              <button onClick={()=>handleReStore(order.id)} className="btn btn-success btn-sm">
+                                  <TbRestore />
+                                </button>
                                 <Link to={"/admin/category/update/"+ order.id} className="btn btn-primary btn-sm">
                                   <i className="fa fa-edit" />
                                 </Link>
                                 <Link to={"/admin/category/show/" + order.id} className="btn btn-info btn-sm">
                                   <i className="fa fa-eye" />
                                 </Link>
-                                <Link href="#" className="btn btn-danger btn-sm">
+                                <button href="#" className="btn btn-danger btn-sm" onClick={()=>OrderDelete(order.id)}>
                                   <i className="fa fa-trash" />
-                                </Link>
+                                </button>
                               </div>
 
                             </div>
@@ -128,33 +153,27 @@ function OrderTrashList() {
           </div>
         </div>
       </div>
-      <nav aria-label="Page navigation example">
-        <ul className="pagination pagination-sm justify-content-end">
-          <li className="page-item disabled">
-            <Link className="page-link">«</Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              1
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              2
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              3
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" href="#">
-              »
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <ReactPaginate
+        className="pagination pagination-sm justify-content-end"
+        previousLabel="«"
+        nextLabel="»"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakLabel="..."
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        pageCount={numberPage}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageChange}
+        containerClassName="pagination"
+        activeClassName="active"
+        // forcePage={pageOffset} // lay trang hien tai
+      />
 
     </div>
   );

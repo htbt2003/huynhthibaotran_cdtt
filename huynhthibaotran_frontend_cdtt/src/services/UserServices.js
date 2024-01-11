@@ -1,9 +1,9 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll()
+function getAll(page)
 {
-    return httpAxios.get("user/index");
+    return httpAxios.get(`user/index?page=${page}`);
 }
 function getById(id)
 {
@@ -26,6 +26,22 @@ const UserService = {
     getById:getById,
     create:create,
     update:update,
-    remove:remove
+    remove:remove,
+    changeStatus:(id) =>
+    {
+        return httpAxios.get("user/change_status/" + id);
+    },
+    delete:(id) =>
+    {
+        return httpAxios.get("user/delete/" + id);
+    },
+    restore:(id) =>
+    {
+        return httpAxios.get("user/restore/" + id);
+    },
+    trash:(page) =>
+    {
+        return httpAxios.get(`user/trash?page=${page}`);
+    },
 }
 export default UserService;

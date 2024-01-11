@@ -9,18 +9,87 @@ use Illuminate\Support\Str;
 
 class BrandController extends Controller
 {
-    public function index()
+    public function changeStatus($id)
     {
-        $brands = Brand::where('status', '!=', 0)
+        $brand = Brand::find($id);
+        if($brand == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'brand' => null
+                ],
+                404
+            );    
+        }
+        $brand->updated_at = date('Y-m-d H:i:s');
+        $brand->updated_by = 1;
+        $brand->status = ($brand->status == 1) ? 2 : 1; //form
+        if($brand->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'brand' => $brand
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'brand' => null
+                ],
+                422
+            );
+        }
+    }
+    public function trash()
+    {
+        $brands = Brand::where('status', '=', 0)
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'slug', )
-            ->get();
-        $total = Brand::count();
+            ->select('id', 'name', 'slug', 'status' )
+            ->paginate(5);
+        $total = Brand::where('status', '!=', 0)->count();
+        $publish = Brand::where('status', '=', 1)->count();
+        $trash = Brand::where('status', '=', 0)->count();
         $result = [
             'status' => true, 
             'message' => 'Tải dữ liệu thành công',
             'brands' => $brands,
-            'total' => $total
+            'total' => $total,
+            'publish' => $publish,
+            'trash' => $trash,
+        ];
+        return response()->json($result,200);
+    }
+
+    public function index()
+    {
+        $brands = Brand::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'status' )
+            ->paginate(5);
+        $brandsAll = Brand::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'status' )
+            ->get();
+        $total = Brand::where('status', '!=', 0)->count();
+        $publish = Brand::where('status', '=', 1)->count();
+        $trash = Brand::where('status', '=', 0)->count();
+        $result = [
+            'status' => true, 
+            'message' => 'Tải dữ liệu thành công',
+            'brands' => $brands,
+            'brandsAll' => $brandsAll,
+            'total' => $total,
+            'publish' => $publish,
+            'trash' => $trash,
         ];
         return response()->json($result,200);
     }
@@ -141,6 +210,65 @@ class BrandController extends Controller
             );
         }
     }
+    public function delete($id)
+    {
+        $brand = brand::find($id);
+        if($brand == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Đã chuyển vào thùng rác', 
+                    'brand' => null
+                ],
+                404
+            );    
+        }
+        $brand->updated_at = date('Y-m-d H:i:s');
+        $brand->updated_by = 1;
+        $brand->status = 0; 
+        if($brand->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Xoá thành công', 
+                    'brand' => $brand
+                ],
+                201
+            );    
+        }
+    }
+    public function restore($id)
+    {
+        $brand = Brand::find($id);
+        if($brand == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'brand' => null
+                ],
+                404
+            );    
+        }
+        $brand->updated_at = date('Y-m-d H:i:s');
+        $brand->updated_by = 1;
+        $brand->status = 2; 
+        if($brand->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Khôi phục thành công', 
+                    'brand' => $brand
+                ],
+                201
+            );    
+        }
+    }
+
     public function destroy($id)
     {
         $brand = Brand::findOrFail($id);
