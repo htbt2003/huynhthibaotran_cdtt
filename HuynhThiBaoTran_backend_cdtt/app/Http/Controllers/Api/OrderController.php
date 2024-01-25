@@ -6,20 +6,45 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderDetail;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\MyEmail;
 
 class OrderController extends Controller
 {
     public function doCheckout(Request $request)
     {  
-       foreach($request  as  $row){
-            $orderDetail=new OrderDetail;
-            $orderDetail->order_id=100;
-            $orderDetail->order_id=$row->id;
-            $orderDetail->price=$row->price;
-            $orderDetail->qty=$row->quantity;
+        $tam = $request->order;
+        $order = new Order();
+        $order->user_id = $tam['user_id']; //form
+        $order->name = $tam['name']; //form
+        $order->phone = $tam['phone']; //form
+        $order->email = $tam['email']; //form
+        $order->address = $tam['address']; //form
+        $order->note = $tam['note']; //form
+        $order->created_at = date('Y-m-d H:i:s');
+        $order->created_by = 1;
+        $order->status = 2; //form
+        $order->save();
+
+       foreach($request->input('ListCart')  as  $row){
+            $orderDetail= new OrderDetail();
+            $orderDetail->order_id= $order->id;
+            $orderDetail->product_id=$row['id'];
+            $orderDetail->price=$row['price'];
+            $orderDetail->qty=$row['quantity'];
             $orderDetail->save();
        }
+
+       Mail::mailer('smtp')->to($order->email)->send(new MyEmail($order));
+
+       return response()->json(
+        [
+            'status' => true,
+            'message' => 'Đặt hàng thành công',
+            'order' => null,
+        ],
+        200
+    );
     }
 
     public function order_userId($user_id)

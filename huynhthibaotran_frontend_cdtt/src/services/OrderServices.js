@@ -25,9 +25,9 @@ function getOrderByUserId(user_id)
 {
     return httpAxios.get(`order/${user_id}`);
 }
-function creatOrderDetail(productCart)
+function doCheckout(data)
 {
-    return httpAxios.post("orderDetail/doCheckout", productCart);
+    return httpAxios.post("doCheckout", data);
 }
 
 const OrderService = {
@@ -37,7 +37,7 @@ const OrderService = {
     update:update,
     remove:remove,
     getOrderByUserId:getOrderByUserId,
-    creatOrderDetail:creatOrderDetail,
+    doCheckout:doCheckout,
     changeStatus:(id) =>
     {
         return httpAxios.get("order/change_status/" + id);

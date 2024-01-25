@@ -1,16 +1,23 @@
-// import './assets/js/vendor/jquery-1.12.0.min.js';
-// import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LayoutSite from './layouts/LayoutSite';
 import RouterApp from './router';
 import LayoutAdmin from "./layouts/LayoutAdmin";
-// import { Provider } from "react-redux";
-// import store from "./pages/frontend/Cart/stores";
-// import React, { useEffect, useState } from 'react';
+import { Provider } from "react-redux";
+import store from "./pages/frontend/Cart/stores";
+import React, { useEffect, useState } from 'react';
+import Login from "./pages/frontend/Login";
+import Register from "./pages/frontend/Register";
+import axios from 'axios';
+
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.headers.post['Accept'] = 'application/json';
+
+axios.defaults.withCredentials = true;
+// axios.defaults.withXSRFToken = true;
 
 function App() {
   return (
-    // <Provider store={store}>
+    <Provider store={store}>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<LayoutSite />}>
@@ -19,6 +26,8 @@ function App() {
               return <Route key={index} path={router.path} element={<Page />} />
             })}
           </Route>
+          <Route path='/dang-nhap' element={<Login />}></Route>
+          <Route path='/dang-ky' element={<Register />}></Route>
           <Route path="/admin" element={<LayoutAdmin />}>
             {RouterApp.RouterPrivate.map(function (router, index) {
               const Page = router.component;
@@ -27,7 +36,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-    // </Provider>
+   </Provider>
   );
 }
 

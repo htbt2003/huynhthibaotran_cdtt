@@ -9,6 +9,23 @@ use Illuminate\Support\Str;
 
 class BrandController extends Controller
 {
+    public function brand_home($limit)
+    {
+        $brands = Brand::where('status', '=', 1)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'slug', 'status', 'image' )
+            ->get();
+            // ->limit($limit);
+        return response()->json(
+            [
+                'status' => true, 
+                'message' => 'Tải dữ liệu thành công', 
+                'brands' => $brands,
+            ],
+            200
+        ); 
+    }
+
     public function changeStatus($id)
     {
         $brand = Brand::find($id);
@@ -73,11 +90,11 @@ class BrandController extends Controller
     {
         $brands = Brand::where('status', '!=', 0)
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'slug', 'status' )
+            ->select('id', 'name', 'slug', 'status', 'image' )
             ->paginate(5);
         $brandsAll = Brand::where('status', '!=', 0)
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'slug', 'status' )
+            ->select('id', 'name', 'slug', 'status', 'image' )
             ->get();
         $total = Brand::where('status', '!=', 0)->count();
         $publish = Brand::where('status', '=', 1)->count();

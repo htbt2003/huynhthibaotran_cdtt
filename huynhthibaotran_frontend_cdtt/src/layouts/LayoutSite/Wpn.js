@@ -14,6 +14,7 @@ function Wpn() {
     // }, []);
     return (
       <>
+      
       {/*wishlist block start*/}
       <div className="sidebar_widget wishlist mb-35">
         <div className="block_title">

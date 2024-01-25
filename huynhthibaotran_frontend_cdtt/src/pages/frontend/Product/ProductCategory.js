@@ -1,33 +1,80 @@
 import { useEffect, useState } from 'react';
 import ProductItem from '../../../components/ProductItem.js';
 import ProductServices from '../../../services/ProductServices';
-// import { Button } from 'bootstrap';
+import CategoryServices from '../../../services/CategoryServices';
+import Ccp from '../../../layouts/LayoutSite/Ccp.js';
+import Wpn from '../../../layouts/LayoutSite/Wpn.js';
+import SpecialPro from '../../../layouts/LayoutSite/SpecialPro.js';
+import ReactPaginate from 'react-paginate';
+import { useParams } from 'react-router-dom';
+import $ from 'jquery';
 
 function ProductCategory() {
-  const [selectedOption, setSelectedOption] = useState(1);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState();
+  const [products, setProducts] = useState([]);
+  const [title, setTitle] = useState("");
+  const { slug } = useParams();
+  const [sort, setSort] = useState();
+  const [prices, setPrices] = useState([0, 1000000]);
+  const [pricesFiler, setPriceFiler] = useState(null);
+  const [reload, setReload] = useState();
 
-  const handleSortChange = (event) => {
-    setSelectedOption(event.target.value);
+    var condition = {
+      prices: {
+        form: prices[0],
+      to: prices[1],
+      },
+      sort: sort,
+    }
+    useEffect(function(){
+      (async function(){
+        const result = await CategoryServices.getCategoryBySlug(slug);
+            const catid = result.category.id;
+            setTitle(result.category.name);
+        const resultpro = await ProductServices.getProductByCategoryId(page, catid, condition)
+          setProducts(resultpro.products.data)
+          setTotal(resultpro.total);
+
+      })();
+    },[slug, reload])
+    
+    // console.log(products)
+    console.log(pricesFiler)
+
+      //------------pagination-------------
+  const numberPage = Math.ceil(total / 8);
+  const handlePageChange = (event) => {
+    setPage(event.selected + 1);
+    setReload(Date.now)
   };
-
+  //----------sort--------
+  const handleSortChange = (event) => {
+    setSort(event.target.value);
+    setReload(Date.now)
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     // Handle the form submission, e.g., trigger sorting based on selectedOption
-    console.log('Selected sorting option:', selectedOption);
+    console.log('Selected sorting option:', sort);
   };
-    // const [limit, setLimit] = useState(8);
-    // const [products, setProducts] = useState([]);
-    // useEffect(function(){
-    //   (async function(){
-    //     await ProductServices.getProductAll(limit, 1)
-    //     .then(function(result){
-    //       setProducts(result.data.products)
-    //     });
-    //   })();
-    // },[limit])
+  //-------thanh lọc giá--------
+  useEffect(() => {
+    // Initialize the jQuery UI slider
+    $('#slider-range').slider({
+      range: true,
+      min: 0,
+      max: 1000000,
+      values: prices,
+      slide: (event, ui) => setPrices(ui.values),
+    });
+  }, [prices]);
+  const handleChangePrice = () => {
+    setPriceFiler(prices);
+    setReload(Date.now)
+  };
     return (
-        <>
-              <>
+      <>
   {/*breadcrumbs area start*/}
   <div className="breadcrumbs_area">
     <div className="row">
@@ -35,16 +82,12 @@ function ProductCategory() {
         <div className="breadcrumb_content">
           <ul>
             <li>
-              <a href="index.html">Trang chủ</a>
+              <a href="index.html">home</a>
             </li>
             <li>
               <i className="fa fa-angle-right" />
             </li>
-            <li>Sản phẩm</li>
-            <li>
-              <i className="fa fa-angle-right" />
-            </li>
-            <li>Danh mục</li>
+            <li>shop</li>
           </ul>
         </div>
       </div>
@@ -55,8 +98,52 @@ function ProductCategory() {
 <div className=" pos_home_section">
   <div className="row pos_home">
     <div className="col-lg-3 col-md-12">
-      <Ccp/>
-      <Wpn/>
+
+                  {/*price slider start*/}
+                  <div className="sidebar_widget price mb-4">
+        <h2>Price</h2>
+        <div className="ca_search_filters">
+      <input
+        type="text"
+        name="text"
+        id="amount"
+        value={`${prices[0]} - ${prices[1]}`}
+        readOnly
+      />
+      <div
+        onChange={handleChangePrice}
+        id="slider-range"
+        className="ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"
+      >
+        {/* <div
+        onChange={handleChangePrice}
+          className="ui-slider-range ui-widget-header ui-corner-all"
+          style={{
+            left: `${(prices[0] / 1000000) * 100}%`,
+            width: `${((prices[1] - prices[0]) / 1000000) * 100}%`,
+          }}
+        ></div>
+        <span
+        onChange={handleChangePrice}
+          className="ui-slider-handle ui-state-default ui-corner-all"
+          tabIndex="0"
+          style={{ left: `${(prices[0] / 1000000) * 100}%` }}
+        ></span>
+        <span
+          className="ui-slider-handle ui-state-default ui-corner-all"
+          tabIndex="0"
+          style={{ left: `${(prices[1] / 1000000) * 100}%` }}
+        ></span> */}
+      </div>
+      <div className="mt-2 text-right">
+            <span className="btn btn-sm btn-primary" onClick={handleChangePrice}>
+               Lọc
+            </span>
+      </div>
+    </div>
+      </div>
+      {/*price slider end*/}
+
       <SpecialPro/>
     </div>
     <div className="col-lg-9 col-md-12">
@@ -95,7 +182,7 @@ function ProductCategory() {
           </ul>
         </div>
         <div className="page_amount">
-          <p>Showing 1–9 of 21 results</p>
+          <p>{title}</p>
         </div>
         <div className="select_option">
         <form onSubmit={handleSubmit}>
@@ -103,18 +190,17 @@ function ProductCategory() {
       <select
         name="orderby"
         id="short"
-        value={selectedOption}
+        value={sort}
         onChange={handleSortChange}
       >
-        <option value={1}>Position</option>
-        <option value={2}>Price: Lowest</option>
-        <option value={3}>Price: Highest</option>
-        <option value={4}>Product Name: Z</option>
+        <option value={'ASC'}>Giá: Tăng dần</option>
+        <option value={'DESC'}>Giá: Giảm dần</option>
+        {/* <option value={4}>Product Name: Z</option>
         <option value={5}>Sort by price: Low</option>
         <option value={6}>Product Name: A</option>
         <option value={7}>In stock</option>
         <option value={8}>Product Name: A</option>
-        <option value={9}>In stock</option>
+        <option value={9}>In stock</option> */}
       </select>
       {/* <button type="submit">Submit</button> */}
     </form>
@@ -126,393 +212,9 @@ function ProductCategory() {
         <div className="tab-content" id="myTabContent">
           <div className="tab-pane fade show active" id="large" role="tabpanel">
             <div className="row">
-              <div className="col-lg-4 col-md-6">
-                <div className="single_product">
-                  <div className="product_thumb">
-                    <a href="single-product.html">
-                      <img src="assets\img\product\product1.jpg" alt="" />
-                    </a>
-                    <div className="img_icone">
-                      <img src="assets\img\cart\span-new.png" alt="" />
-                    </div>
-                    <div className="product_action">
-                      <a href="#">
-                        {" "}
-                        <i className="fa fa-shopping-cart" /> Add to cart
-                      </a>
-                    </div>
-                  </div>
-                  <div className="product_content">
-                    <span className="product_price">$50.00</span>
-                    <h3 className="product_title">
-                      <a href="single-product.html">Curabitur sodales</a>
-                    </h3>
-                  </div>
-                  <div className="product_info">
-                    <ul>
-                      <li>
-                        <a href="#" title=" Add to Wishlist ">
-                          Add to Wishlist
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#modal_box"
-                          title="Quick view"
-                        >
-                          View Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6">
-                <div className="single_product">
-                  <div className="product_thumb">
-                    <a href="single-product.html">
-                      <img src="assets\img\product\product2.jpg" alt="" />
-                    </a>
-                    <div className="hot_img">
-                      <img src="assets\img\cart\span-hot.png" alt="" />
-                    </div>
-                    <div className="product_action">
-                      <a href="#">
-                        {" "}
-                        <i className="fa fa-shopping-cart" /> Add to cart
-                      </a>
-                    </div>
-                  </div>
-                  <div className="product_content">
-                    <span className="product_price">$40.00</span>
-                    <h3 className="product_title">
-                      <a href="single-product.html">Quisque ornare dui</a>
-                    </h3>
-                  </div>
-                  <div className="product_info">
-                    <ul>
-                      <li>
-                        <a href="#" title=" Add to Wishlist ">
-                          Add to Wishlist
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#modal_box"
-                          title="Quick view"
-                        >
-                          View Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6">
-                <div className="single_product">
-                  <div className="product_thumb">
-                    <a href="single-product.html">
-                      <img src="assets\img\product\product3.jpg" alt="" />
-                    </a>
-                    <div className="img_icone">
-                      <img src="assets\img\cart\span-new.png" alt="" />
-                    </div>
-                    <div className="product_action">
-                      <a href="#">
-                        {" "}
-                        <i className="fa fa-shopping-cart" /> Add to cart
-                      </a>
-                    </div>
-                  </div>
-                  <div className="product_content">
-                    <span className="product_price">$60.00</span>
-                    <h3 className="product_title">
-                      <a href="single-product.html">Sed non turpiss</a>
-                    </h3>
-                  </div>
-                  <div className="product_info">
-                    <ul>
-                      <li>
-                        <a href="#" title=" Add to Wishlist ">
-                          Add to Wishlist
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#modal_box"
-                          title="Quick view"
-                        >
-                          View Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6">
-                <div className="single_product">
-                  <div className="product_thumb">
-                    <a href="single-product.html">
-                      <img src="assets\img\product\product4.jpg" alt="" />
-                    </a>
-                    <div className="hot_img">
-                      <img src="assets\img\cart\span-hot.png" alt="" />
-                    </div>
-                    <div className="product_action">
-                      <a href="#">
-                        {" "}
-                        <i className="fa fa-shopping-cart" /> Add to cart
-                      </a>
-                    </div>
-                  </div>
-                  <div className="product_content">
-                    <span className="product_price">$65.00</span>
-                    <h3 className="product_title">
-                      <a href="single-product.html">Duis convallis</a>
-                    </h3>
-                  </div>
-                  <div className="product_info">
-                    <ul>
-                      <li>
-                        <a href="#" title=" Add to Wishlist ">
-                          Add to Wishlist
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#modal_box"
-                          title="Quick view"
-                        >
-                          View Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6">
-                <div className="single_product">
-                  <div className="product_thumb">
-                    <a href="single-product.html">
-                      <img src="assets\img\product\product5.jpg" alt="" />
-                    </a>
-                    <div className="img_icone">
-                      <img src="assets\img\cart\span-new.png" alt="" />
-                    </div>
-                    <div className="product_action">
-                      <a href="#">
-                        {" "}
-                        <i className="fa fa-shopping-cart" /> Add to cart
-                      </a>
-                    </div>
-                  </div>
-                  <div className="product_content">
-                    <span className="product_price">$50.00</span>
-                    <h3 className="product_title">
-                      <a href="single-product.html">Curabitur sodales</a>
-                    </h3>
-                  </div>
-                  <div className="product_info">
-                    <ul>
-                      <li>
-                        <a href="#" title=" Add to Wishlist ">
-                          Add to Wishlist
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#modal_box"
-                          title="Quick view"
-                        >
-                          View Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6">
-                <div className="single_product">
-                  <div className="product_thumb">
-                    <a href="single-product.html">
-                      <img src="assets\img\product\product6.jpg" alt="" />
-                    </a>
-                    <div className="hot_img">
-                      <img src="assets\img\cart\span-hot.png" alt="" />
-                    </div>
-                    <div className="product_action">
-                      <a href="#">
-                        {" "}
-                        <i className="fa fa-shopping-cart" /> Add to cart
-                      </a>
-                    </div>
-                  </div>
-                  <div className="product_content">
-                    <span className="product_price">$40.00</span>
-                    <h3 className="product_title">
-                      <a href="single-product.html">Quisque ornare dui</a>
-                    </h3>
-                  </div>
-                  <div className="product_info">
-                    <ul>
-                      <li>
-                        <a href="#" title=" Add to Wishlist ">
-                          Add to Wishlist
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#modal_box"
-                          title="Quick view"
-                        >
-                          View Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6">
-                <div className="single_product">
-                  <div className="product_thumb">
-                    <a href="single-product.html">
-                      <img src="assets\img\product\product7.jpg" alt="" />
-                    </a>
-                    <div className="img_icone">
-                      <img src="assets\img\cart\span-new.png" alt="" />
-                    </div>
-                    <div className="product_action">
-                      <a href="#">
-                        {" "}
-                        <i className="fa fa-shopping-cart" /> Add to cart
-                      </a>
-                    </div>
-                  </div>
-                  <div className="product_content">
-                    <span className="product_price">$60.00</span>
-                    <h3 className="product_title">
-                      <a href="single-product.html">Sed non turpiss</a>
-                    </h3>
-                  </div>
-                  <div className="product_info">
-                    <ul>
-                      <li>
-                        <a href="#" title=" Add to Wishlist ">
-                          Add to Wishlist
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#modal_box"
-                          title="Quick view"
-                        >
-                          View Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6">
-                <div className="single_product">
-                  <div className="product_thumb">
-                    <a href="single-product.html">
-                      <img src="assets\img\product\product8.jpg" alt="" />
-                    </a>
-                    <div className="hot_img">
-                      <img src="assets\img\cart\span-hot.png" alt="" />
-                    </div>
-                    <div className="product_action">
-                      <a href="#">
-                        {" "}
-                        <i className="fa fa-shopping-cart" /> Add to cart
-                      </a>
-                    </div>
-                  </div>
-                  <div className="product_content">
-                    <span className="product_price">$65.00</span>
-                    <h3 className="product_title">
-                      <a href="single-product.html">Duis convallis</a>
-                    </h3>
-                  </div>
-                  <div className="product_info">
-                    <ul>
-                      <li>
-                        <a href="#" title=" Add to Wishlist ">
-                          Add to Wishlist
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#modal_box"
-                          title="Quick view"
-                        >
-                          View Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6">
-                <div className="single_product">
-                  <div className="product_thumb">
-                    <a href="single-product.html">
-                      <img src="assets\img\product\product9.jpg" alt="" />
-                    </a>
-                    <div className="img_icone">
-                      <img src="assets\img\cart\span-new.png" alt="" />
-                    </div>
-                    <div className="product_action">
-                      <a href="#">
-                        {" "}
-                        <i className="fa fa-shopping-cart" /> Add to cart
-                      </a>
-                    </div>
-                  </div>
-                  <div className="product_content">
-                    <span className="product_price">$50.00</span>
-                    <h3 className="product_title">
-                      <a href="single-product.html">Curabitur sodales</a>
-                    </h3>
-                  </div>
-                  <div className="product_info">
-                    <ul>
-                      <li>
-                        <a href="#" title=" Add to Wishlist ">
-                          Add to Wishlist
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          data-toggle="modal"
-                          data-target="#modal_box"
-                          title="Quick view"
-                        >
-                          View Detail
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+                  {products.map(function(product, index){
+                        return <ProductItem key={index} product={product}/>
+                    })}
             </div>
           </div>
           <div className="tab-pane fade" id="list" role="tabpanel">
@@ -1376,28 +1078,38 @@ function ProductCategory() {
               <option value={2}>10</option>
               <option value={3}>11</option>
             </select>
-            <span>Products by page</span>
           </form>
         </div>
-        <div className="page_number">
-          <span>Pages: </span>
-          <ul>
-            <li>«</li>
-            <li className="current_number">1</li>
-            <li>
-              <a href="#">2</a>
-            </li>
-            <li>»</li>
-          </ul>
+        
+        <div className="mt-2">
+          <ReactPaginate
+                    className="pagination pagination-sm justify-content-end"
+                    previousLabel="«"
+                    nextLabel="»"
+                    pageClassName="page-item"
+                    pageLinkClassName="page-link"
+                    previousClassName="page-item"
+                    previousLinkClassName="page-link"
+                    nextClassName="page-item"
+                    nextLinkClassName="page-link"
+                    breakLabel="..."
+                    breakClassName="page-item"
+                    breakLinkClassName="page-link"
+                    pageCount={numberPage}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={3}
+                    onPageChange={handlePageChange}
+                    containerClassName="pagination"
+                    activeClassName="active"
+                  />
         </div>
       </div>
       {/*pagination style end*/}
     </div>
   </div>
 </div>
-</>
 
-        </>
+</>
     );
 }
 

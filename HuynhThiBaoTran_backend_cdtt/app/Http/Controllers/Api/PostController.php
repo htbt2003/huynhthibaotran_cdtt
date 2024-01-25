@@ -31,24 +31,25 @@ class PostController extends Controller
             200
         );
     }
-    public function post_all($limit, $page = 1)
+    public function post_all()
     {
-        $offset = ($page - 1) * $limit;
-        $posts = Post::where('status', 1)
+        $posts = Post::where([['status', '=', 1], ['type', '=', 'post']])
             ->orderBy('created_at', 'DESC')
-            ->offset($offset)
-            ->limit($limit)
-            ->get();
+            ->paginate(5);
+        $total = $posts->count();
         return response()->json(
             [
                 'status' => true,
                 'message' => 'Tải dữ liệu thành công',
-                'posts' => $posts
+                'posts' => $posts,
+                'total' => $total,
             ],
             200
         );
+    
+
     }
-    public function post_topic($limit, $topic_id)
+    public function post_topic( $topic_id)
     {
         $listid = array();
         array_push($listid, $topic_id + 0);
@@ -75,13 +76,15 @@ class PostController extends Controller
         $posts = Post::where('status', 1)
             ->whereIn('topic_id', $listid)
             ->orderBy('created_at', 'DESC')
-            ->limit($limit)
-            ->get();
+            ->paginate(6);
+        $total = $posts->count();
         return response()->json(
             [
                 'status' => true,
                 'message' => 'Tải dữ liệu thành công',
-                'posts' => $posts
+                'posts' => $posts,
+                'total' => $total,
+
             ],
             200
         );
@@ -102,7 +105,8 @@ class PostController extends Controller
     {
         $args = [
             ['slug', '=', $slug],
-            ['status', '=', 1]
+            ['status', '=', 1],
+            ['type', '=', 'post']
         ];
         $post = Post::where($args)->first();
         if($post == null){
@@ -137,10 +141,10 @@ class PostController extends Controller
             }
         }
         $post_other = Post::where([['id', '!=', $post->id],['status', '=', 1]])
-        ->whereIn('topic_id', $listid)
-        ->orderBy("created_at", 'DESC')
-        ->limit(8)
-        ->get();
+            ->whereIn('topic_id', $listid)
+            ->orderBy("created_at", 'DESC')
+            ->limit(8)
+            ->get();
             return response()->json(
                 ['status' => true, 
                  'message' => 'Tải dữ liệu thành công', 
@@ -217,8 +221,8 @@ class PostController extends Controller
             ->select('id', 'title', 'slug', 'topic_id', 'image', 'status' )
             ->paginate(5);
         $total = Post::where([['status', '=', 0], ['type', '=', 'post']])->count();
-        $publish = Banner::where('status', '=', 1)->count();
-        $trash = Banner::where('status', '=', 0)->count();
+        $publish = Post::where('status', '=', 1)->count();
+        $trash = Post::where('status', '=', 0)->count();
         return response()->json(
             [
                 'status' => true, 
@@ -239,8 +243,8 @@ class PostController extends Controller
             ->select('id', 'title', 'slug', 'topic_id', 'image', 'status' )
             ->paginate(5);
         $total = Post::where([['status', '!=', 0], ['type', '=', 'post']])->count();
-        $publish = Banner::where([['status', '=', 1], ['type', '=', 'post']])->count();
-        $trash = Banner::where([['status', '=', 0], ['type', '=', 'post']])->count();
+        $publish = Post::where([['status', '=', 1], ['type', '=', 'post']])->count();
+        $trash = Post::where([['status', '=', 0], ['type', '=', 'post']])->count();
         return response()->json(
             [
                 'status' => true, 

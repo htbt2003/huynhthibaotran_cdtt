@@ -99,7 +99,7 @@ class CategoryController extends Controller
         $categoriesAll = Category::where('status', '!=', 0)
             ->orderBy('created_at', 'DESC')
             ->select('id', 'name', 'slug', 'image', 'status' )
-            ->paginate(5);
+            ->get();
         $total = Category::where('status', '!=', 0)->count();
         $publish = Category::where('status', '=', 1)->count();
         $trash = Category::where('status', '=', 0)->count();

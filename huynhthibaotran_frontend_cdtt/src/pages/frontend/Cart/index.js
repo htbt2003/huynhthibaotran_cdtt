@@ -1,22 +1,19 @@
 import React from 'react'
 import { connect } from "react-redux";
-// import { IncreaseQuantity, DecreaseQuantity, DeleteCart } from './actions';
+import { IncreaseQuantity, DecreaseQuantity, DeleteCart } from './actions';
 import { urlImage } from '../../../config';
 import { Link } from 'react-router-dom';
 
 
-function Cart({}) {
+function Cart({items,IncreaseQuantity,DecreaseQuantity,DeleteCart}) {
+    let ListCart = [];
+    let TotalCart = 0;
+    Object.keys(items.Carts).forEach(function (item) {
+        TotalCart += items.Carts[item].quantity * items.Carts[item].price;
+        ListCart.push(items.Carts[item]);
+    });
     // console.log(items.Carts)
-    // let ListCart = [];
-    // let TotalCart = 0;
-    // Object.keys(items.Carts).forEach(function (item) {
-    //     TotalCart += items.Carts[item].quantity * items.Carts[item].price;
-    //     ListCart.push(items.Carts[item]);
-    // });
-    // function TotalPrice(price, tonggia) {
-    //     return Number(price * tonggia).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-    // }
-    // if (ListCart.length > 0) {
+    if (ListCart.length > 0) {
     return (
         <>
             {/*breadcrumbs area start*/}
@@ -26,7 +23,7 @@ function Cart({}) {
                         <div className="breadcrumb_content">
                             <ul>
                                 <li>
-                                    <a href="index.html">home</a>
+                                    <Link href="index.html">home</Link>
                                 </li>
                                 <li>
                                     <i className="fa fa-angle-right" />
@@ -57,71 +54,41 @@ function Cart({}) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td className="product_remove">
-                                                    <a href="#">
-                                                        <i className="fa fa-trash-o" />
-                                                    </a>
-                                                </td>
-                                                <td className="product_thumb">
-                                                    <a href="#">
-                                                        <img src="assets\img\cart\cart17.jpg" alt="" />
-                                                    </a>
-                                                </td>
-                                                <td className="product_name">
-                                                    <a href="#">Handbag fringilla</a>
-                                                </td>
-                                                <td className="product-price">£65.00</td>
-                                                <td className="product_quantity">
-                                                    <input min={0} max={100} defaultValue={1} type="number" />
-                                                </td>
-                                                <td className="product_total">£130.00</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="product_remove">
-                                                    <a href="#">
-                                                        <i className="fa fa-trash-o" />
-                                                    </a>
-                                                </td>
-                                                <td className="product_thumb">
-                                                    <a href="#">
-                                                        <img src="assets\img\cart\cart18.jpg" alt="" />
-                                                    </a>
-                                                </td>
-                                                <td className="product_name">
-                                                    <a href="#">Handbags justo</a>
-                                                </td>
-                                                <td className="product-price">£90.00</td>
-                                                <td className="product_quantity">
-                                                    <input min={0} max={100} defaultValue={1} type="number" />
-                                                </td>
-                                                <td className="product_total">£180.00</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="product_remove">
-                                                    <a href="#">
-                                                        <i className="fa fa-trash-o" />
-                                                    </a>
-                                                </td>
-                                                <td className="product_thumb">
-                                                    <a href="#">
-                                                        <img src="assets\img\cart\cart19.jpg" alt="" />
-                                                    </a>
-                                                </td>
-                                                <td className="product_name">
-                                                    <a href="#">Handbag elit</a>
-                                                </td>
-                                                <td className="product-price">£80.00</td>
-                                                <td className="product_quantity">
-                                                    <input min={0} max={100} defaultValue={1} type="number" />
-                                                </td>
-                                                <td className="product_total">£160.00</td>
-                                            </tr>
+                                        {
+                                            ListCart.map((item,key)=>{
+                                                return(
+                                                    <tr>
+                                                        <td className="product_remove">
+                                                            <Link href="#" onClick={()=>DeleteCart(key)}>
+                                                                <i className="fa fa-trash-o" />
+                                                            </Link>
+                                                        </td>
+                                                        <td className="product_thumb">
+                                                            <Link href="#">
+                                                                <img src={urlImage + "product/" + item.image}></img>
+                                                            </Link>
+                                                        </td>
+                                                        <td className="product_name">
+                                                            <Link href="#">{item.name}</Link>
+                                                        </td>
+                                                        <td className="product-price">{(item.price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                                                        <td className="product_quantity">
+                                                                    <span className="btn-primary" style={{margin:'0px', paddingLeft:10, paddingRight:10}} onClick={()=>DecreaseQuantity(key)}>-</span>
+                                                                    <span className="btn-info" style={{margin:'0px', paddingLeft:10, paddingRight:10}}>{item.quantity}</span>
+                                                                    <span className="btn-primary" style={{margin:'0px', paddingLeft:10, paddingRight:10}} onClick={()=>IncreaseQuantity(key)}>+</span>
+                                                        </td>
+                                                        <td className="product_total">{(item.price*item.quantity).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                                                    </tr>    
+                                                )
+                                            })
+                                                
+                                        }
+
                                         </tbody>
                                     </table>
                                 </div>
                                 <div className="cart_submit">
-                                    <button type="submit">update cart</button>
+                                    <h4 style={{color:'red'}}>{TotalCart.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</h4>
                                 </div>
                             </div>
                         </div>
@@ -153,13 +120,13 @@ function Cart({}) {
                                                 <span>Flat Rate:</span> £255.00
                                             </p>
                                         </div>
-                                        <a href="#">Calculate shipping</a>
+                                        <Link href="#">Calculate shipping</Link>
                                         <div className="cart_subtotal">
                                             <p>Total</p>
                                             <p className="cart_amount">£215.00</p>
                                         </div>
                                         <div className="checkout_btn">
-                                            <a href="#">Proceed to Checkout</a>
+                                            <Link to='/thanh-toan'>Proceed to Checkout</Link>
                                         </div>
                                     </div>
                                 </div>
@@ -172,24 +139,23 @@ function Cart({}) {
             {/*shopping cart area end */}
         </>
     );
-    // }
-    // else {
-    //     return (
+    }
+    else {
+        return (
 
-    //         <div className="card card-body py-5 text-center shadow-sm">
-    //             <h4>Giỏ hàng của bạn trống</h4>
-    //         </div>
+            <div className="card card-body py-5 text-center shadow-sm" style={{height:600}}>
+                <h4>Giỏ hàng của bạn trống</h4>
+            </div>
 
-    //     )
-    // }
+        )
+    }
 }
 
-// const mapStateToProps = state => {
-//     //  console.log(state)
-//     return {
-//         items: state._todoProduct
-//     }
-// }
+const mapStateToProps = state => {
+    //  console.log(state)
+    return {
+        items: state._todoProduct
+    }
+}
 
-// export default connect(mapStateToProps, { IncreaseQuantity, DecreaseQuantity, DeleteCart })(Cart);
-export default Cart;
+export default connect(mapStateToProps, { IncreaseQuantity, DecreaseQuantity, DeleteCart })(Cart);

@@ -43,5 +43,13 @@ const UserService = {
     {
         return httpAxios.get(`user/trash?page=${page}`);
     },
+    register:(data) =>
+    {
+        return httpAxios.post("register", data);
+    },
+    login:(data) =>
+    {
+        return httpAxios.post("login", data);
+    },
 }
 export default UserService;

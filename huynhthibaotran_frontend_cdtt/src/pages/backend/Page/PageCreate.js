@@ -17,7 +17,7 @@ function PageCreate() {
   useEffect(function () {
     (async function () {
       const result = await TopicServices.getAll()
-      setTopics(result.topics)
+      setTopics(result.topicsAll)
     })();
   }, []);
   function PageStore(event) {

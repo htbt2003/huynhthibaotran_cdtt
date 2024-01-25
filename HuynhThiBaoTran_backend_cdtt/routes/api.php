@@ -10,7 +10,6 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\ProductImportController;
 use App\Http\Controllers\Api\ProductStoreController;
 use App\Http\Controllers\Api\ProductSaleController;
 use App\Http\Controllers\Api\BannerController;
@@ -30,33 +29,46 @@ use App\Http\Controllers\Api\OrderDetailController;
 |
 */
 
+Route::get('brand_home/{limit}', [BrandController::class, 'brand_home']);
 
 Route::get('menu_list/{position}/{parent_id?}', [MenuController::class, 'menu_list']);
 Route::get('banner_list/{position}', [BannerController::class, 'banner_list']);
 Route::get('category_list/{parent_id?}', [CategoryController::class, 'category_list']);
 Route::get('topic_list/{parent_id?}', [TopicController::class, 'topic_list']);
 
-Route::get('user_login/{user}/{password}', [UserController::class, 'login']);
+Route::post('register', [UserController::class, 'register']);
+Route::post('login', [UserController::class, 'login']);
 
+Route::get('product_new/{limit}', [ProductController::class, 'product_new']);
+Route::get('product_sale/{limit}', [ProductController::class, 'product_sale']);
+Route::get('product_bestSeller/{limit}', [ProductController::class, 'product_bestSeller']);
 Route::get('product_home/{limit}/{category_id?}', [ProductController::class, 'product_home']);
-Route::get('product_all/{limit}/{page?}', [ProductController::class, 'product_all']);
-Route::get('product_category/{limit}/{category_id}', [ProductController::class, 'product_category']);
-Route::get('product_brand/{limit}/{brand_id}', [ProductController::class, 'product_brand']);
+Route::get('product_all', [ProductController::class, 'product_all']);
+Route::get('product_allAction', [ProductController::class, 'product_allAction']);
+Route::get('product_category/{category_id}', [ProductController::class, 'product_category']);
+Route::get('product_brand/{brand_id}', [ProductController::class, 'product_brand']);
 Route::get('product_detail/{id}', [ProductController::class, 'product_detail']);
 Route::get('product_other/{id}/{limit}', [ProductController::class, 'product_other']);
-Route::get('product_search/{key}', [ProductController::class, 'product_search']);
+Route::get('search', [ProductController::class, 'search']);
 
 Route::get('post_list/{limit}/{type}', [PostController::class, 'post_list']);
-Route::get('post_all/{limit}/{page?}', [PostController::class, 'post_all']);
-Route::get('post_topic/{limit}/{topic_id}', [PostController::class, 'post_topic']);
+Route::get('post_all', [PostController::class, 'post_all']);
+Route::get('post_topic/{topic_id}', [PostController::class, 'post_topic']);
 Route::get('post_detail/{slug}', [PostController::class, 'post_detail']);
 Route::get('post_other/{id}/{limit}', [PostController::class, 'post_other']);
 Route::get('post_new', [PostController::class, 'post_new']);
 
+Route::get('page_detail/{slug}', [PageController::class, 'page_detail']);
+
 Route::get('order/index', [OrderController::class, 'index']);
 Route::get('order/{id}', [OrderController::class, 'order_userId']);
-Route::post('orderDetail/store', [OrderDetailController::class, 'store']);
-Route::post('orderDetail/doCheckout', [OrderController::class, 'doCheckout']);
+Route::post('doCheckout', [OrderController::class, 'doCheckout']);
+
+
+
+
+
+
 
 Route::prefix('brand')->group(function () {
     Route::get('index', [BrandController::class, 'index']);
@@ -106,7 +118,7 @@ Route::prefix('menu')->group(function () {
     Route::get('trash', [MenuController::class, 'trash']);
 });
 Route::prefix('order')->group(function () {
-    // Route::get('index', [OrderController::class, 'index']);
+    Route::get('index', [OrderController::class, 'index']);
     Route::get('show/{id}', [OrderController::class, 'show']);
     Route::post('store', [OrderController::class, 'store']);
     Route::post('update/{id}', [OrderController::class, 'update']);
@@ -119,7 +131,7 @@ Route::prefix('order')->group(function () {
 Route::prefix('post')->group(function () {
     Route::get('index', [PostController::class, 'index']);
     Route::get('show/{id}', [PostController::class, 'show']);
-    // Route::post('store', [PostController::class, 'store']);
+    Route::post('store', [PostController::class, 'store']);
     Route::post('update/{id}', [PostController::class, 'update']);
     Route::delete('destroy/{id}', [PostController::class, 'destroy']);
     Route::get('change_status/{key}', [PostController::class, 'changeStatus']);
@@ -150,23 +162,21 @@ Route::prefix('product')->group(function () {
     Route::get('restore/{key}', [ProductController::class, 'restore']);
     Route::get('trash', [ProductController::class, 'trash']);
 });
-Route::prefix('productImport')->group(function () {
-    Route::get('index', [ProductImportController::class, 'index']);
-    Route::get('show/{id}', [ProductImportController::class, 'show']);
-    Route::post('store', [ProductImportController::class, 'store']);
-    Route::post('update/{id}', [ProductImportController::class, 'update']);
-    Route::delete('destroy/{id}', [ProductImportController::class, 'destroy']);
-    Route::get('change_status/{key}', [ProductImportController::class, 'changeStatus']);
-    Route::get('filter/{category_id}/{brand_id}', [ProductImportController::class, 'filter']);
+Route::prefix('productstore')->group(function () {
+    Route::get('index', [ProductStoreController::class, 'index']);
+    Route::get('show/{id}', [ProductStoreController::class, 'show']);
+    Route::post('store', [ProductStoreController::class, 'store']);
+    Route::post('update/{id}', [ProductStoreController::class, 'update']);
+    Route::delete('destroy/{id}', [ProductStoreController::class, 'destroy']);
+    Route::get('change_status/{key}', [ProductStoreController::class, 'changeStatus']);
 });
-Route::prefix('productSale')->group(function () {
+Route::prefix('productsale')->group(function () {
     Route::get('index', [ProductSaleController::class, 'index']);
     Route::get('show/{id}', [ProductSaleController::class, 'show']);
     Route::post('store', [ProductSaleController::class, 'store']);
     Route::post('update/{id}', [ProductSaleController::class, 'update']);
     Route::delete('destroy/{id}', [ProductSaleController::class, 'destroy']);
     Route::get('change_status/{key}', [ProductSaleController::class, 'changeStatus']);
-    Route::get('filter/{category_id}/{brand_id}', [ProductSaleController::class, 'filter']);
 });
 Route::prefix('banner')->group(function () {
     Route::get('index', [BannerController::class, 'index']);
@@ -214,7 +224,16 @@ Route::prefix('customer')->group(function () {
     Route::get('trash', [CustomerController::class, 'trash']);
 });
 
+    Route::middleware(['auth:sanctum', 'isAPIAdmin'])->group(function() {
+        Route::get('/checkingAuthenticated', function(){
+            return response()->json(['message'=>'You are in', 'status'=>200], 200);
+        });
+    });
+    
+    Route::middleware(['auth:sanctum'])->group(function() {
+        Route::post('logout', [UserController::class, 'logout']);
+    });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+        return $request->user();
+    });

@@ -3,27 +3,33 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 function Contact() {
-    // const navigator = useNavigate();
-    // const [name, setName] = useState("");
-    // const [email, setEmail] = useState("");
-    // const [phone, setPhone] = useState("");
-    // const [content, setContent] = useState("");
-    // const [status, setStatus] = useState(1);
-    // document.title = "Liên hệ"
-    // function ContactStore(event) {
-    //     event.preventDefault();//không load lại trang
-    //     var contact = new FormData();
-    //     contact.append("name", name)
-    //     contact.append("email", email)
-    //     contact.append("content", content)
-    //     contact.append("phone", phone)
-    //     contact.append("status", status)
-    //     ContactServices.create(contact)
-    //         .then(function (result) {
-    //             alert(result.data.message);
-    //             navigator("/lien-he", { replace: true })
-    //         });
-    // }
+    const navigator = useNavigate();
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [content, setContent] = useState("");
+    const [status, setStatus] = useState(1);
+    const [title, setTitle] = useState();
+
+    document.title = "Liên hệ"
+    function ContactStore(event) {
+        event.preventDefault();//không load lại trang
+        const contact = {
+            name: name,
+            email: email,
+            content: content,
+            phone: phone,
+            status: status,
+            user_id: 4,
+            title: 'tieu de',
+            replay_id: 1,
+          }
+        ContactServices.create(contact)
+            .then(function (result) {
+                alert(result.message);
+                navigator("/lien-he", { replace: true })
+            });
+    }
     return (
         <>
             {/*breadcrumbs area start*/}
@@ -51,23 +57,21 @@ function Contact() {
                     <div className="col-lg-6 col-md-12">
                         <div className="contact_message">
                             <h3>Tell us your project</h3>
-                            <form id="contact-form" method="POST" action="assets/mail.php">
+                            <form onSubmit={ContactStore}>
                                 <div className="row">
                                     <div className="col-lg-6">
-                                        <input name="name" placeholder="Name *" type="text" />
-                                    </div>
+                                        <input name="name" placeholder="Name *" type="text"  onChange={(e)=> setName(e.target.value)}/>
+                                    </div>                                   
                                     <div className="col-lg-6">
-                                        <input name="email" placeholder="Email *" type="email" />
+                                        <input name="phone" placeholder="Phone *" type="text"  onChange={(e)=> setPhone(e.target.value)}/>
                                     </div>
-                                    <div className="col-lg-6">
-                                        <input name="subject" placeholder="Subject *" type="text" />
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <input name="phone" placeholder="Phone *" type="text" />
+                                    <div className="col">
+                                        <input name="email" placeholder="Email *" type="email" onChange={(e)=> setEmail(e.target.value)}/>
                                     </div>
                                     <div className="col-12">
                                         <div className="contact_textarea">
                                             <textarea
+                                            onChange={(e)=> setContent(e.target.value)}
                                                 placeholder="Message *"
                                                 name="message"
                                                 className="form-control2"

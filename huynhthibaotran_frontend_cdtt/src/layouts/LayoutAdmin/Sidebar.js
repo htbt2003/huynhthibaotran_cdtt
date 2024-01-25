@@ -30,7 +30,7 @@ function Sidebar () {
   };
 // console.log(state)
   const onRouteChanged = () => {
-    document.querySelector('#sidebar').classList.remove('active');
+    document.querySelector('#sidebarbar').classList.remove('active');
     Object.keys(state).forEach(i => {
       setState(prevState => ({ ...prevState, [i]: false }));
     });
@@ -38,23 +38,23 @@ function Sidebar () {
 
   useEffect(() => {
     onRouteChanged();
-    // add class 'hover-open' to sidebar navitem while hover in sidebar-icon-only menu
+    // add class 'hover-open' to sidebarbar navitem while hover in sidebarbar-icon-only menu
     const body = document.querySelector('body');
-    document.querySelectorAll('.sidebar .nav-item').forEach((el) => {
+    document.querySelectorAll('.sidebarbar .nav-item').forEach((el) => {
       el.addEventListener('mouseover', function () {
-        if (body.classList.contains('sidebar-icon-only')) {
+        if (body.classList.contains('sidebarbar-icon-only')) {
           el.classList.add('hover-open');
         }
       });
       el.addEventListener('mouseout', function () {
-        if (body.classList.contains('sidebar-icon-only')) {
+        if (body.classList.contains('sidebarbar-icon-only')) {
           el.classList.remove('hover-open');
         }
       });
     });
   }, []);
     return (
-      <nav className="sidebar sidebar-offcanvas" id="sidebar">
+      <nav className="sidebarbar sidebarbar-offcanvas" id="sidebarbar">
         <ul className="nav">
           <li className="nav-item nav-profile">
             <a href="!#" className="nav-link" onClick={evt =>evt.preventDefault()}>
@@ -117,12 +117,6 @@ function Sidebar () {
           </li>
           <li className='nav-item'>
             <Link className="nav-link" to="/admin/customer">
-              <span className="menu-title"><Trans>Quản lý nhập hàng</Trans></span>
-              <MdFormatListBulleted />
-            </Link>
-          </li>
-          <li className='nav-item'>
-            <Link className="nav-link" to="/admin/customer">
               <span className="menu-title"><Trans>Khách hàng</Trans></span>
               <MdFormatListBulleted />
             </Link>
@@ -169,17 +163,17 @@ function Sidebar () {
 
   function componentDidMount() {
     onRouteChanged();
-    // add class 'hover-open' to sidebar navitem while hover in sidebar-icon-only menu
+    // add class 'hover-open' to sidebarbar navitem while hover in sidebarbar-icon-only menu
     const body = document.querySelector('body');
-    document.querySelectorAll('.sidebar .nav-item').forEach((el) => {
+    document.querySelectorAll('.sidebarbar .nav-item').forEach((el) => {
       
       el.addEventListener('mouseover', function() {
-        if(body.classList.contains('sidebar-icon-only')) {
+        if(body.classList.contains('sidebarbar-icon-only')) {
           el.classList.add('hover-open');
         }
       });
       el.addEventListener('mouseout', function() {
-        if(body.classList.contains('sidebar-icon-only')) {
+        if(body.classList.contains('sidebarbar-icon-only')) {
           el.classList.remove('hover-open');
         }
       });

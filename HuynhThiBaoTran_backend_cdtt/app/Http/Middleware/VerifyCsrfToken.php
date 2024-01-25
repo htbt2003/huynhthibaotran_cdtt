@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        // 'http://huynhthibaotran_backend_cdtt.test/api/login'
     ];
 }

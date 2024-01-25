@@ -13,18 +13,10 @@ class ProductSale extends Model
 {
     use HasFactory;
     protected $table = 'db_productsale';
-    protected $with = ['product', 'category', 'brand'];
+    protected $with = ['product', 'product.category', 'product.brand'];
 
-    public function product(): BelongsTo
+    public function product()
     {
-        return $this->belongsTo(ProductStore::class,Product::class);
-    }
-    public function category(): HasOneThrough
-    {
-        return $this->hasOneThrough(Category::class, Product::class);
-    }
-    public function brand(): HasOneThrough
-    {
-        return $this->hasOneThrough(Brand::class, Product::class);
+        return $this->belongsTo(Product::class);
     }
 }

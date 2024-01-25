@@ -141,7 +141,7 @@ function PostList() {
                               </div>
                             </div>
                           </td>
-                          <td> {post.topic_id} </td>
+                          <td> {post.topic.name} </td>
                           <td> {post.id} </td>
                         </tr>
                       );

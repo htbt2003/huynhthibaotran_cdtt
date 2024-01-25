@@ -24,7 +24,7 @@ function TopicUpdate() {
         topic.append("status", status)
         TopicServices.update(topic, id)
         .then(function(result) {
-            alert(result.data.message);
+            alert(result.message);
             navigator("/admin/topic", {replace:true})
         });
     }
@@ -32,7 +32,7 @@ function TopicUpdate() {
           (async function(){
             await TopicServices.getAll()
             .then(function(result){
-                setTopics(result.data.topics)
+                setTopics(result.topics)
             });
           })();
     },[]);
@@ -40,7 +40,7 @@ function TopicUpdate() {
         (async function(){
           await TopicServices.getById(id)
           .then(function(result){
-              const tmp = result.data.topic
+              const tmp = result.topic
               setName(tmp.name);
               setMetakey(tmp.metakey);
               setMetadesc(tmp.metadesc);

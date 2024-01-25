@@ -3,67 +3,56 @@ import { useNavigate } from "react-router-dom";
 import OrderServices from '../../../services/OrderServices';
 import { connect } from "react-redux";
 import UserServices from '../../../services/UserServices';
+import {ClearCart} from './actions';
 
-function Checkout({  }) {
-    // const navigator = useNavigate();
-    // const [name, setName] = useState("");
-    // const [email, setEmail] = useState("");
-    // const [address, setAddress] = useState("");
-    // const [phone, setPhone] = useState("");
-    // const [note, setNote] = useState("");
-    // const [user, setUser] = useState([])
-    // let ListCart = [];
-    // let TotalCart = 0;
-    // Object.keys(items.Carts).forEach(function (item) {
-    //     TotalCart += items.Carts[item].quantity * items.Carts[item].price;
-    //     ListCart.push(items.Carts[item]);
-    // });
-    // function TotalPrice(price, tonggia) {
-    //     return Number(price * tonggia).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-    // }
-    // useEffect(function () {
-    //     (async function () {
-    //         await UserServices.getById(6)
-    //             .then(function (result) {
-    //                 setUser(result.data.user)
-    //             });
-    //     })();
-    // }, []);
-    // async function OrderStore(event) {
-    //     event.preventDefault();//không load lại trang
-    //     var order = new FormData();
-    //     order.append("user_id", 6)
-    //     if (name == "") {
-    //         order.append("name", user.name)
-    //     }
-    //     else {
-    //         order.append("name", name)
-    //     }
-    //     if (email == "") {
-    //         order.append("email", user.email)
-    //     }
-    //     else {
-    //         order.append("email", email)
-    //     }
-    //     if (address == "") {
-    //         order.append("address", user.address)
-    //     }
-    //     else {
-    //         order.append("address", address)
-    //     }
-    //     if (phone == "") {
-    //         order.append("phone", user.phone)
-    //     }
-    //     else {
-    //         order.append("phone", phone)
-    //     }
-    //     order.append("note", note)
-    //     order.append("status", 1)
-    //     await OrderServices.create(order)
-    //         .then(function (result) {
-    //             navigator("/xac-nhan", { replace: true })
-    //         });
-    // }
+function Checkout({ items, ClearCart}) {
+    const navigator = useNavigate();
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [address, setAddress] = useState("");
+    const [phone, setPhone] = useState("");
+    const [note, setNote] = useState("");
+    const [user, setUser] = useState([])
+    let ListCart = [];
+    let TotalCart = 0;
+    Object.keys(items.Carts).forEach(function (item) {
+        TotalCart += items.Carts[item].quantity * items.Carts[item].price;
+        ListCart.push(items.Carts[item]);
+    });
+//    console.log(ListCart)
+    useEffect(function () {
+        (async function () {
+            await UserServices.getById(6)
+                .then(function (result) {
+                    setUser(result.user)
+                });
+        })();
+    }, []);
+    async function OrderStore(event) {
+        event.preventDefault();//không load lại trang
+        var order = {
+            user_id: user.id,
+            name: name=="" ? user.name : name,
+            email: email=="" ? user.email : email,
+            address: address=="" ? user.address : address,
+            phone: phone=="" ? user.phone : phone,
+            note: note,
+        }
+        const data = {
+            order, 
+            ListCart
+        }
+        await OrderServices.doCheckout(data)
+            .then(function (result) {
+                if(result.status == true)
+                {
+                    ClearCart()
+                    alert(result.message)
+                    navigator("/", { replace: true })
+                }
+                console.log(result.order)
+            });
+    }
     return (
         <>
             {/*breadcrumbs area start*/}
@@ -159,7 +148,7 @@ function Checkout({  }) {
                                 data-parent="#accordion"
                             >
                                 <div className="checkout_info">
-                                    <form action="#">
+                                    <form onSubmit={OrderStore}>
                                         <input placeholder="Coupon code" type="text" />
                                         <input defaultValue="Apply coupon" type="submit" />
                                     </form>
@@ -171,26 +160,26 @@ function Checkout({  }) {
                 <div className="checkout_form">
                     <div className="row">
                         <div className="col-lg-6 col-md-6">
-                            <form action="#">
+                            <form onSubmit={OrderStore} method="post">
                                 <h3>Billing Details</h3>
                                 <div className="row">
-                                    <div className="col-lg-6 mb-30">
+                                    <div className="col-lg-12 mb-30">
                                         <label>
-                                            First Name <span>*</span>
+                                            Họ Tên <span>*</span>
                                         </label>
-                                        <input type="text" />
+                                        <input type="text" onChange={(e) => setName(e.target.value)} value={name} />
                                     </div>
-                                    <div className="col-lg-6 mb-30">
+                                    {/* <div className="col-lg-6 mb-30">
                                         <label>
                                             Last Name <span>*</span>
                                         </label>
                                         <input type="text" />
-                                    </div>
-                                    <div className="col-12 mb-30">
+                                    </div> */}
+                                    {/* <div className="col-12 mb-30">
                                         <label>Company Name</label>
                                         <input type="text" />
-                                    </div>
-                                    <div className="col-12 mb-30">
+                                    </div> */}
+                                    {/* <div className="col-12 mb-30">
                                         <label htmlFor="country">
                                             country <span>*</span>
                                         </label>
@@ -204,43 +193,43 @@ function Checkout({  }) {
                                             <option value={8}>Colombia</option>
                                             <option value={9}>Dominican Republic</option>
                                         </select>
-                                    </div>
+                                    </div> */}
                                     <div className="col-12 mb-30">
                                         <label>
-                                            Street address <span>*</span>
+                                            Địa chỉ <span>*</span>
                                         </label>
-                                        <input placeholder="House number and street name" type="text" />
+                                        <input placeholder="Số nhà hoặc tên đường" type="text" onChange={(e) => setAddress(e.target.value)} value={address} />
                                     </div>
-                                    <div className="col-12 mb-30">
+                                    {/* <div className="col-12 mb-30">
                                         <input
                                             placeholder="Apartment, suite, unit etc. (optional)"
                                             type="text"
                                         />
-                                    </div>
-                                    <div className="col-12 mb-30">
+                                    </div> */}
+                                    {/* <div className="col-12 mb-30">
                                         <label>
                                             Town / City <span>*</span>
                                         </label>
                                         <input type="text" />
-                                    </div>
-                                    <div className="col-12 mb-30">
+                                    </div> */}
+                                    {/* <div className="col-12 mb-30">
                                         <label>
                                             State / County <span>*</span>
                                         </label>
                                         <input type="text" />
-                                    </div>
+                                    </div> */}
                                     <div className="col-lg-6 mb-30">
                                         <label>
-                                            Phone<span>*</span>
+                                            Điện thoại<span>*</span>
                                         </label>
-                                        <input type="text" />
+                                        <input type="text" onChange={(e) => setPhone(e.target.value)} value={phone}/>
                                     </div>
                                     <div className="col-lg-6 mb-30">
                                         <label>
                                             {" "}
-                                            Email Address <span>*</span>
+                                            Email <span>*</span>
                                         </label>
-                                        <input type="text" />
+                                        <input type="text" onChange={(e) => setEmail(e.target.value)} value={email} />
                                     </div>
                                     <div className="col-12 mb-30">
                                         <input
@@ -369,60 +358,51 @@ function Checkout({  }) {
                                     </div>
                                     <div className="col-12">
                                         <div className="order-notes">
-                                            <label htmlFor="order_note">Order Notes</label>
+                                            <label htmlFor="order_note">Ghi chú</label>
                                             <textarea
                                                 id="order_note"
                                                 placeholder="Notes about your order, e.g. special notes for delivery."
                                                 defaultValue={""}
+                                                onChange={(e) => setNote(e.target.value)} value={note} 
                                             />
                                         </div>
                                     </div>
+                                    
                                 </div>
+                                <div className="order_button text-right">
+                                        <button type="submit">Đặt hàng</button>
+                                    </div>
                             </form>
                         </div>
                         <div className="col-lg-6 col-md-6">
-                            <form action="#">
+                            <form onSubmit={OrderStore} method="post">
                                 <h3>Your order</h3>
                                 <div className="order_table table-responsive mb-30">
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th>Product</th>
-                                                <th>Total</th>
+                                                <th>Sản phẩm</th>
+                                                <th>Tổng</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
+                                        {
+                                            ListCart.map((item,key)=>{
+                                                return(
+                                                    <tr key={key}>
                                                 <td>
                                                     {" "}
-                                                    Handbag fringilla <strong> × 2</strong>
+                                                    {item.name} <strong> × {item.quantity}</strong>
                                                 </td>
-                                                <td> $165.00</td>
+                                                <td> {(item.price*item.quantity).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
                                             </tr>
-                                            <tr>
-                                                <td>
-                                                    {" "}
-                                                    Handbag justo <strong> × 2</strong>
-                                                </td>
-                                                <td> $50.00</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    {" "}
-                                                    Handbag elit <strong> × 2</strong>
-                                                </td>
-                                                <td> $50.00</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    {" "}
-                                                    Handbag Rutrum <strong> × 1</strong>
-                                                </td>
-                                                <td> $50.00</td>
-                                            </tr>
+                                                )
+                                            })
+                                                
+                                        }
                                         </tbody>
                                         <tfoot>
-                                            <tr>
+                                            {/* <tr>
                                                 <th>Cart Subtotal</th>
                                                 <td>$215.00</td>
                                             </tr>
@@ -431,11 +411,11 @@ function Checkout({  }) {
                                                 <td>
                                                     <strong>$5.00</strong>
                                                 </td>
-                                            </tr>
+                                            </tr> */}
                                             <tr className="order_total">
-                                                <th>Order Total</th>
+                                                <th>Tổng hoá đơn</th>
                                                 <td>
-                                                    <strong>$220.00</strong>
+                                                    <strong>{TotalCart.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</strong>
                                                 </td>
                                             </tr>
                                         </tfoot>
@@ -499,7 +479,7 @@ function Checkout({  }) {
                                         </div>
                                     </div>
                                     <div className="order_button">
-                                        <button type="submit">Proceed to PayPal</button>
+                                        <button type="submit">Chọn phương thức thanh toán</button>
                                     </div>
                                 </div>
                             </form>
@@ -511,13 +491,12 @@ function Checkout({  }) {
         </>
     )
 }
-// const mapStateToProps = state => {
-//     //  console.log(state)
-//     return {
-//         items: state._todoProduct
-//     }
-// }
+const mapStateToProps = state => {
+    //  console.log(state)
+    return {
+        items: state._todoProduct
+    }
+}
 
-// export default connect(mapStateToProps)(Checkout);
-export default Checkout;
+export default connect(mapStateToProps, { ClearCart })(Checkout);
 

@@ -6,7 +6,7 @@ import Sidebar from './Sidebar';
 import Footer from './Footer';
 
 function LayoutAdmin () {
-
+    document.title = 'Admin';
     return (
       <div className="container-scroller">
         <Header/>

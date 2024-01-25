@@ -21,23 +21,11 @@ function remove(id)
 {
     return httpAxios.delete("page/destroy/" + id);
 }
-function getByType(limit, type)
-{
-    return httpAxios.get(`page_list/${limit}/${type}`);
-}
-function getpageAll(limit, page=1)
+function getPageAll(limit, page=1)
 {
     return httpAxios.get(`page_all/${limit}/${page}`);
 }
-function getpageByTopicId(limit, topic_id)
-{
-    return httpAxios.get(`page_topic/${limit}/${topic_id}`);
-}
-function getpageNew()
-{
-    return httpAxios.get("page_new");
-}
-function getTopicBySlug(slug)
+function getPageBySlug(slug)
 {
     return httpAxios.get(`page_detail/${slug}`);
 }
@@ -48,11 +36,8 @@ const PageServices = {
     create:create,
     update:update,
     remove:remove,
-    getByType:getByType,
-    getpageAll:getpageAll,
-    getpageByTopicId:getpageByTopicId,
-    getpageNew:getpageNew,
-    getTopicBySlug:getTopicBySlug,
+    getPageAll:getPageAll,
+    getPageBySlug:getPageBySlug,
     changeStatus:(id) =>
     {
         return httpAxios.get("page/change_status/" + id);

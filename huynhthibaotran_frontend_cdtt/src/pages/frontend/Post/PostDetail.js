@@ -5,21 +5,21 @@ import { urlImage } from "../../../config";
 import PostItem from "../../../components/PostItem";
 
 function PostDetail() {
-    // const [post, setPost] = useState([]);
-    // const [post_other, setProductOther] = useState([]);
-    // const { slug } = useParams();
-    // useEffect(function () {
-    //     (async function () {
-    //         try {
-    //             const result = await PostServices.getTopicBySlug(slug)
-    //             setPost(result.data.post)
-    //             setProductOther(result.data.post_other)
-    //         }
-    //         catch (error) {
-    //             console.log(error)
-    //         }
-    //     })();
-    // }, [slug]);
+    const [post, setPost] = useState([]);
+    const [post_other, setProductOther] = useState([]);
+    const { slug } = useParams();
+    useEffect(function () {
+        (async function () {
+            try {
+                const result = await PostServices.getTopicBySlug(slug)
+                setPost(result.post)
+                setProductOther(result.post_other)
+            }
+            catch (error) {
+                console.log(error)
+            }
+        })();
+    }, [slug]);
     return (
         <>
             {/*breadcrumbs area start*/}
@@ -52,15 +52,21 @@ function PostDetail() {
                                         <a href="#">WordPress</a>
                                     </span>
                                     <h2>
-                                        <a href="#">Post with Gallery</a>
+                                        <a href="#">{post.title}</a>
                                     </h2>
                                     <div className="blog__post">
                                         <ul>
-                                            <li className="post_author">Posts by : admin</li>
-                                            <li className="post_date"> Mar102015 </li>
+                                            <li className="post_author">Posts by : {post.created_by}</li>
+                                            <li className="post_date"> {post.created_at} </li>
                                         </ul>
                                     </div>
                                 </div>
+                                <div className="blog_thumb">
+                                    <a href="blog-details.html">
+                                        <img src={urlImage + "post/" + post.image} alt="" />
+                                    </a>
+                                </div>
+
                                 <div className="blog_active owl-carousel">
                                     <div className="blog_thumb blog__hover">
                                         <a href="blog-details.html">
@@ -85,12 +91,7 @@ function PostDetail() {
                                 </div>
                                 <div className="blog_entry_content">
                                     <p>
-                                        Donec vitae hendrerit arcu, sit amet faucibus nisl. Cras pretium
-                                        arcu ex. Aenean posuere libero eu augue condimentum rhoncus.
-                                        Praesent ornare tortor ac ante egestas hendrerit. Aliquam et
-                                        metus pharetra, bibendum massa nec, fermentum odio. Nunc id leo
-                                        ultrices, mollis ligula in, finibus tortor. Mauris eu dui ut
-                                        lectus fermentum eleifend
+                                    {post.detail}
                                     </p>
                                     <p>
                                         Proin consectetur aliquam odio nec fringilla. Sed interdum at
@@ -272,6 +273,24 @@ function PostDetail() {
                                     </form>
                                 </div>
                             </div>
+                            <div className="new_product_area mt-5" style={{marginRight:20}}>
+                                <div className="block_title">
+                                    <h3>Có thể bạn quan tâm</h3>
+                                </div>
+                                <div className="row">
+                                    <div className="row" >
+                                    {
+                                        (post_other && post_other.length > 0 && post_other.map(function (post, index) {
+                                            return (
+                                                <PostItem post={post} key={index}/>
+                                
+                                                );
+                                            }))
+                                    }
+                                    </div>
+                                </div>
+                                </div>
+
                         </div>
                     </div>
                     <div className="col-lg-3 col-md-8 offset-md-2 offset-lg-0">

@@ -6,6 +6,7 @@ export const ADD_CART = 'ADD_CART' ;
 export const UPDATE_CART = 'UPDATE_CART';
 export const DELETE_CART = 'DELETE_CART';
 export const CLEAR_CART = 'CLEAR_CART';
+export const GET_USER = 'GET_USER';
 
 /*GET_ALL_PRODUCT*/
 export function GetAllProduct(payload){
@@ -14,7 +15,13 @@ export function GetAllProduct(payload){
         payload
     }
 }
- 
+export function GetUser(payload){
+    return{
+        type:'GET_USER',
+        payload
+    }
+}
+
 /*GET NUMBER CART*/
 export function GetNumberCart(){
     return{

@@ -11,7 +11,7 @@ function MenuPageCreate(prop) {
   useEffect(function () {
     (async function () {
       const result = await PageServices.getAll();
-      setPages(result.pages.data);
+      setPages(result.pagesAll);
     })();
   }, []);
 
@@ -23,19 +23,32 @@ function MenuPageCreate(prop) {
       setSelectedPages(prevSelected => [...prevSelected, pageId]);
     }
   };
-
   function MenuPageStore(event) {
     event.preventDefault();//không load lại trang
-    const stringid = selectedPages.join('');
-    const position=prop.position
-    const listid=stringid
-    const type= "trang-don"
-    MenuServices.tao(position, type, listid)
+    const menu ={
+      position:prop.position,
+      listid:selectedPages,
+      type: "trang-don"
+    }
+    MenuServices.create(menu)
     .then((result) => {
       alert(result.message);
       navigator('/admin/menu', { replace: true });
     })
   }
+
+  // function MenuPageStore(event) {
+  //   event.preventDefault();//không load lại trang
+  //   const stringid = selectedPages.join('');
+  //   const position=prop.position
+  //   const listid=stringid
+  //   const type= "trang-don"
+  //   MenuServices.tao(position, type, listid)
+  //   .then((result) => {
+  //     alert(result.message);
+  //     navigator('/admin/menu', { replace: true });
+  //   })
+  // }
 
   return (
     <form method='post' onSubmit={MenuPageStore}>

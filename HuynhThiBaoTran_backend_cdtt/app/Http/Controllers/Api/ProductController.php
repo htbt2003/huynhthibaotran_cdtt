@@ -5,12 +5,102 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Brand;
+use App\Models\ProductStore;
 use App\Models\Category;
+use App\Models\OrderDetail;
+use App\Models\Post;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
+    function product_new($limit)
+    {
+        $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+        ->groupBy('product_id');
+        $products = Product::where('status', '=', 1)
+            ->joinSub($productstore, 'productstore', function($join){
+                $join->on('db_product.id', '=', 'productstore.product_id');
+            })
+            ->leftJoin('db_productsale', function ($join) {
+                $join->on('db_product.id', '=', 'db_productsale.product_id')
+                    ->where('db_productsale.date_begin', '<=', Carbon::now())
+                    ->where('db_productsale.date_end', '>=', Carbon::now());
+            })
+            ->orderBy('db_product.created_at', 'DESC')
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price', 'db_product.slug', 'db_productsale.price_sale')
+            -> limit($limit)
+            ->get();
+        return response()->json(
+            [
+                'status' => true,
+                'message' => 'Tải dữ liệu thành công',
+                'products' => $products
+            ],
+            200
+        );
+    }
+    function product_sale($limit)
+    {
+        $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+        ->groupBy('product_id');
+        $products = Product::where([
+                ['db_product.status', '=', 1],
+                ['db_productsale.date_begin', '<=', Carbon::now()],
+                ['db_productsale.date_end', '>=', Carbon::now()]
+            ])
+            ->joinSub($productstore, 'productstore', function($join){
+                $join->on('db_product.id', '=', 'productstore.product_id');
+            })
+            ->join('db_productsale', 'db_product.id', '=', 'db_productsale.product_id')
+            ->orderBy('db_product.created_at', 'DESC')
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price', 'db_product.slug', 'db_productsale.price_sale', 'db_productsale.date_begin', 'db_productsale.date_end')
+            -> limit($limit)
+            ->get();
+        return response()->json(
+            [
+                'status' => true,
+                'message' => 'Tải dữ liệu thành công',
+                'products' => $products
+            ],
+            200
+        );
+    }
+    function product_bestSeller($limit)
+    {
+        $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+            ->groupBy('product_id');
+        $orderdetail = OrderDetail::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+            ->groupBy('product_id');
+        $products = Product::where([
+                ['db_product.status', '=', 1],
+            ])
+            ->joinSub($productstore, 'productstore', function($join){
+                $join->on('db_product.id', '=', 'productstore.product_id');
+            })
+            ->joinSub($orderdetail, 'orderdetail', function($join){
+                $join->on('db_product.id', '=', 'orderdetail.product_id');
+            })
+            ->leftJoin('db_productsale', function ($join) {
+                $join->on('db_product.id', '=', 'db_productsale.product_id')
+                    ->where('db_productsale.date_begin', '<=', Carbon::now())
+                    ->where('db_productsale.date_end', '>=', Carbon::now());
+            })
+            ->orderBy('orderdetail.sum_qty', 'DESC')
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug', 'db_productsale.price_sale')
+            -> limit($limit)
+            ->get();
+        return response()->json(
+            [
+                'status' => true,
+                'message' => 'Tải dữ liệu thành công',
+                'products' => $products
+            ],
+            200
+        );
+    }
 
     public function product_home($limit, $category_id = 0)
     {
@@ -36,9 +126,22 @@ class ProductController extends Controller
                 }
             }
         }
+        $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+        ->groupBy('product_id');
         $products = Product::where('status', '=', 1)
-            ->whereIn('category_id', $listid)
-            ->orderBy('created_at', 'DESC')->limit($limit)->get();
+            ->joinSub($productstore, 'productstore', function($join){
+                $join->on('db_product.id', '=', 'productstore.product_id');
+            })
+            ->whereIn('db_product.category_id', $listid)
+            ->leftJoin('db_productsale', function ($join) {
+                $join->on('db_product.id', '=', 'db_productsale.product_id')
+                    ->where('db_productsale.date_begin', '<=', Carbon::now())
+                    ->where('db_productsale.date_end', '>=', Carbon::now());
+            })
+            ->orderBy('db_product.created_at', 'DESC')
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug', 'db_productsale.price_sale')
+            -> limit($limit)
+            ->get();
         if(count($products)>0){
             return response()->json(
                 [
@@ -61,24 +164,86 @@ class ProductController extends Controller
         }
     }
 
-    public function product_all($limit, $page = 1)
+    // public function product_all()
+    // {
+    //     $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+    //     ->groupBy('product_id');
+    //     $products = Product::where('status','=', 1)
+    //         ->joinSub($productstore, 'productstore', function($join){
+    //             $join->on('db_product.id', '=', 'productstore.product_id');
+    //         })
+    //         ->orderBy('db_product.created_at', 'DESC')
+    //         ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug')
+    //         ->paginate(8);
+    //     $total = $products->total();
+    //     return response()->json(
+    //         [
+    //             'status' => true,
+    //             'message' => 'Tải dữ liệu thành công',
+    //             'products' => $products,
+    //             'total' => $total,
+    //         ],
+    //         200
+    //     );
+    // }
+    public function product_allAction(Request $condition)
     {
-        $offset = ($page - 1) * $limit;
-        $products = Product::where('status', 1)
-            ->orderBy('created_at', 'DESC')
-            ->offset($offset)
-            ->limit($limit)
+        $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+            ->groupBy('product_id');
+        $query = Product::where('status','=', 1)
+            ->joinSub($productstore, 'productstore', function($join){
+                $join->on('db_product.id', '=', 'productstore.product_id');
+            })
+            ->leftJoin('db_productsale', function ($join) {
+                $join->on('db_product.id', '=', 'db_productsale.product_id')
+                    ->where('db_productsale.date_begin', '<=', Carbon::now())
+                    ->where('db_productsale.date_end', '>=', Carbon::now());
+            })
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug', 'db_product.created_at', 'db_productsale.price_sale');
+
+        if ($condition->input('brands') != null) {
+            $query->whereIn('brand_id', $condition->input('brands'));
+        }
+
+        if ($condition->input('categories') != null ) {
+            
+            $query->whereIn('category_id', $condition->input('categories'));
+        }
+
+        if ($condition->has('prices')) {
+            $query->whereBetween('price', [
+                $condition->prices['from'] ?? 0,
+                $condition->prices['to'] ?? 1000000,
+            ]);
+        }
+        if ($condition->has('sort')) {
+            $query->orderBy('price', $condition->input('sort'));
+        }
+        else{
+            $query->orderBy('created_at', 'DESC');
+        }
+        $products = $query->paginate(8);
+        $total = $products->total();
+        $categories = Category::where('status', '=', '1')
+            ->select('id', 'name')
+            ->get();
+        $brands = Brand::where('status', '=', '1')
+            ->select('id', 'name')
             ->get();
         return response()->json(
             [
                 'status' => true,
                 'message' => 'Tải dữ liệu thành công',
-                'products' => $products
+                'products' => $products,
+                'total' => $total,
+                'categories' => $categories,
+                'brands' => $brands,
             ],
             200
         );
     }
-    public function product_category($limit, $category_id)
+
+    public function product_category($category_id, Request $condition)
     {
         $listid = array();
         array_push($listid, $category_id + 0);
@@ -102,32 +267,81 @@ class ProductController extends Controller
                 }
             }
         }
-        $products = Product::where('status', 1)
+        $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+        ->groupBy('product_id');
+        $query = Product::where('status','=', 1)
+            ->joinSub($productstore, 'productstore', function($join){
+                $join->on('db_product.id', '=', 'productstore.product_id');
+            })
             ->whereIn('category_id', $listid)
-            ->orderBy('created_at', 'DESC')
-            ->limit($limit)
-            ->get();
+            ->leftJoin('db_productsale', function ($join) {
+                $join->on('db_product.id', '=', 'db_productsale.product_id')
+                    ->where('db_productsale.date_begin', '<=', Carbon::now())
+                    ->where('db_productsale.date_end', '>=', Carbon::now());
+            })
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug', 'db_product.created_at', 'db_product.created_at', 'db_productsale.price_sale');
+            
+        if ($condition->has('prices')) {
+            $query->whereBetween('price', [
+                $condition->prices['from'] ?? 0,
+                $condition->prices['to'] ?? 1000000,
+            ]);
+        }
+        if ($condition->has('sort')) {
+            $query->orderBy('price', $condition->input('sort'));
+        }
+        else{
+            $query->orderBy('created_at', 'DESC');
+        }
+        $products = $query->paginate(8);
+        $total = $products->total();
         return response()->json(
             [
                 'status' => true,
                 'message' => 'Tải dữ liệu thành công',
-                'products' => $products
+                'products' => $products,
+                'total' => $total,
             ],
             200
         );
+
     }
 
-    public function product_product($limit, $product_id)
+    public function product_brand($brand_id, Request $condition)
     {
-        $products = Product::where([['product_id', '=', $product_id], ['status', '=', 1]])
-            ->orderBy('created_at', 'DESC')
-            ->limit($limit)
-            ->get();
+        $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+        ->groupBy('product_id');
+        $query = Product::where([['brand_id', '=', $brand_id], ['status', '=', 1]])
+            ->joinSub($productstore, 'productstore', function($join){
+                $join->on('db_product.id', '=', 'productstore.product_id');
+            })
+            ->leftJoin('db_productsale', function ($join) {
+                $join->on('db_product.id', '=', 'db_productsale.product_id')
+                    ->where('db_productsale.date_begin', '<=', Carbon::now())
+                    ->where('db_productsale.date_end', '>=', Carbon::now());
+            })
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug', 'db_product.created_at', 'db_productsale.price_sale');
+            
+        if ($condition->has('prices')) {
+            $query->whereBetween('price', [
+                $condition->prices['from'] ?? 0,
+                $condition->prices['to'] ?? 1000000,
+            ]);
+        }
+        if ($condition->has('sort')) {
+            $query->orderBy('price', $condition->input('sort'));
+        }
+        else{
+            $query->orderBy('created_at', 'DESC');
+        }
+        $products = $query->paginate(8);
+        $total = $products->total();
         return response()->json(
             [
                 'status' => true,
                 'message' => 'Tải dữ liệu thành công',
-                'products' => $products
+                'products' => $products,
+                'total' => $total,
             ],
             200
         );
@@ -157,7 +371,14 @@ class ProductController extends Controller
             ['slug', '=', $slug],
             ['status', '=', 1]
         ];
-        $product = Product::where($args)->first();
+        $product = Product::where($args)
+            ->leftJoin('db_productsale', function ($join) {
+                $join->on('db_product.id', '=', 'db_productsale.product_id')
+                    ->where('db_productsale.date_begin', '<=', Carbon::now())
+                    ->where('db_productsale.date_end', '>=', Carbon::now());
+            })
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug', 'db_productsale.price_sale')
+            ->first();
         if($product == null){
             return response()->json(
                 ['status' => false, 
@@ -189,11 +410,22 @@ class ProductController extends Controller
                 }
             }
         }
-        $product_other = Product::where([['id', '!=', $product->id],['status', '=', 1]])
-        ->whereIn('category_id', $listid)
-        ->orderBy("created_at", 'DESC')
-        ->limit(8)
-        ->get();
+        $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+        ->groupBy('product_id');
+        $product_other = Product::where([['db_product.id', '!=', $product->id],['status', '=', 1]])
+            ->joinSub($productstore, 'productstore', function($join){
+                $join->on('db_product.id', '=', 'productstore.product_id');
+            })
+            ->whereIn('category_id', $listid)
+            ->leftJoin('db_productsale', function ($join) {
+                $join->on('db_product.id', '=', 'db_productsale.product_id')
+                    ->where('db_productsale.date_begin', '<=', Carbon::now())
+                    ->where('db_productsale.date_end', '>=', Carbon::now());
+            })
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug')
+            ->orderBy("db_product.created_at", 'DESC')
+            ->limit(8)
+            ->get();
             return response()->json(
                 ['status' => true, 
                  'message' => 'Tải dữ liệu thành công', 
@@ -204,34 +436,60 @@ class ProductController extends Controller
             );
         
     }
-    public function product_search($key)
+    public function search(Request $request)
     {
-        $args = [
-            ['name',"Like" , "%$key%"],
-            ['status', '=', 1]
-        ];
-        $products = Product::where($args)
-            ->get();
-        if(count($products) > 0){
+        
+            $search = $request->input('key');
+            $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+            ->groupBy('product_id');
+            $products = Product::where('status', '=', 1)
+                ->where(function ($query) use ($search) {
+                    $query->where('name', 'LIKE', "%$search%")
+                        ->orWhere('metadesc', 'LIKE', "%$search%");
+                })
+                ->orWhereHas('category', function ($query) use ($search) {
+                    $query->where('name', 'LIKE', "%$search%");
+                })
+                ->orWhereHas('brand', function ($query) use ($search) {
+                    $query->where('name', 'LIKE', "%$search%");
+                })
+                ->joinSub($productstore, 'productstore', function ($join) {
+                    $join->on('db_product.id', '=', 'productstore.product_id');
+                })
+                ->leftJoin('db_productsale', function ($join) {
+                    $join->on('db_product.id', '=', 'db_productsale.product_id')
+                        ->where('db_productsale.date_begin', '<=', Carbon::now())
+                        ->where('db_productsale.date_end', '>=', Carbon::now());
+                })
+                ->select('db_product.id', 'db_product.name', 'db_product.image', 'db_product.price', 'db_product.slug', 'db_productsale.price_sale')
+                ->orderBy('db_product.created_at', "DESC")
+                ->get();
+            
+            $posts = Post::where([['status', '=', 1], ['type', '=', 'post']])
+                ->where(function ($query) use ($search) {
+                    $query->where('title', 'LIKE', "%$search%")
+                        ->orWhere('metadesc', 'LIKE', "%$search%");
+                })
+                ->orWhereHas('topic', function ($query) use ($search) {
+                    $query->where('name', 'LIKE', "%$search%");
+                })
+                ->orderBy('created_at', "DESC")
+                ->get();
+            // $protoltal = $products->total(); 
+            // $posttoltal = $posts->total(); 
             return response()->json(
                 [
                     'status' => true,
                     'message' => 'Tải dữ liệu thành công',
-                    'products' => $products
+                    'products' => $products,
+                    'posts' => $posts,
+                    // 'protoltal' => $protoltal,
+                    // 'posttoltal' => $posttoltal,
+                    'search' => $search,
+
                 ],
                 200
-            );    
-        }
-        else{
-            return response()->json(
-                [
-                    'status' => false,
-                    'message' => 'Không có dữ liệu',
-                    'products' => null
-                ],
-                200
-            );    
-        }
+            );   
     }
     public function filter($category_id=0, $brand_id=0)
     {

@@ -31,7 +31,7 @@ function TopicCreate() {
           (async function(){
             await TopicServices.getAll()
             .then(function(result){
-                setTopics(result.topics)
+                setTopics(result.topicsAll)
             });
           })();
     },[]);

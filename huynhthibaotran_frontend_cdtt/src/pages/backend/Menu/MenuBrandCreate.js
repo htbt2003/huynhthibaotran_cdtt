@@ -10,7 +10,7 @@ function MenuBrandCreate(prop) {
     useEffect(function () {
         (async function () {
             const result = await BrandServices.getAll();
-            setBrands(result.brands.data);
+            setBrands(result.brandsAll);
         })();
     }, []);
     const handleCheckboxChange = (brandId) => {

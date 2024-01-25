@@ -39,7 +39,7 @@ function CategoryCreate() {
   useEffect(function () {
     (async function () {
       const result = await CategoryServices.getAll();
-      setCategories(result.categories);
+      setCategories(result.categoriesAll);
     })();
   }, []);
 

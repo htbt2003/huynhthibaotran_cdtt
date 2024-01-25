@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -56,8 +58,8 @@ class UserController extends Controller
         ->select('id', 'name', 'phone', 'email', 'image', 'status')
         ->paginate(5);
         $total = User::where([['status', '!=', 0], ['roles', '=', 'user']])->count();
-        $publish = Banner::where([['status', '=', 1], ['roles', '=', 'user']])->count();
-        $trash = Banner::where([['status', '=', 0], ['roles', '=', 'user']]->count();
+        $publish = User::where([['status', '=', 1], ['roles', '=', 'user']])->count();
+        $trash = User::where([['status', '=', 0], ['roles', '=', 'user']])->count();
         return response()->json(
             [
                 'status' => true, 
@@ -78,8 +80,8 @@ class UserController extends Controller
         ->select('id', 'name', 'phone', 'email', 'image', 'status')
         ->paginate(5);
         $total = User::where([['status', '!=', 0], ['roles', '=', 'user']])->count();
-        $publish = Banner::where('status', '=', 1)->count();
-        $trash = Banner::where('status', '=', 0)->count();
+        $publish = User::where('status', '=', 1)->count();
+        $trash = User::where('status', '=', 0)->count();
         return response()->json(
             [
                 'status' => true, 
@@ -112,7 +114,6 @@ class UserController extends Controller
         $user->username = $request->username; //form
         $user->password = $request->password; //form
         $user->address = $request->address; //form
-        $slug = Str::of($request->name)->slug('-');
         //upload image
         $files = $request->image;
         if ($files != null) {
@@ -307,13 +308,91 @@ class UserController extends Controller
             );    
         }
     }
-    public function login($email, $password){
-        $user = User::where([['email', '=', $email], ['password', '=', $password]])->first();
-        if($user != null){
-            return response()->json(['message' => 'Đăng nhập thành công', 'status' => true, 'user' => $user]);
-        }else{
-            return response()->json(['message' => 'Sai email hoặc mật khẩu', 'status' => false, 'user' => null]);
+    // public function loginNNNNN($email, $password){
+    //     $user = User::where([['email', '=', $email], ['password', '=', $password]])->first();
+    //     if($user != null){
+    //         return response()->json(['message' => 'Đăng nhập thành công', 'status' => true, 'user' => $user]);
+    //     }else{
+    //         return response()->json(['message' => 'Sai email hoặc mật khẩu', 'status' => false, 'user' => null]);
+    //     }
+    // }
+    public function register(Request $request)
+    {
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'email' => 'required|email|unique:users,email',
+        //     'password' => 'required|string|min:6',
+        // ]);
+
+        // $user = new User([
+        //     'name' => $request->input('name'),
+        //     'email' => $request->input('email'),
+        //     'password' => Hash::make($request->input('password')),
+        // ]);
+        $user = new User();
+        $user->name = $request->name; //form
+        $user->gender = $request->gender; //form
+        $user->email = $request->email; //form
+        $user->phone = $request->phone; //form
+        $user->username = $request->username; //form
+        $user->password = Hash::make($request->password); //form
+        $user->address = $request->address; //form
+        $user->roles = $request->roles; //form
+        $user->image = $request->image; 
+        $user->created_at = date('Y-m-d H:i:s');
+        $user->created_by = 1;
+        $user->status = $request->status; //form
+        $user->save();
+
+        return response()->json(
+            [
+                'status' => true,
+                'message' => 'Đăng ký thành công',
+                'user' => $user
+            ],
+            201
+        );    
+    }
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            if($user->roles == 'admin')
+                {
+                    $token = $user->createToken($user->email.'_AdminToken',['server:admin'])->plainTextToken;
+                }
+                else
+                {
+                    $token = $user->createToken($user->email.'_Token', [''])->plainTextToken;
+                }
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Đăng nhập thành công',
+                    'user' => $user,
+                    'token' => $token,
+                ],
+                200
+            );    
+        } 
+        else {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Sai mật khẩu hoặc password',
+                    'user' => null,
+                    'token' => null
+                ], 401);
         }
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+
+        return response()->json(['message' => 'Đăng xuất thành công']);
     }
 
 }

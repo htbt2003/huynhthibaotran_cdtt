@@ -25,13 +25,13 @@ function getByType(limit, type)
 {
     return httpAxios.get(`post_list/${limit}/${type}`);
 }
-function getPostAll(limit, page=1)
+function getPostAll(page)
 {
-    return httpAxios.get(`post_all/${limit}/${page}`);
+    return httpAxios.get(`post_all?page=${page}`);
 }
-function getPostByTopicId(limit, topic_id)
+function getPostByTopicId(page, topic_id)
 {
-    return httpAxios.get(`post_topic/${limit}/${topic_id}`);
+    return httpAxios.get(`post_topic/${topic_id}?page=${page}`);
 }
 function getPostNew()
 {

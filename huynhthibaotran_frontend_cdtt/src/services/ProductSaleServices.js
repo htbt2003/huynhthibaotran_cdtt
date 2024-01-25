@@ -1,25 +1,25 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll(page=1)
+function getAll(page)
 {
-    return httpAxios.get(`product/index?page=${page}`);
+    return httpAxios.get(`productsale/index?page=${page}`);
 }
 function getById(id)
 {
-    return httpAxios.get("product/show/" + id);
+    return httpAxios.get("productsale/show/" + id);
 }
 function create(data)
 {
-    return httpAxios.post("product/store", data);
+    return httpAxios.post("productsale/store", data);
 }
 function update(data, id)
 {
-    return httpAxios.post("product/update/" + id, data);
+    return httpAxios.post("productsale/update/" + id, data);
 }
 function remove(id)
 {
-    return httpAxios.delete("product/destroy/" + id);
+    return httpAxios.delete("productsale/destroy/" + id);
 }
 function getProductHome(limit, category_id)
 {
@@ -46,7 +46,7 @@ function getProductSearch(key)
     return httpAxios.get(`product_search/${key}`);
 }
 
-const ProductSaleService = {
+const ProductSaleServices = {
     getAll:getAll,
     getById:getById,
     create:create,
@@ -58,9 +58,5 @@ const ProductSaleService = {
     getProductByCategoryId:getProductByCategoryId,
     getProductByBrandId:getProductByBrandId,
     getProductSearch:getProductSearch,
-    changeStatus:(id) =>
-    {
-        return httpAxios.get("product/change_status/" + id);
-    },
 }
-export default ProductSaleService;
+export default ProductSaleServices;

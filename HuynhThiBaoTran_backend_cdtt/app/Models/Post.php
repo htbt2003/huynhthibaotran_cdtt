@@ -12,7 +12,7 @@ class Post extends Model
     protected $table = 'db_post';
     protected $with = ['topic'];
 
-    public function product(): BelongsTo
+    public function topic()
     {
         return $this->belongsTo(Topic::class);
     }

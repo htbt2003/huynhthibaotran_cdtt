@@ -74,16 +74,9 @@ import PageTrashList from "../pages/backend/Page/PageTrashList";
 import BannerTrashList from "../pages/backend/Banner/BannerTrashList";
 import TopicTrashList from "../pages/backend/Topic/TopicTrashList";
 import UserTrashList from "../pages/backend/User/UserTrashList";
+import ProductStoreList from "../pages/backend/ProductStore/ProductStoreList";
+import ProductSaleList from "../pages/backend/ProductSale/ProductSaleList";
 
-// import ProductImportList from '../pages/backend/ProductImport/ProductImportList';
-// import ProductImportShow from '../pages/backend/ProductImport/ProductImportShow';
-// import ProductImportCreate from '../pages/backend/ProductImport/ProductImportCreate';
-// import ProductImportUpdate from '../pages/backend/ProductImport/ProductImportUpdate';
-
-// import ProductSaleList from '../pages/backend/ProductSale/ProductSaleList';
-// import ProductSaleShow from '../pages/backend/ProductSale/ProductSaleShow';
-// import ProductSaleCreate from '../pages/backend/ProductSale/ProductSaleCreate';
-// import ProductSaleUpdate from '../pages/backend/ProductSale/ProductSaleUpdate';
 
 const RouterPrivate = [
   { path: "/admin", component: Dashboard },
@@ -106,16 +99,9 @@ const RouterPrivate = [
   { path: "/admin/product/create", component: ProductCreate },
   { path: "/admin/product/update/:id", component: ProductUpdate },
 
-// { path: "/admin/ProductImport", component:ProductImportList },
-// { path: "/admin/ProductImport/show/:id", component: ProductImportShow },
-// { path: "/admin/ProductImport/create", component: ProductImportCreate },
-// { path: "/admin/ProductImport/update/:id", component: ProductImportUpdate },
+{ path: "/admin/ProductStore", component:ProductStoreList },
 
-// { path: "/admin/productSale", component: ProductSaleList },
-// { path: "/admin/productSale/show/:id", component: ProductSaleShow },
-// { path: "/admin/productSale/create", component: ProductSaleCreate },
-// { path: "/admin/productSale/update/:id", component: ProductSaleUpdate },
-
+{ path: "/admin/productSale", component: ProductSaleList },
   { path: "/admin/contact", component: ContactList },
   { path: "/admin/contact/trash", component: ContactTrashList },
   { path: "/admin/contact/show/:id", component: ContactShow },

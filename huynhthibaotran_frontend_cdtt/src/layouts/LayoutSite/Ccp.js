@@ -14,6 +14,20 @@ function Ccp() {
     // }, []);
     return (
     <>
+
+                 {/* {
+                    products ? 
+                    (products && products.map(function(product, index){
+                        return <ProductItem key={index} product={product}/>
+                    }))
+                    :
+                    (
+                        <div className=" mt-5 text-center">
+                            <img src='../../assest/img/search.png' alt="..."/>
+                            <h3>Không tìm thấy kết quả nào</h3>
+                        </div>
+                    )
+                } */}
           {/*layere categorie"*/}
           <div className="sidebar_widget shop_c">
         <div className="categorie__titile">

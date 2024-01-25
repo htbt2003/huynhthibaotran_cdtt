@@ -4,22 +4,24 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ProductStore;
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class ProductStoreController extends Controller
 {
     public function index()
     {
-        $products = ProductStore::where('status', '!=', 0)
-            ->orderBy('created_at', 'DESC')
-            ->select('id', 'product_id', 'status')
-            ->paginate(5);
-        $total = ProductStore::where('status', '!=', 0)->count();
+        $prostores = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'), DB::raw('AVG(price_root) as avg_price'))
+            ->groupBy('product_id',)
+            // ->orderBy('created_at', 'DESC')
+            ->paginate(5);        
+        $total = $prostores->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
-                'products' => $products,
+                'prostores' => $prostores,
                 'total' => $total,
             ],
             200
@@ -27,14 +29,14 @@ class ProductStoreController extends Controller
     }
     public function show($id)
     {
-        $product = ProductStore::find($id);
-        if($product == null)//Luuu vao CSDL
+        $prostore = ProductStore::find($id);
+        if($prostore == null)//Luuu vao CSDL
         {
             return response()->json(
                 [
                     'status' => false, 
                     'message' => 'Không tìm thấy dữ liệu', 
-                    'product' => null
+                    'prostore' => null
                 ],
                 404
             );    
@@ -44,7 +46,7 @@ class ProductStoreController extends Controller
                 [   
                     'status' => true, 
                     'message' => 'Tải dữ liệu thành công', 
-                    'product' => $product
+                    'prostore' => $prostore
                 ],
                 200
             );    
@@ -53,36 +55,19 @@ class ProductStoreController extends Controller
 
     public function store(Request $request)
     {
-        $product = new Product();
-        $product->category_id = $request->category_id; //form
-        $product->brand_id = $request->brand_id; //form
-        $product->name = $request->name; //form
-        $product->slug = Str::of($request->name)->slug('-');
-        $product->price = $request->price; //form
-        //upload image
-        $files = $request->image;
-        if ($files != null) {
-            $extension = $files->getClientOriginalExtension();
-            if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = date('YmdHis') . '.' . $extension;
-                $product->image = $filename;
-                $files->move(public_path('images/product'), $filename);
-            }
-        }
-        //
-        $product->detail = $request->detail; //form
-        $product->metakey = $request->metakey; //form
-        $product->metadesc = $request->metadesc; //form
-        $product->created_at = date('Y-m-d H:i:s');
-        $product->created_by = 1;
-        $product->status = $request->status; //form
-        if($product->save())//Luuu vao CSDL
+        $prostore = new ProductStore();
+        $prostore->product_id = $request->product_id;
+        $prostore->price_root = $request->price_root; //form
+        $prostore->qty = $request->qty; //form
+        $prostore->created_at = date('Y-m-d H:i:s');
+        $prostore->created_by = 1;
+        if($prostore->save())//Luuu vao CSDL
         {
             return response()->json(
                 [
                     'status' => true, 
                     'message' => 'Thành công', 
-                    'product' => $product
+                    'prostore' => $prostore
                 ],
                 201
             );    
@@ -93,7 +78,7 @@ class ProductStoreController extends Controller
                 [
                     'status' => false, 
                     'message' => 'Thêm không thành công', 
-                    'product' => null
+                    'prostore' => null
                 ],
                 422
             );
@@ -101,47 +86,30 @@ class ProductStoreController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $product = ProductStore::find($id);
-        if($product == null)//Luuu vao CSDL
+        $prostore = ProductStore::find($id);
+        if($prostore == null)//Luuu vao CSDL
         {
             return response()->json(
                 [
                     'status' => false, 
                     'message' => 'Không tìm thấy dữ liệu', 
-                    'product' => null
+                    'prostore' => null
                 ],
                 404
             );    
         }
-        $product->category_id = $request->category_id; //form
-        $product->brand_id = $request->brand_id; //form
-        $product->name = $request->name; //form
-        $product->slug = Str::of($request->name)->slug('-');
-        $product->price = $request->price; //form
-        //upload image
-        $files = $request->image;
-        if ($files != null) {
-            $extension = $files->getClientOriginalExtension();
-            if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = date('YmdHis') . '.' . $extension;
-                $product->image = $filename;
-                $files->move(public_path('images/product'), $filename);
-            }
-        }
-        //
-        $product->detail = $request->detail; //form
-        $product->metakey = $request->metakey; //form
-        $product->metadesc = $request->metadesc; //form
-        $product->updated_at = date('Y-m-d H:i:s');
-        $product->updated_by = 1;
-        $product->status = $request->status; //form
-        if($product->save())//Luuu vao CSDL
+        $prostore->pty = $request->pty; //form
+        $prostore->price_root = $request->price_root; //form
+        $prostore->updated_at = date('Y-m-d H:i:s');
+        $prostore->updated_by = 1;
+        $prostore->status = $request->status; //form
+        if($prostore->save())//Luuu vao CSDL
         {
             return response()->json(
                 [
                     'status' => true, 
                     'message' => 'Cập nhật dữ liệu thành công', 
-                    'product' => $product
+                    'prostore' => $prostore
                 ],
                 201
             );    
@@ -152,11 +120,47 @@ class ProductStoreController extends Controller
                 [
                     'status' => false, 
                     'message' => 'Cập nhật dữ liệu không thành công', 
-                    'product' => null
+                    'prostore' => null
                 ],
                 422
             );
         }
     }
-    
+    public function destroy($id)
+    {
+        $prostore = ProductStore::findOrFail($id);
+        if($prostore == null)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'prostore' => null
+                ],
+                404 
+            );    
+        }
+        if($prostore->delete())
+        {
+            return response()->json(
+                [
+                    'status' => true,
+                    'message' => 'Xóa thành công',
+                    'prostore' => $prostore
+                ],
+                200
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Xóa không thành công',
+                    'prostore' => null
+                ],
+                422
+            );    
+        }    
+    }   
 }

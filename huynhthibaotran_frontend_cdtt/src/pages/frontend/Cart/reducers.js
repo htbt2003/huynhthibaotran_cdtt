@@ -1,12 +1,34 @@
 import { combineReducers } from 'redux';
-import {GET_ALL_PRODUCT,GET_NUMBER_CART,ADD_CART, DECREASE_QUANTITY, INCREASE_QUANTITY, DELETE_CART, CLEAR_CART, UPDATE_CART} from  './actions';
- 
+import {GET_USER,GET_ALL_PRODUCT,GET_NUMBER_CART,ADD_CART, DECREASE_QUANTITY, INCREASE_QUANTITY, DELETE_CART, CLEAR_CART, UPDATE_CART} from  './actions';
+
+const initUser = {
+    user:null,
+}
+
 const initProduct = {
     numberCart:0,
     Carts:[],
     _products:[]
 }
- 
+
+function todoUser(state = initUser,action){
+    switch(action.type){
+        case GET_USER:
+            return{
+                ...state,
+                user: {
+                    id:action.payload.id,
+                    name:action.payload.name,
+                    image:action.payload.image,
+                    email:action.payload.email,
+                    phone:action.payload.phone    
+                }
+            }
+        default:
+            return state;
+    }
+}
+
 function todoProduct(state = initProduct,action){
     switch(action.type){
         case GET_ALL_PRODUCT:
@@ -94,6 +116,7 @@ function todoProduct(state = initProduct,action){
     }
 }
 const ShopApp = combineReducers({
-    _todoProduct:todoProduct
+    _todoProduct:todoProduct,
+    _todoUser:todoUser
 });
 export default ShopApp;

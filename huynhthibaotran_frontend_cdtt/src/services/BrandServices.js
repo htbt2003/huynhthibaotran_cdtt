@@ -2,6 +2,10 @@ import httpAxios from "../httpAxios";
 
 
 const BrandService = {
+    getBrandBySlug: (slug) =>
+    {
+        return httpAxios.get("brand/show/"+slug);
+    },
     getAll: (page) =>{
         return httpAxios.get(`brand/index?page=${page}`);
     },
@@ -36,6 +40,10 @@ const BrandService = {
     trash:(page) =>
     {
         return httpAxios.get(`brand/trash?page=${page}`);
+    },
+    brandHome:(limit) =>
+    {
+        return httpAxios.get(`brand_home/${limit}`);
     }
 };
 export default BrandService;

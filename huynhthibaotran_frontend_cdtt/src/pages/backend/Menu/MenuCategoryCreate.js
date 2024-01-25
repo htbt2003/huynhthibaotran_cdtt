@@ -10,9 +10,10 @@ function MenuCategoryCreate(prop) {
   useEffect(function () {
     (async function () {
       const result = await CategoryServices.getAll();
-      setCategories(result.categories.data);
+      setCategories(result.categoriesAll);
     })();
   }, []);
+  console.log(categories)
   const handleCheckboxChange = (categoryId) => {
     const isSelected = selectedCategories.includes(categoryId);
     if (isSelected) {

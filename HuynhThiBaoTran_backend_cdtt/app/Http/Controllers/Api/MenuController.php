@@ -144,6 +144,10 @@ class MenuController extends Controller
             ->orderBy('created_at', 'DESC')
             ->select('id', 'name', 'link', 'position', 'status' )
             ->paginate(5);
+        $menusAll = Menu::where('status', '!=', 0)
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'name', 'link', 'position', 'status' )
+            ->get(0);
         $categoryies = Menu::where([['type', '=', 'danh-muc-san-pham'],['status', '!=', 0]])
             ->orderBy('created_at', 'DESC')
             ->select('id', 'name', 'link', 'position', 'status' )
@@ -172,6 +176,7 @@ class MenuController extends Controller
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'menus' => $menus,
+                'menusAll' => $menusAll,
                 'categoryies' => $categoryies,
                 'brands' => $brands,
                 'pages' => $pages,
@@ -205,7 +210,7 @@ class MenuController extends Controller
                     $category = Category::find($id);
                     $menu = new Menu();
                     $menu->name = $category->name;
-                    $menu->link = 'danh-muc-san-pham/'.$category->slug; 
+                    $menu->link = '/danh-muc-san-pham/'.$category->slug; 
                     $menu->parent_id = 0;
                     $menu->type = $request->type;
                     $menu->created_at = date('Y-m-d H:i:s');
@@ -222,7 +227,7 @@ class MenuController extends Controller
                     $brand = Brand::find($id);
                     $menu = new Menu();
                     $menu->name = $brand->name;
-                    $menu->link = 'thuong-hieu/'.$brand->slug; 
+                    $menu->link = '/thuong-hieu/'.$brand->slug; 
                     $menu->parent_id = 0;
                     $menu->type = $request->type;
                     $menu->created_at = date('Y-m-d H:i:s');
@@ -239,7 +244,7 @@ class MenuController extends Controller
                         $topic = Topic::find($id);
                         $menu = new Menu();
                         $menu->name = $brand->name;
-                        $menu->link = 'chu-de-bai-viet/'.$topic->slug; 
+                        $menu->link = '/chu-de-bai-viet/'.$topic->slug; 
                         $menu->parent_id = 0;
                         $menu->type = $request->type;
                         $menu->created_at = date('Y-m-d H:i:s');
@@ -256,7 +261,7 @@ class MenuController extends Controller
                         $page = Post::find($id);
                         $menu = new Menu();
                         $menu->name = $brand->name;
-                        $menu->link = 'trang-don/'.$page->slug; 
+                        $menu->link = '/trang-don/'.$page->slug; 
                         $menu->parent_id = 0;
                         $menu->type = $request->type;
                         $menu->created_at = date('Y-m-d H:i:s');
@@ -293,104 +298,104 @@ class MenuController extends Controller
             );
         }
     }
-    // public function tao($position, $type, $listid)
-    // {
-    //     $flag = true;
-    //     switch ($type) {
-    //         case "danh-muc-san-pham":
-    //             for ($i = 0; $i < strlen($listid); $i++)
-    //             {
-    //                 $category = Category::find($listid[$i]);
-    //                 $menu = new Menu();
-    //                 $menu->name = $category->name;
-    //                 $menu->link = 'danh-muc-san-pham/'.$category->slug; 
-    //                 $menu->parent_id = 0;
-    //                 $menu->type = $type;
-    //                 $menu->created_at = date('Y-m-d H:i:s');
-    //                 $menu->created_by = 1;
-    //                 $menu->status = 2;
-    //                 $menu->position = $position;    
-    //                 $menu->save();      
-    //             }
-    //             $flag = true;
-    //             break;
-    //         case "thuong-hieu":
-    //             for ($i = 0; $i < strlen($listid); $i++)
-    //             {
-    //                 $brand = Brand::find($listid[$i]);
-    //                 $menu = new Menu();
-    //                 $menu->name = $brand->name;
-    //                 $menu->link = 'thuong-hieu/'.$brand->slug; 
-    //                 $menu->parent_id = 0;
-    //                 $menu->type = $type;
-    //                 $menu->created_at = date('Y-m-d H:i:s');
-    //                 $menu->created_by = 1;
-    //                 $menu->status = 2;
-    //                 $menu->position = $position;    
-    //                 $menu->save();      
-    //             }
-    //             $flag = true;
-    //             break;
-    //             case "chu-de-bai-viet":
-    //                 for ($i = 0; $i < strlen($listid); $i++)
-    //                 {
-    //                     $topic = Topic::find($listid[$i]);
-    //                     $menu = new Menu();
-    //                     $menu->name = $topic->name;
-    //                     $menu->link = 'chu-de-bai-viet/'.$topic->slug; 
-    //                     $menu->parent_id = 0;
-    //                     $menu->type = $type;
-    //                     $menu->created_at = date('Y-m-d H:i:s');
-    //                     $menu->created_by = 1;
-    //                     $menu->status = 2;
-    //                     $menu->position = $position;    
-    //                     $menu->save();      
-    //                 }
-    //                 $flag = true;
-    //                 break;
-    //             case "trang-don":
-    //                 for ($i = 0; $i < strlen($listid); $i++)
-    //                 {
-    //                     $page = Post::find($listid[$i]);
-    //                     $menu = new Menu();
-    //                     $menu->name = $page->title;
-    //                     $menu->link = 'trang-don/'.$page->slug; 
-    //                     $menu->parent_id = 0;
-    //                     $menu->type = $type;
-    //                     $menu->created_at = date('Y-m-d H:i:s');
-    //                     $menu->created_by = 1;
-    //                     $menu->status = 2;
-    //                     $menu->position = $position;    
-    //                     $menu->save();      
-    //                 }
-    //                 $flag = true;
-    //                 break;
-    //     }
-    //     if($flag)//Luuu vao CSDL
-    //     {
-    //         return response()->json(
-    //             [
-    //                 'status' => true, 
-    //                 'message' => 'Thêm thành công', 
-    //                 'type' => $type, 
-    //                 'listid' => $listid, 
-    //             ],
-    //             201
-    //         );    
-    //     }
-    //     else
-    //     {
-    //         return response()->json(
-    //             [
-    //                 'status' => false, 
-    //                 'message' => 'Không thành công', 
-    //                 'type' => $type, 
-    //                 'listid' => $listid, 
-    //             ],
-    //             422
-    //         );
-    //     }
-    // }
+    public function tao($position, $type, $listid)
+    {
+        $flag = true;
+        switch ($type) {
+            case "danh-muc-san-pham":
+                for ($i = 0; $i < strlen($listid); $i++)
+                {
+                    $category = Category::find($listid[$i]);
+                    $menu = new Menu();
+                    $menu->name = $category->name;
+                    $menu->link = 'danh-muc-san-pham/'.$category->slug; 
+                    $menu->parent_id = 0;
+                    $menu->type = $type;
+                    $menu->created_at = date('Y-m-d H:i:s');
+                    $menu->created_by = 1;
+                    $menu->status = 2;
+                    $menu->position = $position;    
+                    $menu->save();      
+                }
+                $flag = true;
+                break;
+            case "thuong-hieu":
+                for ($i = 0; $i < strlen($listid); $i++)
+                {
+                    $brand = Brand::find($listid[$i]);
+                    $menu = new Menu();
+                    $menu->name = $brand->name;
+                    $menu->link = 'thuong-hieu/'.$brand->slug; 
+                    $menu->parent_id = 0;
+                    $menu->type = $type;
+                    $menu->created_at = date('Y-m-d H:i:s');
+                    $menu->created_by = 1;
+                    $menu->status = 2;
+                    $menu->position = $position;    
+                    $menu->save();      
+                }
+                $flag = true;
+                break;
+                case "chu-de-bai-viet":
+                    for ($i = 0; $i < strlen($listid); $i++)
+                    {
+                        $topic = Topic::find($listid[$i]);
+                        $menu = new Menu();
+                        $menu->name = $topic->name;
+                        $menu->link = 'chu-de-bai-viet/'.$topic->slug; 
+                        $menu->parent_id = 0;
+                        $menu->type = $type;
+                        $menu->created_at = date('Y-m-d H:i:s');
+                        $menu->created_by = 1;
+                        $menu->status = 2;
+                        $menu->position = $position;    
+                        $menu->save();      
+                    }
+                    $flag = true;
+                    break;
+                case "trang-don":
+                    for ($i = 0; $i < strlen($listid); $i++)
+                    {
+                        $page = Post::find($listid[$i]);
+                        $menu = new Menu();
+                        $menu->name = $page->title;
+                        $menu->link = 'trang-don/'.$page->slug; 
+                        $menu->parent_id = 0;
+                        $menu->type = $type;
+                        $menu->created_at = date('Y-m-d H:i:s');
+                        $menu->created_by = 1;
+                        $menu->status = 2;
+                        $menu->position = $position;    
+                        $menu->save();      
+                    }
+                    $flag = true;
+                    break;
+        }
+        if($flag)//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Thêm thành công', 
+                    'type' => $type, 
+                    'listid' => $listid, 
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không thành công', 
+                    'type' => $type, 
+                    'listid' => $listid, 
+                ],
+                422
+            );
+        }
+    }
     
     public function update(Request $request, $id)
     {

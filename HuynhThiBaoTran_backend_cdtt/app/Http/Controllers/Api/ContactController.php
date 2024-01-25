@@ -102,7 +102,7 @@ class ContactController extends Controller
     public function store(Request $request)
     {
         $contact = new Contact();
-        $contact->user_id = 1; //form
+        $contact->user_id = $request->user_id; //form
         $contact->name = $request->name; //form
         $contact->email = $request->email; //form
         $contact->phone = $request->phone; //form

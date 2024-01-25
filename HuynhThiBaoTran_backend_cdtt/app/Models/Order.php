@@ -12,7 +12,7 @@ class Order extends Model
     protected $table = 'db_order';
     protected $with = ['user'];
 
-    public function product(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }

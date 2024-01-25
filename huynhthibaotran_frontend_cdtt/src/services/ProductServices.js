@@ -25,25 +25,37 @@ function getProductHome(limit, category_id)
 {
     return httpAxios.get(`product_home/${limit}/${category_id}`);
 }
-function getProductAll(limit, page=1)
+function getProductAll(page, filters)
 {
-    return httpAxios.get(`product_all/${limit}/${page}`);
+    return httpAxios.get(`product_allAction?page=${page}`, {
+        params: {
+          ...filters,
+        },
+      });
 }
 function getProductBySlug(slug)
 {
     return httpAxios.get(`product_detail/${slug}`);
 }
-function getProductByCategoryId(limit, category_id)
+function getProductByCategoryId(page, category_id, filters) 
 {
-    return httpAxios.get(`product_category/${limit}/${category_id}`);
+    return httpAxios.get(`product_category/${category_id}?page=${page}`, {
+        params: {
+          ...filters,
+        },
+      });
 }
-function getProductByBrandId(limit, brand_id)
+function getProductByBrandId(page, brand_id, filters)
 {
-    return httpAxios.get(`product_brand/${limit}/${brand_id}`);
+    return httpAxios.get(`product_brand/${brand_id}?page=${page}`, {
+        params: {
+          ...filters,
+        },
+      });
 }
-function getProductSearch(key)
+function getSearch(key)
 {
-    return httpAxios.get(`product_search/${key}`);
+    return httpAxios.get(`search?key=${key}`);
 }
 
 const ProductService = {
@@ -57,7 +69,7 @@ const ProductService = {
     getProductBySlug:getProductBySlug,
     getProductByCategoryId:getProductByCategoryId,
     getProductByBrandId:getProductByBrandId,
-    getProductSearch:getProductSearch,
+    getSearch:getSearch,
     changeStatus:(id) =>
     {
         return httpAxios.get("product/change_status/" + id);
@@ -77,6 +89,18 @@ const ProductService = {
     trash:(page) =>
     {
         return httpAxios.get(`product/trash?page=${page}`);
+    },
+    getProductNew:(limit) =>
+    {
+        return httpAxios.get(`product_new/${limit}`);
+    },
+    getProductSale:(limit) =>
+    {
+        return httpAxios.get(`product_sale/${limit}`);
+    },
+    getProductBestSeller:(limit) =>
+    {
+        return httpAxios.get(`product_bestSeller/${limit}`);
     },
 }
 export default ProductService;

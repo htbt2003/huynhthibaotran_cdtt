@@ -10,7 +10,7 @@ function MenuTopicCreate(prop) {
   useEffect(function () {
     (async function () {
       const result = await TopicServices.getAll();
-      settopics(result.topics.data);
+      settopics(result.topicsAll);
     })();
   }, []);
 

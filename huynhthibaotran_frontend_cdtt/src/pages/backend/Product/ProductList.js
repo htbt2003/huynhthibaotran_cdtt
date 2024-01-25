@@ -167,8 +167,8 @@ function ProductList() {
             </div>
           </div>
         </td>
-        <td> {product.category_id} </td>
-        <td> {product.brand_id} </td>
+        <td> {product.category.name} </td>
+        <td> {product.brand.name} </td>
         <td> {product.id} </td>
       </tr>
     );

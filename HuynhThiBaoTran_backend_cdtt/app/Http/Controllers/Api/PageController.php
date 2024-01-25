@@ -102,50 +102,14 @@ class PageController extends Controller
     {
         $args = [
             ['slug', '=', $slug],
-            ['status', '=', 1]
+            ['status', '=', 1],
+            ['type', '=', 'page']
         ];
         $page = Post::where($args)->first();
-        if($page == null){
-            return response()->json(
-                ['status' => false, 
-                 'message' => 'Không timg thấy dữ liệu', 
-                 'page' =>null
-                ],
-                400
-            );
-        }
-        $listid = array();
-        array_push($listid, $page->topic_id);
-        $args_topic1 = [
-            ['parent_id', '=', $page->topic_id],
-            ['status', '=', 1]
-        ];
-        $list_topic1 = Topic::where($args_topic1)->get();
-        if (count($list_topic1) > 0) {
-            foreach ($list_topic1 as $row1) {
-                array_push($listid, $row1->id);
-                $args_topic2 = [
-                    ['parent_id', '=', $row1->id],
-                    ['status', '=', 1]
-                ];
-                $list_topic2 = Topic::where($args_topic2)->get();
-                if (count($list_topic2) > 0) {
-                    foreach ($list_topic2 as $row2) {
-                        array_push($listid, $row2->id);
-                    }
-                }
-            }
-        }
-        $page_other = Post::where([['id', '!=', $page->id],['status', '=', 1]])
-        ->whereIn('topic_id', $listid)
-        ->orderBy("created_at", 'DESC')
-        ->limit(8)
-        ->get();
             return response()->json(
                 ['status' => true, 
                  'message' => 'Tải dữ liệu thành công', 
                  'page' => $page,
-                 'page_other'=>$page_other
                 ],
                 200
             );
@@ -216,9 +180,9 @@ class PageController extends Controller
             ->orderBy('created_at', 'DESC')
             ->select('id', 'title', 'slug', 'topic_id', 'image', 'status' )
             ->paginate(5);
-        $total = Post::where([['status', '=', 0], ['type', '=', 'page']])->count();
-        $publish = Banner::where('status', '=', 1)->count();
-        $trash = Banner::where('status', '=', 0)->count();
+        $total = Post::where([['status', '!=', 0], ['type', '=', 'page']])->count();
+        $publish = Post::where([['status', '=', 1], ['type', '=', 'page']])->count();
+        $trash = Post::where([['status', '=', 0], ['type', '=', 'page']])->count();
         return response()->json(
             [
                 'status' => true, 
@@ -238,17 +202,22 @@ class PageController extends Controller
             ->orderBy('created_at', 'DESC')
             ->select('id', 'title', 'slug', 'topic_id', 'image', 'status' )
             ->paginate(5);
+        $pagesAll = Post::where([['status', '!=', 0], ['type', '=', 'page']])
+            ->orderBy('created_at', 'DESC')
+            ->select('id', 'title', 'slug', 'topic_id', 'image', 'status' )
+            ->get();
         $total = Post::where([['status', '!=', 0], ['type', '=', 'page']])->count();
-        $publish = Banner::where([['status', '=', 1], ['type', '=', 'page']])->count();
-        $trash = Banner::where([['status', '=', 0], ['type', '=', 'page']])->count();
+        $publish = Post::where([['status', '=', 1], ['type', '=', 'page']])->count();
+        $trash = Post::where([['status', '=', 0], ['type', '=', 'page']])->count();
         return response()->json(
             [
                 'status' => true, 
                 'message' => 'Tải dữ liệu thành công',
                 'pages' => $pages,
+                'pagesAll' => $pagesAll,
                 'total' => $total,
                 'publish' => $publish,
-            'trash' => $trash,
+                'trash' => $trash,
             ],
             200
         );

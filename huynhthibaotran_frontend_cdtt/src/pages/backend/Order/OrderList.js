@@ -119,7 +119,7 @@ function OrderList() {
                           </td>
                           <td>
                             <div className='row'>
-                              <div className='col-2 pt-2'>{order.name}</div>
+                              <div className='col-7 pt-2'>{order.user.name}</div>
                               <div className="col- 2 function_style">
                                 <button onClick={() => handleStatus(order.id)} className={order.status === 1 ? "btn btn-success btn-sm" : "btn btn-danger btn-sm"}>
                                       <i className={order.status === 1 ? "fa fa-toggle-on" : "fa fa-toggle-off"} />

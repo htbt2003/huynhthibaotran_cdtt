@@ -3,28 +3,28 @@ import ProductServices from '../../../services/ProductServices';
 import { useParams } from "react-router-dom";
 import { urlImage } from "../../../config";
 import ProductItem from "../../../components/ProductItem";
-// import { AddCart } from '../Cart/actions';
-// import { connect } from 'react-redux';
+import { AddCart } from '../Cart/actions';
+import { connect } from 'react-redux';
 import React from 'react'
 import Ccp from '../../../layouts/LayoutSite/Ccp.js';
-import Wpn from '../../../layouts/LayoutSite/Wpn.js';
 import SpecialPro from '../../../layouts/LayoutSite/SpecialPro.js';
 
 function ProductDetail(props) {
-    // const {slug} = useParams();
-    // const [product, setProduct] = useState([]);
-    // const [product_other, setProductOther] = useState([]);
-    // useEffect(function(){
-    //   (async function(){
-    //     await ProductServices.getProductBySlug(slug)
-    //     .then(function(result){
-    //         if(result.data.success === true){
-    //             setProduct(result.data.product)
-    //             setProductOther(result.data.product_other)
-    //         }
-    //     });
-    //   })();
-    // },[slug])
+    const {slug} = useParams();
+    const [product, setProduct] = useState([]);
+    const [product_other, setProductOther] = useState([]);
+    useEffect(function(){
+      (async function(){
+        await ProductServices.getProductBySlug(slug)
+        .then(function(result){
+            if(result.status === true){
+                setProduct(result.product)
+                setProductOther(result.product_other)
+            }
+        });
+      })();
+    },[slug])
+    console.log(product)
     return (
       <>
         {/*breadcrumbs area start*/}
@@ -55,22 +55,21 @@ function ProductDetail(props) {
   <div className="row pos_home">
     <div className="col-lg-3 col-md-12">
       <Ccp/>
-      <Wpn/>
       <SpecialPro/>
     </div>
     <div className="col-lg-9 col-md-12">
   <div className="row">
-    <div className="col-lg-6 col-md-6">
-      <div className="product_tab sidebar fix">
+    <div className="col-lg-6 col-md-6" >
+      <div className="product_tab sidebar fix" >
         <div className="tab-content produc_tab_c">
           <div
-            className="tab-pane fade show active"
+            className="tab-pane fade show active "
             id="p_tab1"
             role="tabpanel"
           >
-            <div className="modal_img">
+            <div className="modal_img" >
               <a href="#">
-                <img src="assets\img\product\productbig.jpg" alt="" />
+                <img src={urlImage + "product/" + product.image} alt="" />
               </a>
               <div className="img_icone">
                 <img src="assets\img\cart\span-new.png" alt="" />
@@ -85,8 +84,8 @@ function ProductDetail(props) {
               </div>
             </div>
           </div>
-          <div className="tab-pane fade" id="p_tab2" role="tabpanel">
-            <div className="modal_img">
+          <div className="tab-pane fade" >
+            <div className="">
               <a href="#">
                 <img src="assets\img\product\productbig1.jpg" alt="" />
               </a>
@@ -123,7 +122,7 @@ function ProductDetail(props) {
             </div>
           </div>
         </div>
-        <div className="product_tab_button">
+        <div className="product_tab_button mb-4">
           <ul className="nav" role="tablist">
             <li>
               <a
@@ -134,7 +133,7 @@ function ProductDetail(props) {
                 aria-controls="p_tab1"
                 aria-selected="false"
               >
-                <img src="assets\img\cart\cart.jpg" alt="" />
+                <img src={urlImage + "product/" + product.image} alt="" />
               </a>
             </li>
             <li>
@@ -145,7 +144,7 @@ function ProductDetail(props) {
                 aria-controls="p_tab2"
                 aria-selected="false"
               >
-                <img src="assets\img\cart\cart2.jpg" alt="" />
+                <img src={urlImage + "product/" + product.image} alt="" />
               </a>
             </li>
             <li>
@@ -156,7 +155,7 @@ function ProductDetail(props) {
                 aria-controls="p_tab3"
                 aria-selected="false"
               >
-                <img src="assets\img\cart\cart4.jpg" alt="" />
+                <img src={urlImage + "product/" + product.image} alt="" />
               </a>
             </li>
           </ul>
@@ -200,23 +199,32 @@ function ProductDetail(props) {
         </div>
         <div className="product_desc">
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati
-            modi culpa voluptates illo, quos magni totam inventore delectus
-            perspiciatis necessitatibus, iure rerum! Deleniti nobis voluptatibus
-            minus, iusto ullam quae esse..
+            {product.metadesc}
           </p>
         </div>
-        <div className="content_price mb-15">
-          <span>$118.00</span>
-          <span className="old-price">$130.00</span>
+        {
+          product.price_sale!=null ?
+          (
+            <div className="content_price mb-15">
+          <span style={{color:'red'}}>{product.price_sale}đ</span>
+          <span className="old-price">{product.price}đ</span>
         </div>
+          )
+          :
+          (
+            <div className="content_price mb-15">
+          <span>{product.price}đ</span>
+        </div>
+          )
+        }
+        
         <div className="box_quantity mb-20">
           <form action="#">
             <label>quantity</label>
             <input min={0} max={100} defaultValue={1} type="number" />
           </form>
-          <button type="submit">
-            <i className="fa fa-shopping-cart" /> add to cart
+          <button onClick={()=>props.AddCart(product)}>
+            <i className="fa fa-shopping-cart" /> Thêm vào giỏ hàng
           </button>
           <a href="#" title="add to wishlist">
             <i className="fa fa-heart" aria-hidden="true" />
@@ -287,8 +295,8 @@ function ProductDetail(props) {
       </div>
     </div>
     {/*product info start*/}
-    <div className="product_d_info sidebar">
-      <div className="col-12">
+    <div className="mb-4 col-12 ">
+      <div className="">
         <div className="product_d_inner">
           <div className="product_info_button">
             <ul className="nav" role="tablist">
@@ -336,15 +344,7 @@ function ProductDetail(props) {
             >
               <div className="product_info_content">
                 <p>
-                  Fashion has been creating well-designed collections since
-                  2010. The brand offers feminine designs delivering stylish
-                  separates and statement dresses which have since evolved into
-                  a full ready-to-wear collection in which every item is a vital
-                  part of a woman's wardrobe. The result? Cool, easy, chic looks
-                  with youthful elegance and unmistakable signature style. All
-                  the beautiful pieces are made in Italy and manufactured with
-                  the greatest attention. Now Fashion extends to a range of
-                  accessories including shoes, hats, belts and more!
+                  {product.detail}
                 </p>
               </div>
             </div>
@@ -470,230 +470,24 @@ function ProductDetail(props) {
   </div>
   {/*product info end*/}
   {/*Related Products area start*/}
-  <div className="new_product_area">
-    <div className="block_title">
-      <h3>Related Products</h3>
-    </div>
-    <div className="row">
-      <div className="product_active owl-carousel">
-        <div className="col-lg-3">
-          <div className="single_product">
-            <div className="product_thumb">
-              <a href="single-product.html">
-                <img src="assets\img\product\product1.jpg" alt="" />
-              </a>
-              <div className="img_icone">
-                <img src="assets\img\cart\span-new.png" alt="" />
-              </div>
-              <div className="product_action">
-                <a href="#">
-                  {" "}
-                  <i className="fa fa-shopping-cart" /> Add to cart
-                </a>
-              </div>
+  <div className="new_product_area" style={{marginRight:20}}>
+            <div className="block_title">
+              <h3>Có thể bạn quan tâm</h3>
             </div>
-            <div className="product_content">
-              <span className="product_price">$50.00</span>
-              <h3 className="product_title">
-                <a href="single-product.html">Curabitur sodales</a>
-              </h3>
-            </div>
-            <div className="product_info">
-              <ul>
-                <li>
-                  <a href="#" title=" Add to Wishlist ">
-                    Add to Wishlist
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    data-toggle="modal"
-                    data-target="#modal_box"
-                    title="Quick view"
-                  >
-                    View Detail
-                  </a>
-                </li>
-              </ul>
+            <div className="row">
+              <div className="row" style={{ position:'relative'}}>
+                {
+                    (product_other && product_other.length > 0 && product_other.map(function (product, index) {
+                        return (
+                           <ProductItem product={product} key={index}/>
+          
+                          );
+                      }))
+                }                
+              </div>
+
             </div>
           </div>
-        </div>
-        <div className="col-lg-3">
-          <div className="single_product">
-            <div className="product_thumb">
-              <a href="single-product.html">
-                <img src="assets\img\product\product2.jpg" alt="" />
-              </a>
-              <div className="hot_img">
-                <img src="assets\img\cart\span-hot.png" alt="" />
-              </div>
-              <div className="product_action">
-                <a href="#">
-                  {" "}
-                  <i className="fa fa-shopping-cart" /> Add to cart
-                </a>
-              </div>
-            </div>
-            <div className="product_content">
-              <span className="product_price">$40.00</span>
-              <h3 className="product_title">
-                <a href="single-product.html">Quisque ornare dui</a>
-              </h3>
-            </div>
-            <div className="product_info">
-              <ul>
-                <li>
-                  <a href="#" title=" Add to Wishlist ">
-                    Add to Wishlist
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    data-toggle="modal"
-                    data-target="#modal_box"
-                    title="Quick view"
-                  >
-                    View Detail
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div className="col-lg-3">
-          <div className="single_product">
-            <div className="product_thumb">
-              <a href="single-product.html">
-                <img src="assets\img\product\product3.jpg" alt="" />
-              </a>
-              <div className="img_icone">
-                <img src="assets\img\cart\span-new.png" alt="" />
-              </div>
-              <div className="product_action">
-                <a href="#">
-                  {" "}
-                  <i className="fa fa-shopping-cart" /> Add to cart
-                </a>
-              </div>
-            </div>
-            <div className="product_content">
-              <span className="product_price">$60.00</span>
-              <h3 className="product_title">
-                <a href="single-product.html">Sed non turpiss</a>
-              </h3>
-            </div>
-            <div className="product_info">
-              <ul>
-                <li>
-                  <a href="#" title=" Add to Wishlist ">
-                    Add to Wishlist
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    data-toggle="modal"
-                    data-target="#modal_box"
-                    title="Quick view"
-                  >
-                    View Detail
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div className="col-lg-3">
-          <div className="single_product">
-            <div className="product_thumb">
-              <a href="single-product.html">
-                <img src="assets\img\product\product4.jpg" alt="" />
-              </a>
-              <div className="hot_img">
-                <img src="assets\img\cart\span-hot.png" alt="" />
-              </div>
-              <div className="product_action">
-                <a href="#">
-                  {" "}
-                  <i className="fa fa-shopping-cart" /> Add to cart
-                </a>
-              </div>
-            </div>
-            <div className="product_content">
-              <span className="product_price">$65.00</span>
-              <h3 className="product_title">
-                <a href="single-product.html">Duis convallis</a>
-              </h3>
-            </div>
-            <div className="product_info">
-              <ul>
-                <li>
-                  <a href="#" title=" Add to Wishlist ">
-                    Add to Wishlist
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    data-toggle="modal"
-                    data-target="#modal_box"
-                    title="Quick view"
-                  >
-                    View Detail
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div className="col-lg-3">
-          <div className="single_product">
-            <div className="product_thumb">
-              <a href="single-product.html">
-                <img src="assets\img\product\product6.jpg" alt="" />
-              </a>
-              <div className="img_icone">
-                <img src="assets\img\cart\span-new.png" alt="" />
-              </div>
-              <div className="product_action">
-                <a href="#">
-                  {" "}
-                  <i className="fa fa-shopping-cart" /> Add to cart
-                </a>
-              </div>
-            </div>
-            <div className="product_content">
-              <span className="product_price">$50.00</span>
-              <h3 className="product_title">
-                <a href="single-product.html">Curabitur sodales</a>
-              </h3>
-            </div>
-            <div className="product_info">
-              <ul>
-                <li>
-                  <a href="#" title=" Add to Wishlist ">
-                    Add to Wishlist
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    data-toggle="modal"
-                    data-target="#modal_box"
-                    title="Quick view"
-                  >
-                    View Detail
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   {/*Related Products area end*/}
 </div>
   </div>
@@ -703,16 +497,15 @@ function ProductDetail(props) {
     );
 }
 
-// const mapStateToProps = state =>{
-//     return {
-//          _products: state._todoProduct,
-//        };
-// }
-// function mapDispatchToProps(dispatch){
-//     return{
-//         AddCart:item=>dispatch(AddCart(item))
+const mapStateToProps = state =>{
+    return {
+         _products: state._todoProduct,
+       };
+}
+function mapDispatchToProps(dispatch){
+    return{
+        AddCart:item=>dispatch(AddCart(item))
       
-//     }
-// }
-// export default connect(mapStateToProps,mapDispatchToProps)(ProductDetail)
-export default ProductDetail;
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(ProductDetail)

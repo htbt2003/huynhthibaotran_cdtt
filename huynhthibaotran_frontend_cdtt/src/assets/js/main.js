@@ -16,11 +16,11 @@
     /*----------------------------
     jQuery MeanMenu
     ------------------------------ */
-    $('.mobile-menu nav').meanmenu({
-        meanScreenWidth: "9901",
-        meanMenuContainer: ".mobile-menu",
-        onePage: true,
-    });
+    // $('.mobile-menu nav').meanmenu({
+    //     meanScreenWidth: "9901",
+    //     meanMenuContainer: ".mobile-menu",
+    //     onePage: true,
+    // });
     
     
       /*--------------------------
@@ -198,27 +198,27 @@
      /*------------------------------
       Category menu Activation
     ------------------------------*/
-    $('.sidebar_widget.catrgorie > ul > li > a').on('click', function(){
-       $(this).removeAttr('href');
-       var element = $(this).parent('li');
-        if (element.hasClass('open')) {
+    // $('.sidebar_widget.catrgorie > ul > li > a').on('click', function(){
+    //    $(this).removeAttr('href');
+    //    var element = $(this).parent('li');
+    //     if (element.hasClass('open')) {
 
-           element.removeClass('open');
+    //        element.removeClass('open');
 
-           element.find('li').removeClass('open');
+    //        element.find('li').removeClass('open');
 
-           element.find('ul').slideUp();
-       }
-          else {
-            element.addClass('open');
-            element.children('ul').slideDown();
-            element.siblings('li').children('ul').slideUp();
-            element.siblings('li').removeClass('open');
-            element.siblings('li').find('li').removeClass('open');
-            element.siblings('li').find('ul').slideUp();
-          }
-         });
-         $('.has-sub > a').append('<span class="holder"></span>');
+    //        element.find('ul').slideUp();
+    //    }
+    //       else {
+    //         element.addClass('open');
+    //         element.children('ul').slideDown();
+    //         element.siblings('li').children('ul').slideUp();
+    //         element.siblings('li').removeClass('open');
+    //         element.siblings('li').find('li').removeClass('open');
+    //         element.siblings('li').find('ul').slideUp();
+    //       }
+    //      });
+    //      $('.has-sub > a').append('<span class="holder"></span>');
     
     
     

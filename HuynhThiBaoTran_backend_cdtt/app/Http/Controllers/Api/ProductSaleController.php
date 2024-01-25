@@ -4,17 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ProductSale;
 use App\Models\Product;
 
 class ProductSaleController extends Controller
 {
     public function index()
     {
-        $prosales = Productsale::where(['status', '!=', 0],)
+        $prosales = ProductSale::select('id', 'product_id', 'qty', 'date_begin', 'date_end','price_sale')
             ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'slug', 'category_id', 'brand_id', 'image', 'status')
-            ->get();
-         $total = Productsale::where('status', '!=', 0)->count();
+            ->paginate(5);
+        $total = ProductSale::count();
         return response()->json(
             [
                 'status' => true, 
@@ -27,7 +27,7 @@ class ProductSaleController extends Controller
     }
     public function show($id)
     {
-        $prosale = Productsale::find($id);
+        $prosale = ProductSale::find($id);
         return response()->json(
             [   
                 'status' => true, 
@@ -39,31 +39,14 @@ class ProductSaleController extends Controller
     }
     public function store(Request $request)
     {
-        $prosale = new prosale();
-        $prosale->category_id = $request->category_id; //form
-        $prosale->prosale_id = $request->prosale_id; //form
-        $prosale->name = $request->name; //form
-        $prosale->slug = Str::of($request->name)->slug('-');
-        $prosale->price = $request->price; //form
-        $prosale->price_sale = $request->price_sale; //form
-        //upload image
-        $files = $request->image;
-        if ($files != null) {
-            $extension = $files->getClientOriginalExtension();
-            if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = date('YmdHis') . '.' . $extension;
-                $prosale->image = $filename;
-                $files->move(public_path('images/prosale'), $filename);
-            }
-        }
-        //
-        $prosale->qty = $request->qty; //form
-        $prosale->detail = $request->detail; //form
-        $prosale->metakey = $request->metakey; //form
-        $prosale->metadesc = $request->metadesc; //form
+        $prosale = new ProductSale();
+        $prosale->product_id = $request->product_id; 
+        $prosale->price_sale = $request->price_sale; 
+        $prosale->qty = $request->qty; 
+        $prosale->date_begin = $request->date_begin;
+        $prosale->date_end = $request->date_end;
         $prosale->created_at = date('Y-m-d H:i:s');
         $prosale->created_by = 1;
-        $prosale->status = $request->status; //form
         if($prosale->save())//Luuu vao CSDL
         {
             return response()->json(
@@ -89,7 +72,7 @@ class ProductSaleController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $prosale = Productsale::find($id);
+        $prosale = ProductSale::find($id);
         if($prosale == null)//Luuu vao CSDL
         {
             return response()->json(
@@ -101,27 +84,11 @@ class ProductSaleController extends Controller
                 404
             );    
         }
-        $prosale->category_id = $request->category_id; //form
-        $prosale->prosale_id = $request->prosale_id; //form
-        $prosale->name = $request->name; //form
-        $prosale->slug = Str::of($request->name)->slug('-');
-        $prosale->price = $request->price; //form
-        $prosale->price_sale = $request->price_sale; //form
-        //upload image
-        $files = $request->image;
-        if ($files != null) {
-            $extension = $files->getClientOriginalExtension();
-            if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
-                $filename = date('YmdHis') . '.' . $extension;
-                $prosale->image = $filename;
-                $files->move(public_path('images/prosale'), $filename);
-            }
-        }
-        //
-        $prosale->qty = $request->qty; //form
-        $prosale->detail = $request->detail; //form
-        $prosale->metakey = $request->metakey; //form
-        $prosale->metadesc = $request->metadesc; //form
+        $prosale->product_id = $request->product_id; 
+        $prosale->price_sale = $request->price_sale; 
+        $prosale->qty = $request->qty; 
+        $prosale->date_begin = $request->date_begin;
+        $prosale->date_end = $request->date_end;
         $prosale->updated_at = date('Y-m-d H:i:s');
         $prosale->updated_by = 1;
         $prosale->status = $request->status; //form
@@ -150,7 +117,7 @@ class ProductSaleController extends Controller
     }
     public function delete($id)
     {
-        $prosale = Productsale::find($id);
+        $prosale = ProductSale::find($id);
         if($prosale == null)//Luuu vao CSDL
         {
             return response()->json(
@@ -179,7 +146,7 @@ class ProductSaleController extends Controller
     }
     public function restore($id)
     {
-        $prosale = Productsale::find($id);
+        $prosale = ProductSale::find($id);
         if($prosale == null)//Luuu vao CSDL
         {
             return response()->json(
@@ -209,7 +176,7 @@ class ProductSaleController extends Controller
 
     public function destroy($id)
     {
-        $prosale = Productsale::findOrFail($id);
+        $prosale = ProductSale::findOrFail($id);
         if($prosale == null)//Luuu vao CSDL
         {
             return response()->json(

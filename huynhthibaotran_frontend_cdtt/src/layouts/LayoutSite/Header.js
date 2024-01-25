@@ -17,34 +17,34 @@ function Header(props) {
         <div className="switcher">
           <ul>
             <li className="languages">
-              <a href="#">
+              <Link href="#">
                 <img src="assets\img\logo\fontlogo.jpg" alt="" /> English{" "}
                 <i className="fa fa-angle-down" />
-              </a>
+              </Link>
               <ul className="dropdown_languages">
                 <li>
-                  <a href="#">
+                  <Link href="#">
                     <img src="assets\img\logo\fontlogo.jpg" alt="" /> English
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#">
+                  <Link href="#">
                     <img src="assets\img\logo\fontlogo2.jpg" alt="" /> French{" "}
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </li>
             <li className="currency">
-              <a href="#">
+              <Link href="#">
                 {" "}
                 Currency : $ <i className="fa fa-angle-down" />
-              </a>
+              </Link>
               <ul className="dropdown_currency">
                 <li>
-                  <a href="#"> Dollar (USD)</a>
+                  <Link href="#"> Dollar (USD)</Link>
                 </li>
                 <li>
-                  <a href="#"> Euro (EUR)</a>
+                  <Link href="#"> Euro (EUR)</Link>
                 </li>
               </ul>
             </li>
@@ -54,30 +54,30 @@ function Header(props) {
       <div className="col-lg-6 col-md-6">
         <div className="header_links">
           <ul>
-            <li>
+            {/* <li>
               <Link to={"/lien-he"} title="Contact">
                 Contact
               </Link>
-            </li>
+            </li> */}
             <li>
-              <a href="wishlist.html" title="wishlist">
-                My wishlist
-              </a>
-            </li>
-            <li>
-              <a href="my-account.html" title="My account">
-                My account
-              </a>
-            </li>
-            <li>
-              <Link to={"/gio-hang"} title="My cart">
-                My cart
+              <Link to={"/gio-hang"} title="wishlist">
+                Giỏ hàng
               </Link>
             </li>
             <li>
-              <a href="login.html" title="Login">
-                Login
-              </a>
+              <Link to={"/tai-khoan"} title="My account">
+                Tài khoản
+              </Link>
+            </li>
+            <li>
+              <Link to={"/dang-nhap"} title="My cart">
+               Đăng nhập
+              </Link>
+            </li>
+            <li>
+              <Link to={"/dang-ky"} title="Login">
+                Đăng ký
+              </Link>
             </li>
           </ul>
         </div>
@@ -91,9 +91,9 @@ function Header(props) {
       {/*logo start*/}
       <div className="col-lg-3 col-md-3">
         <div className="logo">
-          <a href="index.html">
+          <Link href="index.html">
             <img src="assets\img\logo\logo.jpg.png" alt="" />
-          </a>
+          </Link>
         </div>
       </div>
       {/*logo end*/}
@@ -101,51 +101,53 @@ function Header(props) {
         <div className="header_right_info">
           <div className="search_bar">
             <form action="#">
-              <input placeholder="Search..." type="text" />
-              <button type="submit">
-                <i className="fa fa-search" />
-              </button>
+              <input placeholder="Search..." type="text" value={key} onChange={(e) => setKey(e.target.value)}/>
+              <Link to={"/tim-kiem/"+ key}>
+                <button>
+                  <i className="fa fa-search" />
+                </button>
+              </Link>
             </form>
           </div>
           <div className="shopping_cart">
-            <a href="#">
+            <Link href="#">
               <i className="fa fa-shopping-cart" /> 2Items - $209.44{" "}
               <i className="fa fa-angle-down" />
-            </a>
+            </Link>
             {/*mini cart*/}
             <div className="mini_cart">
               <div className="cart_item">
                 <div className="cart_img">
-                  <a href="#">
+                  <Link href="#">
                     <img src="assets\img\cart\cart.jpg" alt="" />
-                  </a>
+                  </Link>
                 </div>
                 <div className="cart_info">
-                  <a href="#">lorem ipsum dolor</a>
+                  <Link href="#">lorem ipsum dolor</Link>
                   <span className="cart_price">$115.00</span>
                   <span className="quantity">Qty: 1</span>
                 </div>
                 <div className="cart_remove">
-                  <a title="Remove this item" href="#">
+                  <Link title="Remove this item" href="#">
                     <i className="fa fa-times-circle" />
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="cart_item">
                 <div className="cart_img">
-                  <a href="#">
+                  <Link href="#">
                     <img src="assets\img\cart\cart2.jpg" alt="" />
-                  </a>
+                  </Link>
                 </div>
                 <div className="cart_info">
-                  <a href="#">Quisque ornare dui</a>
+                  <Link href="#">Quisque ornare dui</Link>
                   <span className="cart_price">$105.00</span>
                   <span className="quantity">Qty: 1</span>
                 </div>
                 <div className="cart_remove">
-                  <a title="Remove this item" href="#">
+                  <Link title="Remove this item" href="#">
                     <i className="fa fa-times-circle" />
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="shipping_price">
@@ -157,7 +159,7 @@ function Header(props) {
                 <span className="prices"> $227.00</span>
               </div>
               <div className="cart_button">
-                <a href="checkout.html"> Check out</a>
+                <Link href="checkout.html"> Check out</Link>
               </div>
             </div>
             {/*mini cart end*/}

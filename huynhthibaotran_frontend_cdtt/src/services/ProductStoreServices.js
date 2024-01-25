@@ -1,49 +1,25 @@
 import httpAxios from "../httpAxios";
 
 
-function getAll(page=1)
+function getAll(page)
 {
-    return httpAxios.get(`product/index?page=${page}`);
+    return httpAxios.get(`productstore/index?page=${page}`);
 }
 function getById(id)
 {
-    return httpAxios.get("product/show/" + id);
+    return httpAxios.get("productstore/show/" + id);
 }
 function create(data)
 {
-    return httpAxios.post("product/store", data);
+    return httpAxios.post("productstore/store", data);
 }
 function update(data, id)
 {
-    return httpAxios.post("product/update/" + id, data);
+    return httpAxios.post("productstore/update/" + id, data);
 }
 function remove(id)
 {
-    return httpAxios.delete("product/destroy/" + id);
-}
-function getProductHome(limit, category_id)
-{
-    return httpAxios.get(`product_home/${limit}/${category_id}`);
-}
-function getProductAll(limit, page=1)
-{
-    return httpAxios.get(`product_all/${limit}/${page}`);
-}
-function getProductBySlug(slug)
-{
-    return httpAxios.get(`product_detail/${slug}`);
-}
-function getProductByCategoryId(limit, category_id)
-{
-    return httpAxios.get(`product_category/${limit}/${category_id}`);
-}
-function getProductByBrandId(limit, brand_id)
-{
-    return httpAxios.get(`product_brand/${limit}/${brand_id}`);
-}
-function getProductSearch(key)
-{
-    return httpAxios.get(`product_search/${key}`);
+    return httpAxios.delete("productstore/destroy/" + id);
 }
 
 const ProductStoreService = {
@@ -52,15 +28,5 @@ const ProductStoreService = {
     create:create,
     update:update,
     remove:remove,
-    getProductHome:getProductHome,
-    getProductAll:getProductAll,
-    getProductBySlug:getProductBySlug,
-    getProductByCategoryId:getProductByCategoryId,
-    getProductByBrandId:getProductByBrandId,
-    getProductSearch:getProductSearch,
-    changeStatus:(id) =>
-    {
-        return httpAxios.get("product/change_status/" + id);
-    },
 }
 export default ProductStoreService;

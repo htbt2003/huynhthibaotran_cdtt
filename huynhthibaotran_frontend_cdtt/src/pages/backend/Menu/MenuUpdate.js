@@ -32,7 +32,7 @@ function MenuUpdate() {
     (async function(){
       await MenuServices.getAll()
       .then(function(result){
-          setMenus(result.menus.data)
+          setMenus(result.menusAll)
       });
     })();
   },[])
