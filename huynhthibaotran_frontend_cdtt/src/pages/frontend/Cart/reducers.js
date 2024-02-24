@@ -117,6 +117,6 @@ function todoProduct(state = initProduct,action){
 }
 const ShopApp = combineReducers({
     _todoProduct:todoProduct,
-    _todoUser:todoUser
+    _todoUser:todoUser,
 });
 export default ShopApp;

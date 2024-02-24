@@ -11,6 +11,63 @@ use App\Models\User;
 
 class UserController extends Controller
 {
+    public function update_account(Request $request, $id)
+    {
+        $user = User::find($id);
+        if($user == null)
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Không tìm thấy dữ liệu', 
+                    'user' => null
+                ],
+                404
+            );    
+        }
+        $user->name = $request->name; //form
+        $user->gender = $request->gender; //form
+        $user->email = $request->email; //form
+        $user->phone = $request->phone; //form
+        $user->username = $request->username; //form
+        $user->address = $request->address; //form
+        //upload image
+        $files = $request->image;
+        if ($files != null) {
+            $extension = $files->getClientOriginalExtension();
+            if (in_array($extension, ['jpg', 'png', 'gif', 'webp', 'jpeg'])) {
+                $filename = date('YmdHis') . '.' . $extension;
+                $user->image = $filename;
+                $files->move(public_path('images/user'), $filename);
+            }
+        }
+        //
+        $user->updated_at = date('Y-m-d H:i:s');
+        $user->updated_by = 1;
+        if($user->save())//Luuu vao CSDL
+        {
+            return response()->json(
+                [
+                    'status' => true, 
+                    'message' => 'Cập nhật dữ liệu thành công', 
+                    'user' => $user
+                ],
+                201
+            );    
+        }
+        else
+        {
+            return response()->json(
+                [
+                    'status' => false, 
+                    'message' => 'Cập nhật dữ liệu không thành công', 
+                    'user' => null
+                ],
+                422
+            );
+        }
+    }
+
     public function changeStatus($id)
     {
         $user = User::find($id);
@@ -173,7 +230,6 @@ class UserController extends Controller
         $user->username = $request->username; //form
         $user->password = $request->password; //form
         $user->address = $request->address; //form
-        $slug = Str::of($request->name)->slug('-');
         //upload image
         $files = $request->image;
         if ($files != null) {
@@ -356,7 +412,6 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             if($user->roles == 'admin')
@@ -390,9 +445,12 @@ class UserController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->token()->revoke();
-
-        return response()->json(['message' => 'Đăng xuất thành công']);
+        // $request->user()->token()->revoke();
+        // Auth::logout();
+        return response()->json([
+            'status' => true,
+            'message' => 'Đăng xuất thành công'
+        ]);
     }
 
 }

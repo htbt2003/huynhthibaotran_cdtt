@@ -53,7 +53,7 @@ class CustomerController extends Controller
     {
         $users = User::where([['status', '=', 0], ['roles', '=', 'customer']])
         ->orderBy('created_at', 'DESC')
-        ->select('id', 'name', 'phone', 'email', 'image', 'status')
+        ->select('id', 'name', 'phone', 'email', 'image', 'status', 'address')
         ->paginate(5);
         $total = User::where([['status', '!=', 0], ['roles', '=', 'customer']])->count();
         $publish = User::where([['status', '=', 1], ['roles', '=', 'customer']])->count();
@@ -75,7 +75,7 @@ class CustomerController extends Controller
     {
         $users = User::where([['status', '!=', 0], ['roles', '=', 'customer']])
         ->orderBy('created_at', 'DESC')
-        ->select('id', 'name', 'phone', 'email', 'image', 'status')
+        ->select('id', 'name', 'phone', 'email', 'image', 'status','address')
         ->paginate(5);
         $total = User::where([['status', '!=', 0], ['roles', '=', 'customer']])->count();
         $publish = User::where([['status', '=', 1], ['roles', '=', 'customer']])->count();
@@ -87,7 +87,7 @@ class CustomerController extends Controller
                 'users' => $users,
                 'total' => $total,
                 'publish' => $publish,
-            'trash' => $trash,
+                'trash' => $trash,
             ],
             200
         );

@@ -128,7 +128,7 @@ class ProductController extends Controller
         }
         $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
         ->groupBy('product_id');
-        $products = Product::where('status', '=', 1)
+        $products = Product::where('db_product.status', '=', 1)
             ->joinSub($productstore, 'productstore', function($join){
                 $join->on('db_product.id', '=', 'productstore.product_id');
             })
@@ -164,33 +164,35 @@ class ProductController extends Controller
         }
     }
 
-    // public function product_all()
-    // {
-    //     $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
-    //     ->groupBy('product_id');
-    //     $products = Product::where('status','=', 1)
-    //         ->joinSub($productstore, 'productstore', function($join){
-    //             $join->on('db_product.id', '=', 'productstore.product_id');
-    //         })
-    //         ->orderBy('db_product.created_at', 'DESC')
-    //         ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug')
-    //         ->paginate(8);
-    //     $total = $products->total();
-    //     return response()->json(
-    //         [
-    //             'status' => true,
-    //             'message' => 'Tải dữ liệu thành công',
-    //             'products' => $products,
-    //             'total' => $total,
-    //         ],
-    //         200
-    //     );
-    // }
+    public function products()
+    {
+        $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
+        ->groupBy('product_id');
+        $products = Product::where('db_product.status','=', 1)
+            ->joinSub($productstore, 'productstore', function($join){
+                $join->on('db_product.id', '=', 'productstore.product_id');
+            })
+            ->join('db_category', 'db_product.category_id','=','db_category.id')
+            ->join('db_brand', 'db_product.brand_id','=','db_brand.id')
+            ->orderBy('db_product.created_at', 'DESC')
+            ->select('db_product.id','db_product.name', 'db_product.image', 'db_product.price','db_product.slug', 'db_category.name as category_name', 'db_brand.name as brand_name')
+            ->paginate(8);
+        $total = $products->total();
+        return response()->json(
+            [
+                'status' => true,
+                'message' => 'Tải dữ liệu thành công',
+                'products' => $products,
+                'total' => $total,
+            ],
+            200
+        );
+    }
     public function product_allAction(Request $condition)
     {
         $productstore = ProductStore::select('product_id', DB::raw('SUM(qty) as sum_qty'))
             ->groupBy('product_id');
-        $query = Product::where('status','=', 1)
+        $query = Product::where('db_product.status','=', 1)
             ->joinSub($productstore, 'productstore', function($join){
                 $join->on('db_product.id', '=', 'productstore.product_id');
             })

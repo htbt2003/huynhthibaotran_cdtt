@@ -111,7 +111,7 @@ function Sidebar () {
             <Collapse in={ state.QLBH }>
               <ul className="nav flex-column sub-menu">
                 <li className="nav-item"> <Link className='nav-link' to="/admin/order"><GoArrowRight /><Trans>Tất cả đơn hàng</Trans></Link></li>
-                <li className="nav-item"> <Link className='nav-link' to="/basic-ui/dropdowns"><GoArrowRight /><Trans>Xuất hàng</Trans></Link></li>
+                <li className="nav-item"> <Link className='nav-link' to="/admin/delivery"><GoArrowRight /><Trans>Xuất hàng</Trans></Link></li>
               </ul>
             </Collapse>
           </li>

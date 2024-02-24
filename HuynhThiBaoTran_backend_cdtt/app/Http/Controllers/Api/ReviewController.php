@@ -8,12 +8,36 @@ use App\Models\Review;
 
 class ReviewController extends Controller
 {
+    public function review_product($product_id)
+    {
+        $reviews = Review::where([['product_id', '=', $product_id]])
+                ->join('db_user', 'db_user.id', '=', 'db_review.user_id')
+                ->select('db_review.id', 'db_review.product_id', 'db_review.user_id','db_review.rating', 'db_review.comment','db_user.name as user_name', 'db_review.created_at')
+                ->get();
+        return response()->json(
+            [
+                'success' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'reviews' => $reviews,
+            ],
+            200
+        );
+    }
+    public function review_product_user($product_id, $user_id)
+    {
+        $review = Review::where([['product_id', '=', $product_id], ['user_id', '=', $user_id]])->first();
+        return response()->json(
+            [
+                'success' => true, 
+                'message' => 'Tải dữ liệu thành công',
+                'review' => $review,
+            ],
+            200
+        );
+    }
     public function index()
     {
-        $reviews = Review::where('status', '!=', 0)
-            ->orderBy('created_at', 'DESC')
-            ->select('id', 'name', 'slug', 'status')
-            ->get();
+        $reviews = Review::orderBy('created_at', 'DESC')->get();
         return response()->json(
             [
                 'success' => true, 
@@ -38,7 +62,7 @@ class ReviewController extends Controller
     }
     public function store(Request $request)
     {
-        $review = new review();
+        $review = new Review();
         $review->user_id = $request->user_id; //form
         $review->product_id = $request->product_id; //form
         $review->rating = $request->rating; //form

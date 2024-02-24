@@ -57,6 +57,10 @@ function getSearch(key)
 {
     return httpAxios.get(`search?key=${key}`);
 }
+function getProducts(page)
+{
+    return httpAxios.get(`products?page=${page}`);
+}
 
 const ProductService = {
     getAll:getAll,
@@ -101,6 +105,10 @@ const ProductService = {
     getProductBestSeller:(limit) =>
     {
         return httpAxios.get(`product_bestSeller/${limit}`);
+    },
+    getProducts:(page) =>
+    {
+        return httpAxios.get(`products?page=${page}`);
     },
 }
 export default ProductService;

@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import React from 'react'
 import Ccp from '../../../layouts/LayoutSite/Ccp.js';
 import SpecialPro from '../../../layouts/LayoutSite/SpecialPro.js';
+import ProductReview from "./ProductReview.js";
 
 function ProductDetail(props) {
     const {slug} = useParams();
@@ -24,7 +25,6 @@ function ProductDetail(props) {
         });
       })();
     },[slug])
-    console.log(product)
     return (
       <>
         {/*breadcrumbs area start*/}
@@ -164,7 +164,7 @@ function ProductDetail(props) {
     </div>
     <div className="col-lg-6 col-md-6">
       <div className="product_d_right">
-        <h1>Printed Summer Dress</h1>
+        <h1>{product.name}</h1>
         <div className="product_ratting mb-10">
           <ul>
             <li>
@@ -383,86 +383,8 @@ function ProductDetail(props) {
                 </p>
               </div>
             </div>
-            <div className="tab-pane fade" id="reviews" role="tabpanel">
-              <div className="product_info_content">
-                <p>
-                  Fashion has been creating well-designed collections since
-                  2010. The brand offers feminine designs delivering stylish
-                  separates and statement dresses which have since evolved into
-                  a full ready-to-wear collection in which every item is a vital
-                  part of a woman's wardrobe. The result? Cool, easy, chic looks
-                  with youthful elegance and unmistakable signature style. All
-                  the beautiful pieces are made in Italy and manufactured with
-                  the greatest attention. Now Fashion extends to a range of
-                  accessories including shoes, hats, belts and more!
-                </p>
-              </div>
-              <div className="product_info_inner">
-                <div className="product_ratting mb-10">
-                  <ul>
-                    <li>
-                      <a href="#">
-                        <i className="fa fa-star" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="fa fa-star" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="fa fa-star" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="fa fa-star" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="fa fa-star" />
-                      </a>
-                    </li>
-                  </ul>
-                  <strong>Posthemes</strong>
-                  <p>09/07/2018</p>
-                </div>
-                <div className="product_demo">
-                  <strong>demo</strong>
-                  <p>That's OK!</p>
-                </div>
-              </div>
-              <div className="product_review_form">
-                <form action="#">
-                  <h2>Add a review </h2>
-                  <p>
-                    Your email address will not be published. Required fields
-                    are marked{" "}
-                  </p>
-                  <div className="row">
-                    <div className="col-12">
-                      <label htmlFor="review_comment">Your review </label>
-                      <textarea
-                        name="comment"
-                        id="review_comment"
-                        defaultValue={""}
-                      />
-                    </div>
-                    <div className="col-lg-6 col-md-6">
-                      <label htmlFor="author">Name</label>
-                      <input id="author" type="text" />
-                    </div>
-                    <div className="col-lg-6 col-md-6">
-                      <label htmlFor="email">Email </label>
-                      <input id="email" type="text" />
-                    </div>
-                  </div>
-                  <button type="submit">Submit</button>
-                </form>
-              </div>
-            </div>
+           <ProductReview product_id={product.id}/>
+           
           </div>
         </div>
       </div>

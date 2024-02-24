@@ -76,10 +76,13 @@ import TopicTrashList from "../pages/backend/Topic/TopicTrashList";
 import UserTrashList from "../pages/backend/User/UserTrashList";
 import ProductStoreList from "../pages/backend/ProductStore/ProductStoreList";
 import ProductSaleList from "../pages/backend/ProductSale/ProductSaleList";
+import ProductDelivery from "../pages/backend/ProductDelivery/ProductDelivery";
 
 
 const RouterPrivate = [
   { path: "/admin", component: Dashboard },
+
+  { path: "/admin/config", component: Config },
 
   { path: "/admin/brand", component: BrandList },
   { path: "/admin/brand/trash", component: BrandTrashList },
@@ -156,6 +159,8 @@ const RouterPrivate = [
   { path: "/admin/customer/create", component: CustomerCreate },
   { path: "/admin/customer/update/:id", component: CustomerUpdate },
   { path: "/admin/customer/trash", component: CustomerTrashList },
+
+  { path: "/admin/delivery", component: ProductDelivery },
 
 ];
 export default RouterPrivate;

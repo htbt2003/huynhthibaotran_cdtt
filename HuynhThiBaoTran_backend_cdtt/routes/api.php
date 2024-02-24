@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\TopicController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\OrderDetailController;
+use App\Http\Controllers\Api\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,14 +37,16 @@ Route::get('banner_list/{position}', [BannerController::class, 'banner_list']);
 Route::get('category_list/{parent_id?}', [CategoryController::class, 'category_list']);
 Route::get('topic_list/{parent_id?}', [TopicController::class, 'topic_list']);
 
+Route::post('updateAccount/{id}', [UserController::class, 'update_account']);
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
+Route::post('logout', [UserController::class, 'logout']);
 
 Route::get('product_new/{limit}', [ProductController::class, 'product_new']);
 Route::get('product_sale/{limit}', [ProductController::class, 'product_sale']);
 Route::get('product_bestSeller/{limit}', [ProductController::class, 'product_bestSeller']);
 Route::get('product_home/{limit}/{category_id?}', [ProductController::class, 'product_home']);
-Route::get('product_all', [ProductController::class, 'product_all']);
+Route::get('products', [ProductController::class, 'products']);
 Route::get('product_allAction', [ProductController::class, 'product_allAction']);
 Route::get('product_category/{category_id}', [ProductController::class, 'product_category']);
 Route::get('product_brand/{brand_id}', [ProductController::class, 'product_brand']);
@@ -64,6 +67,12 @@ Route::get('order/index', [OrderController::class, 'index']);
 Route::get('order/{id}', [OrderController::class, 'order_userId']);
 Route::post('doCheckout', [OrderController::class, 'doCheckout']);
 
+
+
+Route::get('reviewProduct/{product_id}', [ReviewController::class, 'review_product']);
+Route::get('reviewProductUser/{product_id}/{user_id}', [ReviewController::class, 'review_product_user']);
+Route::post('review/store', [ReviewController::class, 'store']);
+Route::delete('review/destroy/{id}', [ReviewController::class, 'destroy']);
 
 
 
@@ -178,6 +187,10 @@ Route::prefix('productsale')->group(function () {
     Route::delete('destroy/{id}', [ProductSaleController::class, 'destroy']);
     Route::get('change_status/{key}', [ProductSaleController::class, 'changeStatus']);
 });
+
+Route::post('config/update', [ConfigController::class, 'update']);
+Route::get('config/show', [BannerController::class, 'show']);
+
 Route::prefix('banner')->group(function () {
     Route::get('index', [BannerController::class, 'index']);
     Route::get('show/{id}', [BannerController::class, 'show']);
@@ -224,16 +237,16 @@ Route::prefix('customer')->group(function () {
     Route::get('trash', [CustomerController::class, 'trash']);
 });
 
-    Route::middleware(['auth:sanctum', 'isAPIAdmin'])->group(function() {
-        Route::get('/checkingAuthenticated', function(){
-            return response()->json(['message'=>'You are in', 'status'=>200], 200);
-        });
-    });
+    // Route::middleware(['auth:sanctum', 'isAPIAdmin'])->group(function() {
+    //     Route::get('checkingAuthenticated', function(){
+    //         return response()->json(['message'=>'You are in', 'status'=>200], 200);
+    //     });
+    // });
     
-    Route::middleware(['auth:sanctum'])->group(function() {
-        Route::post('logout', [UserController::class, 'logout']);
-    });
+    // Route::middleware(['auth:sanctum'])->group(function() {
+    //     Route::post('logout', [UserController::class, 'logout']);
+    // });
 
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
-    });
+    // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    //     return $request->user();
+    // });

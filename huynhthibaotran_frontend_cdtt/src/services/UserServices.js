@@ -51,5 +51,13 @@ const UserService = {
     {
         return httpAxios.post("login", data);
     },
+    logout:() =>
+    {
+        return httpAxios.post("logout");
+    },
+    updateAccount:(data, id) =>
+    {
+        return httpAxios.post("updateAccount/" + id, data);
+    },
 }
 export default UserService;

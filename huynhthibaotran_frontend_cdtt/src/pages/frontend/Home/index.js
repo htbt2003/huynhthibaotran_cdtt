@@ -446,7 +446,7 @@ function Home() {
 </div>
 
       {/*brand logo strat*/}
-      <BrandHome/>
+      {/* <BrandHome/> */}
       {/*brand logo end*/}
     </div>
   </div>

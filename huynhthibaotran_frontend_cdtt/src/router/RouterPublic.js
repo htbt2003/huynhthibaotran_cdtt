@@ -12,6 +12,7 @@ import Product from "../pages/frontend/Product";
 import ProductDetail from "../pages/frontend/Product/ProductDetail";
 import ProductBrand from "../pages/frontend/Product/ProductBrand";
 import ProductCategory from "../pages/frontend/Product/ProductCategory";
+import Account from "../pages/frontend/Account";
 
 const RouterPublic = [
     {path:'/',component:Home},
@@ -27,7 +28,7 @@ const RouterPublic = [
     {path:'/tim-kiem/:key?',component:Search},
     {path:'/gio-hang',component:Cart},
     {path:'/thanh-toan',component:checkout},
-    // {path:'/xac-nhan',component:confirm}
+    {path:'/tai-khoan',component:Account},
 
 ];
 

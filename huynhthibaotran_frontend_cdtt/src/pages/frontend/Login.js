@@ -7,7 +7,7 @@ import { GetUser } from './Cart/actions';
 import swal from 'sweetalert';
 import axios from 'axios';
 
-const Login = ({ GetUser }) => {
+const Login = ({ GetUser, userd }) => {
   const navigator = useNavigate();
   const [user, setUser] = useState([]);
   const [email, setEmail] = useState("");
@@ -18,13 +18,18 @@ const Login = ({ GetUser }) => {
       email: email,
       password: password
     }
+    const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
+    console.log(userd)
+
   axios.get('http://huynhthibaotran_backend_cdtt.test/sanctum/csrf-cookie')
-    .then(function () {
+    .then(function (res) {
       UserServices.login(user)
       .then(function (result) {
         if (result.status == true) {
           localStorage.setItem('auth_token', result.token);
-          localStorage.setItem('auth_name', result.user);
+          localStorage.setItem('auth', result.user.roles);
+          GetUser(result.user);
           swal("Success", result.message, "success");
           if (result.user.roles === 'admin') {
             navigator("/admin", { replace: true })
@@ -39,7 +44,6 @@ const Login = ({ GetUser }) => {
       });
     });
   }
-
 
 return (
   <div>
@@ -92,7 +96,7 @@ return (
 
 const mapStateToProps = state => {
   return {
-    user: state._todoUser.user,
+    userd: state._todoUser.user,
   }
 }
 export default connect(mapStateToProps, { GetUser })(Login);

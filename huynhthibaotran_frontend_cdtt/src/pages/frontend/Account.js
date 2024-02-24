@@ -1,20 +1,17 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import {FaPlus} from 'react-icons/fa';
-import { useEffect, useState } from 'react';
-import UserServices from '../../../services/UserServices';
+import { useEffect, useState } from "react";
+import UserServices from '../../services/UserServices';
+import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-function UserUpdate() {
-    const {id} = useParams();
+const Account = ({User}) => {
     const navigator = useNavigate();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
     const [address, setAddress] = useState("");
-    const [status, setStatus] = useState(1);
-    const [gender, setGender] = useState(1);
-
+    const [gender, setGender] = useState();
+    
     function UserEdit(event)
     {
         event.preventDefault();//không load lại trang
@@ -24,10 +21,8 @@ function UserUpdate() {
         user.append("email", email)
         user.append("phone", phone)
         user.append("username", username)
-        user.append("password", password)
         user.append("address", address)
-        user.append("roles", 'user')
-        user.append("status", status)
+        user.append("gender", gender)
         if(image.files.length === 0)
         {
             user.append("image", "")
@@ -36,45 +31,36 @@ function UserUpdate() {
         {
             user.append("image", image.files[0])
         }
-        UserServices.update(user, id)
+        UserServices.updateAccount(user, User.id)
         .then(function(result) {
             alert(result.message);
-            navigator("/admin/user", {replace:true})
+            navigator("/", {replace:true})
         });
     }
     useEffect (function(){
         (async function(){
-          await UserServices.getById(id)
+          await UserServices.getById(User.id)
           .then(function(result){
               const tmp = result.user
               setName(tmp.name);
               setEmail(tmp.email);
               setPhone(tmp.phone);
               setUsername(tmp.username);
-              setPassword(tmp.password);
               setAddress(tmp.address);
-              setStatus(tmp.status);
+              setGender(tmp.gender)
           });
         })();
     },[]);
     return (
-    <form method='post' onSubmit={UserEdit}>
-<div className="content">
-  <section className="content-header my-2">
-    <h1 className="d-inline">Cập nhật thành viên</h1>
-    <div className="row mt-2 align-items-center">
-      <div className="col-md-12 text-right">
-        <button className="btn btn-success btn-sm" name="THEM">
-          <i className="fa fa-save" /> Lưu [Thêm]
-        </button>
-        <a href="user_index.html" className="btn btn-primary btn-sm">
-          <i className="fa fa-arrow-left" /> Về danh sách
-        </a>
-      </div>
-    </div>
-  </section>
-  <section className="content-body my-2">
-    <form action="" method="post" encType="multipart/form-data">
+        <section className="main_content_area">
+  <div className="account_dashboard">
+  <h3 className="text-center">Thông tin tài khoản </h3>
+    <div className="row">
+      <div className="col-sm-12 col-md col-lg">
+        {/* Tab panes */}
+        <section className="content-body my-2">
+    <form  method="post" onSubmit={UserEdit}>
+    <p className="text-center">Already have an account? <a href="#">Log in instead!</a></p>
       <div className="row">
         <div className="col-md-6">
           <div className="mb-3">
@@ -89,29 +75,6 @@ function UserUpdate() {
               placeholder="Tên đăng nhập"
             />
           </div>
-          <div className="mb-3">
-            <label>
-              <strong>Mật khẩu(*)</strong>
-            </label>
-            <input
-            value={password} onChange={(e)=> setPassword(e.target.value)}
-              type="password"
-              name="password"
-              className="form-control"
-              placeholder="Mật khẩu"
-            />
-          </div>
-          {/* <div className="mb-3">
-            <label>
-              <strong>Xác nhận mật khẩu(*)</strong>
-            </label>
-            <input
-              type="password"
-              name="re_password"
-              className="form-control"
-              placeholder="Xác nhận mật khẩu"
-            />
-          </div> */}
           <div className="mb-3">
             <label>
               <strong>Email(*)</strong>
@@ -189,22 +152,27 @@ function UserUpdate() {
             </label>
             <input type="file" id="image" className="form-control" />
           </div>
-          <div className="mb-3">
-            <label>
-              <strong>Trạng thái</strong>
-            </label>
-            <select name="status" className="form-select" value={status} onChange={(e)=> setStatus(e.target.value)}>
-              <option value={1}>Xuất bản</option>
-              <option value={2}>Chưa xuất bản</option>
-            </select>
-          </div>
         </div>
       </div>
+      <button className="btn btn-success btn-sm" type="submit">
+  <i className="fa fa-save" /> Lưu [Cập nhật]
+</button>
+
     </form>
   </section>
-</div>
-    </form>
+
+      </div>
+    </div>
+  </div>
+</section>
+
     );
 }
+const mapStateToProps = state => {
+    return {
+      User: state._todoUser.user,
+    }
+  }
+  
+export default connect(mapStateToProps)(Account);
 
-export default UserUpdate;

@@ -25,7 +25,7 @@ function ProductSaleList() {
       setProsales(resultSale.prosales.data)
       setTotalSale(resultSale.total);
 
-      const result = await ProductServices.getAll(page);
+      const result = await ProductServices.getProducts(page);
       setProducts(result.products.data)
       setTotal(result.total);
 
@@ -139,8 +139,8 @@ function ProductSaleList() {
                                             <div className=''>{product.name}</div>
                                           </div>
                                         </td>
-                                        <td> {product.category.name} </td>
-                                        <td> {product.brand.name} </td>
+                                        <td> {product.category_name} </td>
+                                        <td> {product.brand_name} </td>
                                         <td> 
                                           <input type='text' id={"pricesale" + product.id}/>
                                         </td>

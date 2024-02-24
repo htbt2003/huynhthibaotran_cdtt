@@ -4,8 +4,9 @@ import OrderServices from '../../../services/OrderServices';
 import { connect } from "react-redux";
 import UserServices from '../../../services/UserServices';
 import {ClearCart} from './actions';
+import swal from "sweetalert";
 
-function Checkout({ items, ClearCart}) {
+function Checkout({ items, ClearCart, User}) {
     const navigator = useNavigate();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ function Checkout({ items, ClearCart}) {
 //    console.log(ListCart)
     useEffect(function () {
         (async function () {
-            await UserServices.getById(6)
+            await UserServices.getById(User.id)
                 .then(function (result) {
                     setUser(result.user)
                 });
@@ -47,7 +48,7 @@ function Checkout({ items, ClearCart}) {
                 if(result.status == true)
                 {
                     ClearCart()
-                    alert(result.message)
+                    swal("Success", result.message, "success");
                     navigator("/", { replace: true })
                 }
                 console.log(result.order)
@@ -494,7 +495,8 @@ function Checkout({ items, ClearCart}) {
 const mapStateToProps = state => {
     //  console.log(state)
     return {
-        items: state._todoProduct
+        items: state._todoProduct,
+        User: state._todoUser.user,
     }
 }
 

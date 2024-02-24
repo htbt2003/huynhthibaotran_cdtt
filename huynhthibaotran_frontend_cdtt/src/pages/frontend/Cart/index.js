@@ -152,10 +152,9 @@ function Cart({items,IncreaseQuantity,DecreaseQuantity,DeleteCart}) {
 }
 
 const mapStateToProps = state => {
-    //  console.log(state)
     return {
         items: state._todoProduct
     }
 }
 
-export default connect(mapStateToProps, { IncreaseQuantity, DecreaseQuantity, DeleteCart })(Cart);
+export default connect(mapStateToProps, { IncreaseQuantity, DecreaseQuantity, DeleteCart, })(Cart);
